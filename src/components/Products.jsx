@@ -441,7 +441,7 @@ export const products = [
     id: 55,
     name: "Graphic T-Shirt",
     category: "Fashion",
-    image: "./src/assets/Graphic T-Shirt.jpg",
+    image: "./src/assets/Graphic T-Shirt.webp",
     price: 21.99,
     description: "Eye-catching designs made with soft cotton fabric. Perfect for casual wear or layering. Breathable material keeps you cool while adding personality to your everyday outfit."
   },
@@ -449,7 +449,7 @@ export const products = [
     id: 56,
     name: "Portable Projector",
     category: "Electronics",
-    image: "./src/assets/Portable Projector.webp",
+    image: "./src/assets/Portable Projector.jpg",
     price: 129.99,
     description: "Big screen entertainment from a compact device. Easy to carry, perfect for movie nights or presentations. Connects to smartphones, laptops, and consoles via HDMI or USB."
   },
@@ -482,7 +482,7 @@ export const products = [
     id: 60,
     name: "Mini Fridge",
     category: "Home",
-    image: "./src/assets/Mini Fridge.jpg",
+    image: "./src/assets/Mini Fridge.avif",
     price: 109.99,
     description: "Compact cooling for bedrooms or dorm rooms. Energy-efficient with adjustable temperature settings, removable shelves, and quiet operation. Great for drinks, snacks, and skincare products."
   },
@@ -507,7 +507,7 @@ export const products = [
     id: 63,
     name: "Rain Jacket",
     category: "Fashion",
-    image: "./src/assets/Rain Jacket.jpg",
+    image: "./src/assets/Rain Jacket.jpeg",
     price: 69.99,
     description: "Water-resistant and windproof for rainy days. Lightweight and breathable design with adjustable hood and pockets. Keeps you dry and stylish during unpredictable weather."
   },
@@ -515,7 +515,7 @@ export const products = [
     id: 64,
     name: "Scented Candles",
     category: "Home",
-    image: "./src/assets/Scented Candles.jpg",
+    image: "./src/assets/Scented Candles.png",
     price: 24.99,
     description: "Relaxing aromas for a cozy atmosphere. Made with natural soy wax and essential oils, ideal for meditation, sleep, or adding charm to any room."
   },
@@ -523,7 +523,7 @@ export const products = [
     id: 65,
     name: "Kindle Case",
     category: "Electronics",
-    image: "./src/assets/Kindle Case.webp",
+    image: "./src/assets/Kindle Case.jpg",
     price: 15.99,
     description: "Protect your e-reader with style. Slim, durable, and lightweight with magnetic closure. Prevents scratches, dents, and dust while keeping your Kindle safe and secure."
   },
@@ -531,7 +531,7 @@ export const products = [
     id: 66,
     name: "Adjustable Ankle Weights",
     category: "Fitness",
-    image: "./src/assets/Ankle Weights.jpg",
+    image: "./src/assets/Adjustable Ankle Weights.jpg",
     price: 23.99,
     description: "Increase resistance and improve workouts. Fully adjustable straps ensure a snug fit. Perfect for walking, jogging, or strength training to enhance muscle tone and endurance."
   },
@@ -539,7 +539,7 @@ export const products = [
     id: 67,
     name: "Jogger Pants",
     category: "Fashion",
-    image: "./src/assets/Jogger Pants.jpg",
+    image: "./src/assets/Jogger Pants.jpeg",
     price: 34.99,
     description: "Stylish comfort for workouts or casual wear. Soft, stretchy fabric and elastic cuffs offer flexibility and mobility. Great for lounging, errands, or light exercise."
   },
@@ -555,7 +555,7 @@ export const products = [
     id: 69,
     name: "Wireless Game Controller",
     category: "Electronics",
-    image: "./src/assets/Wireless Game Controller.jpg",
+    image: "./",
     price: 49.99,
     description: "Precision control for console and PC gaming. Features ergonomic grip, responsive buttons, long-range connectivity, and customizable settings to enhance your gaming experience."
   },
