@@ -552,7 +552,7 @@ export const products = [
     id: 69,
     name: "Wireless Game Controller",
     category: "Electronics",
-    image: "src/assets/Wireless Game Controller.jpg",
+    image: "src/assets/Wireless Game Controller.avif",
     price: 49.99,
     description: "Precision control for console and PC gaming. Features ergonomic grip, responsive buttons, long-range connectivity, and customizable settings to enhance your gaming experience."
   },
@@ -568,7 +568,7 @@ export const products = [
     id: 71,
     name: "Aromatherapy Set",
     category: "Home",
-    image: "src/assets/Aromatherapy Set.jpg",
+    image: "src/assets/Aromatherapy Set.webp",
     price: 32.99,
     description: "Relax with essential oils and calming scents. Includes diffuser and therapeutic-grade oils. Promotes sleep, stress relief, and mental clarity through natural fragrance."
   },
@@ -576,7 +576,7 @@ export const products = [
     id: 72,
     name: "Leather Wallet",
     category: "Fashion",
-    image: "src/assets/Leather Wallet.jpg",
+    image: "src/assets/Leather Wallet.webp",
     price: 39.99,
     description: "Slim and stylish genuine leather wallet. Multiple card slots and a secure money clip. Timeless design for everyday use or as a gift option."
   },
@@ -592,7 +592,7 @@ export const products = [
     id: 74,
     name: "Weighted Blanket",
     category: "Home",
-    image: "src/assets/Weighted Blanket.jpg",
+    image: "src/assets/Weighted Blanket.jpeg",
     price: 79.99,
     description: "Promote restful sleep with calming pressure. Evenly distributed weight helps reduce anxiety and improve sleep quality. Soft, breathable cover for year-round comfort."
   },
@@ -616,7 +616,7 @@ export const products = [
     id: 77,
     name: "Zip-Up Hoodie",
     category: "Fashion",
-    image: "src/assets/Zip-Up Hoodie.jpg",
+    image: "src/assets/Zip-Up Hoodie.webp",
     price: 42.99,
     description: "Classic style with warmth and comfort. Fleece-lined interior, adjustable hood, and front pockets. Ideal for layering during cool days or lounging indoors."
   },
@@ -632,7 +632,7 @@ export const products = [
     id: 79,
     name: "Smart Doorbell",
     category: "Home",
-    image: "src/assets/Smart Doorbell.jpg",
+    image: "src/assets/Smart Doorbell.webp",
     price: 89.99,
     description: "Monitor visitors with HD video and alerts. Two-way audio, night vision, and motion detection keep your home secure and accessible from your smartphone."
   },
@@ -648,7 +648,7 @@ export const products = [
     id: 81,
     name: "Travel Backpack",
     category: "Fashion",
-    image: "src/assets/Travel Backpack.jpg",
+    image: "src/assets/Travel Backpack.webp",
     price: 59.99,
     description: "Spacious and durable backpack for travel. Water-resistant material, multiple compartments, and padded straps offer comfort and organization for long trips or commutes."
   },
@@ -656,7 +656,7 @@ export const products = [
     id: 82,
     name: "Bean Bag Chair",
     category: "Home",
-    image: "src/assets/Bean Bag Chair.jpg",
+    image: "src/assets/Bean Bag Chair.avif",
     price: 84.99,
     description: "Ultimate comfort for lounging and relaxation. Filled with soft memory foam, conforms to your body shape. Stylish addition to bedrooms, dorms, or gaming rooms."
   },
@@ -664,7 +664,7 @@ export const products = [
     id: 83,
     name: "Streaming Webcam",
     category: "Electronics",
-    image: "src/assets/Streaming Webcam.jpg",
+    image: "src/assets/Streaming Webcam.webp",
     price: 69.99,
     description: "Crystal-clear video for calls and content creation. Features auto-focus, HD resolution, and noise-reducing microphone. Plug-and-play setup for Zoom, Twitch, YouTube, and more."
   },
