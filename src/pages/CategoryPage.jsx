@@ -21,9 +21,13 @@ const CategoryPage = () => {
             >
               <Link to={`/product/${product.id}`}>
                 <img
-                  src={product.image}
+                  src={`/${product.image}`}
                   alt={product.name}
                   className="w-full h-60 object-cover rounded-t-lg"
+                  onError={(e) => {
+                    e.target.onerror = null;
+                    e.target.src = 'https://via.placeholder.com/400x400?text=Image+Not+Found';
+                  }}
                 />
               </Link>
               <div className="p-4">

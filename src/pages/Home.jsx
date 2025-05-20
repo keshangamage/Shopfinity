@@ -130,35 +130,86 @@ const Home = () => {
       </section>
 
       {/* Flash Sale*/}
-      <section className="py-16 bg-gradient-to-r from-teal-400 to-blue-600 text-center text-white">
-        <h2 className="text-4xl font-extrabold mb-10">🔥 Flash Sale! 🔥</h2>
-        <p className="text-lg mb-6">Grab these deals before they're gone!</p>
-        <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-10 px-6">
-          {["Limited Time Offers", "Flash Discount", "New Arrivals"].map((title, index) => (
-            <div
-              key={index}
-              className="relative bg-white text-gray-800 rounded-lg shadow-lg p-6 hover:shadow-2xl transform hover:scale-105 transition-all duration-300 overflow-hidden"
-            >
-              <div className="absolute inset-0 bg-gradient-to-t from-teal-500 to-transparent opacity-20"></div>
-              <h3 className="text-2xl font-bold mb-4">{title}</h3>
-              <p className="text-md mb-6">Hurry, time is running out!</p>
-              <Link
-                to="/shop"
-                className="inline-block bg-orange-500 text-white px-8 py-3 rounded-full hover:bg-orange-600 transition-all"
-              >
-                Shop Now
-              </Link>
-            </div>
-          ))}
+      <section className="py-20 bg-gradient-to-br from-purple-600 via-pink-500 to-red-500 relative overflow-hidden">
+        {/* Animated background elements */}
+        <div className="absolute inset-0">
+          <div className="absolute top-0 left-0 w-40 h-40 bg-white opacity-10 rounded-full -translate-x-1/2 -translate-y-1/2"></div>
+          <div className="absolute bottom-0 right-0 w-60 h-60 bg-white opacity-10 rounded-full translate-x-1/2 translate-y-1/2"></div>
         </div>
-        <div className="mt-10">
-          <p className="text-lg font-semibold">Don't miss out on these exclusive deals!</p>
-          <Link
-            to="/shop"
-            className="mt-4 inline-block bg-zinc-900 text-white px-10 py-3 rounded-full hover:bg-zinc-950 transition-all"
-          >
-            Explore All Deals
-          </Link>
+        
+        <div className="relative container mx-auto px-6">
+          <div className="text-center mb-16">
+            <h2 className="text-5xl font-extrabold mb-6 text-white tracking-tight">
+              ⚡ Flash Sale ⚡
+            </h2>
+            <p className="text-xl text-white/90 font-light">
+              Exclusive deals that won't last long!
+            </p>
+          </div>
+
+          <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-8">
+            {[
+              {
+                title: "Limited Time Offers",
+                discount: "Up to 70% OFF",
+                description: "Premium selections at unbeatable prices"
+              },
+              {
+                title: "Flash Discount",
+                discount: "24HR Deal",
+                description: "New deals every day at midnight"
+              },
+              {
+                title: "New Arrivals",
+                discount: "First Access",
+                description: "Be the first to grab new products"
+              }
+            ].map((deal, index) => (
+              <div
+                key={index}
+                className="bg-white/10 backdrop-blur-lg rounded-2xl p-8 border border-white/20 hover:transform hover:scale-105 transition-all duration-300"
+              >
+                <div className="text-white space-y-4">
+                  <h3 className="text-2xl font-bold">{deal.title}</h3>
+                  <p className="text-3xl font-extrabold text-yellow-300">
+                    {deal.discount}
+                  </p>
+                  <p className="text-white/80">{deal.description}</p>
+                  <Link
+                    to="/shop"
+                    className="inline-block w-full bg-white text-purple-600 font-semibold py-3 px-6 rounded-xl hover:bg-opacity-90 transition-colors mt-4 text-center"
+                  >
+                    Shop Now
+                  </Link>
+                </div>
+              </div>
+            ))}
+          </div>
+
+          <div className="mt-16 text-center">
+            <p className="text-xl font-medium text-white/90 mb-6">
+              Time is running out! Don't miss these incredible offers
+            </p>
+            <Link
+              to="/shop"
+              className="inline-flex items-center justify-center bg-white/10 backdrop-blur-lg text-white border border-white/20 px-8 py-4 rounded-xl hover:bg-white/20 transition-all duration-300 group"
+            >
+              <span className="font-semibold">View All Deals</span>
+              <svg
+                className="w-5 h-5 ml-2 group-hover:translate-x-1 transition-transform"
+                fill="none"
+                stroke="currentColor"
+                viewBox="0 0 24 24"
+              >
+                <path
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                  strokeWidth="2"
+                  d="M9 5l7 7-7 7"
+                />
+              </svg>
+            </Link>
+          </div>
         </div>
       </section>
 
