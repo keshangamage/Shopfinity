@@ -688,7 +688,7 @@ export const products = [
     id: 86,
     name: "Hiking Boots",
     category: "Fashion",
-    image: "src/assets/Hiking Boots.jpg",
+    image: "src/assets/Hiking Boots.webp",
     price: 89.99,
     description: "Sturdy and comfortable for rugged adventures. Waterproof design, grippy soles, and ankle support make them ideal for long hikes and uneven terrains."
   },
@@ -696,7 +696,7 @@ export const products = [
     id: 87,
     name: "Kettlebell",
     category: "Fitness",
-    image: "src/assets/Kettlebell.jpg",
+    image: "src/assets/Kettlebell.webp",
     price: 35.99,
     description: "Versatile tool for strength and endurance training. Ergonomic handle and balanced weight allow dynamic movements including swings, squats, and presses for full-body workouts."
   },
@@ -704,7 +704,7 @@ export const products = [
     id: 88,
     name: "Mirror with LED Lights",
     category: "Home",
-    image: "src/assets/Mirror with LED Lights.jpg",
+    image: "src/assets/Mirror with LED Lights.webp",
     price: 49.99,
     description: "Bright, clear lighting for makeup or grooming. Adjustable brightness with touch controls and sleek frame. Ideal for dressing tables or bathroom vanities."
   },
@@ -752,7 +752,7 @@ export const products = [
     id: 94,
     name: "LED Monitor Light Bar",
     category: "Electronics",
-    image: "src/assets/Monitor Light Bar.jpg",
+    image: "src/assets/LED Monitor Light Bar.jpg",
     price: 33.99,
     description: "Enhance your workspace with eye-friendly lighting. Reduces screen glare and eye strain. USB-powered with adjustable brightness and color temperature for better focus."
   },
@@ -760,7 +760,7 @@ export const products = [
     id: 95,
     name: "Silicone Kitchen Utensils",
     category: "Home",
-    image: "src/assets/Kitchen Utensils.jpg",
+    image: "src/assets/Silicone Kitchen Utensils'.jpg",
     price: 25.99,
     description: "Heat-resistant and non-stick safe tools. Includes spatulas, tongs, and spoons. Durable, dishwasher-safe, and gentle on cookware. A must-have set for modern kitchens."
   },
@@ -784,7 +784,7 @@ export const products = [
     id: 98,
     name: "LED Desk Clock",
     category: "Home",
-    image: "src/assets/LED Desk Clock.jpg",
+    image: "src/assets/LED Desk Clock.webp",
     price: 27.99,
     description: "Digital time display with modern design. Includes temperature display, alarm, and night mode. Sleek for desks, bedside tables, or offices."
   },
@@ -792,7 +792,7 @@ export const products = [
     id: 99,
     name: "Compact Power Strip",
     category: "Electronics",
-    image: "src/assets/Power Strip.jpg",
+    image: "src/assets/Compact Power Strip.jpg",
     price: 21.99,
     description: "Multiple outlets and USB ports in one device. Surge protection included. Compact design fits on desks or travel bags for powering devices conveniently."
   },
