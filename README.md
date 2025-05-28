@@ -1,7 +1,5 @@
 # Shopfinity | Modern E-commerce Platform
 
-![Shopfinity Logo](./src/assets/logobgremove.png)
-
 ## Overview
 
 Shopfinity is a feature-rich e-commerce platform built with React and Vite, offering a seamless shopping experience. The application provides users with a modern interface to browse products, manage their shopping cart, and complete purchases.
