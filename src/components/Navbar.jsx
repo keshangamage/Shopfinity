@@ -2,10 +2,12 @@ import { useState } from "react";
 import { FaSearch, FaShoppingCart, FaBars, FaUser } from "react-icons/fa";
 import { Link, useNavigate } from "react-router-dom";
 import logo from "../assets/logobgremove.png"; // Adjust path as needed
+import { useCart } from "../utils/CartContext";
 
 const Navbar = () => {
   const [isDropdownOpen, setIsDropdownOpen] = useState(false);
   const navigate = useNavigate();
+  const { cartItems } = useCart();
 
   const toggleDropdown = () => {
     setIsDropdownOpen((prev) => !prev);
@@ -105,15 +107,18 @@ const Navbar = () => {
         >
           <FaUser className="text-gray-500" />
           <span className="font-medium">Sign In / Register</span>
-        </Link>
-
-        {/* Cart Button */}
+        </Link>        {/* Cart Button */}
         <Link
           to="/cart"
-          className="flex items-center gap-2 px-4 py-2 rounded-full border border-gray-300 text-gray-700 hover:bg-gray-100 transition duration-200 shadow-sm"
+          className="flex items-center gap-2 px-4 py-2 rounded-full border border-gray-300 text-gray-700 hover:bg-gray-100 transition duration-200 shadow-sm relative"
         >
           <FaShoppingCart className="text-gray-500" />
           <span className="font-medium">Cart</span>
+          {cartItems.length > 0 && (
+            <span className="absolute -top-2 -right-2 bg-teal-500 text-white rounded-full w-5 h-5 flex items-center justify-center text-xs">
+              {cartItems.reduce((total, item) => total + item.quantity, 0)}
+            </span>
+          )}
         </Link>
       </div>
     </header>

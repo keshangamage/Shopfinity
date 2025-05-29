@@ -2,9 +2,11 @@ import { useParams } from "react-router-dom";
 import { products } from "../components/Products";
 import React from "react";
 import { Link } from "react-router-dom";
+import { useCart } from "../utils/CartContext";
 
 const CategoryPage = () => {
   const { categoryName } = useParams();
+  const { addToCart } = useCart();
   const categoryProducts = products.filter(
     (item) => item.category.toLowerCase() === categoryName.toLowerCase()
   );
@@ -30,10 +32,16 @@ const CategoryPage = () => {
                   }}
                 />
               </Link>
-              <div className="p-4">
-                <h2 className="text-lg font-semibold">{product.name}</h2>
+              <div className="p-4">                <h2 className="text-lg font-semibold">{product.name}</h2>
                 <p className="text-gray-600 mt-2">${product.price.toFixed(2)}</p>
-                <button className="bg-orange-500 text-white py-1.5 px-6.5 rounded-full mt-3 hover:bg-orange-600 transition-all ">
+                <button 
+                  onClick={(e) => {
+                    e.preventDefault(); // Prevent navigation
+                    addToCart(product, 1);
+                    alert(`${product.name} added to cart!`);
+                  }}
+                  className="bg-orange-500 text-white py-1.5 px-6.5 rounded-full mt-3 hover:bg-orange-600 transition-all"
+                >
                   Add to Cart
                 </button>
               </div>

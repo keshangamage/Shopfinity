@@ -2,10 +2,12 @@ import React, { useState } from "react";
 import { Link } from "react-router-dom";
 import { products } from "../components/Products";
 import webbanner from "../assets/banner.png";
+import { useCart } from "../utils/CartContext";
 
 
 const Home = () => {
   const [visibleCount, setVisibleCount] = useState(15);
+  const { addToCart } = useCart();
 
   return (
     <div className="min-h-screen bg-gray-100 font-sans">
@@ -106,12 +108,18 @@ const Home = () => {
                 <p className="text-gray-600 mt-2">
                   <span className={product.discountPrice ? "line-through" : ""}>
                     ${product.price.toFixed(2)}
-                  </span>
-                  {product.discountPrice && (
+                  </span>                  {product.discountPrice && (
                     <span className="text-red-500 ml-2">(${product.discountPrice.toFixed(2)})</span>
                   )}
                 </p>
-                <button className="bg-orange-500 text-white py-1.5 px-6.5 rounded-full mt-3 hover:bg-orange-600 transition-all ">
+                <button 
+                  onClick={(e) => {
+                    e.preventDefault(); // Prevent navigation to product page
+                    addToCart(product, 1);
+                    alert(`${product.name} added to cart!`);
+                  }}
+                  className="bg-orange-500 text-white py-1.5 px-6.5 rounded-full mt-3 hover:bg-orange-600 transition-all"
+                >
                   Add to Cart
                 </button>
               </div>

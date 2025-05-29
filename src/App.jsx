@@ -8,22 +8,25 @@ import Cart from "./pages/Cart";
 import Checkout from "./pages/Checkout";
 import ProductDetail from "./pages/ProductDetail";
 import CategoryPage from "./pages/CategoryPage";
+import { CartProvider } from "./utils/CartContext";
 
 function App() {
   return (
-    <Router>
-      <Navbar />
+    <CartProvider>
+      <Router>
+        <Navbar />
 
-      <Routes>
-        <Route path="/" element={<Home />} /> 
-        <Route path="/login" element={<Login />} /> 
-        <Route path="/register" element={<Register />} /> 
-        <Route path="/cart" element={<Cart />} /> 
-        <Route path="/checkout" element={<Checkout />} />
-        <Route path="/product/:id" element={<ProductDetail />} />
-        <Route path="/categories/:categoryName" element={<CategoryPage />} />
-      </Routes>
-    </Router>
+        <Routes>
+          <Route path="/" element={<Home />} /> 
+          <Route path="/login" element={<Login />} /> 
+          <Route path="/register" element={<Register />} /> 
+          <Route path="/cart" element={<Cart />} /> 
+          <Route path="/checkout" element={<Checkout />} />
+          <Route path="/product/:id" element={<ProductDetail />} />
+          <Route path="/categories/:categoryName" element={<CategoryPage />} />
+        </Routes>
+      </Router>
+    </CartProvider>
   );
 }
 

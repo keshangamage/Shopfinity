@@ -1,15 +1,25 @@
 import React, { useState } from "react";
-import { useParams } from "react-router-dom";
-import { products } from "../components/Products"; 
+import { useParams, useNavigate } from "react-router-dom";
+import { products } from "../components/Products";
+import { useCart } from "../utils/CartContext";
 
 const ProductDetail = () => {
   const [isImageModalOpen, setIsImageModalOpen] = useState(false);
-  const { id } = useParams(); 
+  const [quantity, setQuantity] = useState(1);
+  const { id } = useParams();
+  const { addToCart } = useCart();
+  const navigate = useNavigate();
   const product = products.find((p) => p.id.toString() === id);
 
   if (!product) {
     return <div className="p-8">Product not found.</div>;
   }
+  
+  const handleAddToCart = () => {
+    addToCart(product, quantity);
+    // Show a confirmation toast or message
+    alert(`${product.name} has been added to your cart!`);
+  };
 
   return (
     <div className="p-8 max-w-4xl mx-auto">
@@ -23,12 +33,33 @@ const ProductDetail = () => {
             e.target.onerror = null; // Prevent infinite loop
             e.target.src = 'https://via.placeholder.com/400x400?text=Image+Not+Found';
           }}
-        />
-        <div>
+        />        <div>
           <h2 className="text-3xl font-bold mb-4">{product.name}</h2>
           <p className="text-xl text-teal-600 mb-4">${product.price}</p>
           <p className="text-gray-700 mb-6">{product.description}</p>
-          <button className="bg-teal-600 text-white py-2 px-4 rounded hover:bg-teal-700 transition">Add to Cart</button>
+          <div className="flex items-center gap-4 mb-4">
+            <div className="flex items-center border rounded">
+              <button 
+                onClick={() => quantity > 1 && setQuantity(quantity - 1)}
+                className="px-3 py-1 border-r hover:bg-gray-100"
+              >
+                -
+              </button>
+              <span className="px-4 py-1">{quantity}</span>
+              <button 
+                onClick={() => setQuantity(quantity + 1)}
+                className="px-3 py-1 border-l hover:bg-gray-100"
+              >
+                +
+              </button>
+            </div>
+          </div>
+          <button 
+            onClick={handleAddToCart}
+            className="bg-teal-600 text-white py-2 px-4 rounded hover:bg-teal-700 transition"
+          >
+            Add to Cart
+          </button>
         </div>
       </div>
 
