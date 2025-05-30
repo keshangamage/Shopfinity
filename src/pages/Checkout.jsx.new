@@ -1,3 +1,4 @@
+// filepath: e:\Shopfinity\src\pages\Checkout.jsx
 import React, { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { useCart } from "../utils/CartContext";
