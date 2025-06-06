@@ -1,13 +1,44 @@
-import React from "react";
-import { useNavigate } from "react-router-dom";
+import React, { useState } from "react";
+import { useNavigate, Link } from "react-router-dom";
+import { useAuth } from "../utils/AuthContext";
+import { FcGoogle } from "react-icons/fc";
 
 const Login = () => {
-  const navigate = useNavigate(); // Initialize navigate
+  const { login, signInWithGoogle } = useAuth();
+  const navigate = useNavigate();
+  const [email, setEmail] = useState("");
+  const [password, setPassword] = useState("");
+  const [error, setError] = useState("");
+  const [loading, setLoading] = useState(false);
 
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
-    // Add login logic here
-    navigate("/"); // Redirect to home after login
+    
+    try {
+      setError("");
+      setLoading(true);
+      await login(email, password);
+      navigate("/");
+    } catch (err) {
+      setError("Failed to sign in. Please check your credentials.");
+      console.error(err);
+    } finally {
+      setLoading(false);
+    }
+  };
+  
+  const handleGoogleSignIn = async () => {
+    try {
+      setError("");
+      setLoading(true);
+      await signInWithGoogle();
+      navigate("/");
+    } catch (err) {
+      setError("Failed to sign in with Google.");
+      console.error(err);
+    } finally {
+      setLoading(false);
+    }
   };
 
   return (
@@ -15,7 +46,12 @@ const Login = () => {
       <div className="w-full max-w-md bg-white rounded-2xl shadow-lg p-8">
         <h2 className="text-2xl font-bold text-center text-gray-800 mb-6">Sign in to your account</h2>
 
-        <form className="space-y-5" onSubmit={handleSubmit}>
+        <form className="space-y-5" onSubmit={handleSubmit}>          {error && (
+            <div className="bg-red-50 border border-red-200 text-red-700 px-4 py-2 rounded-lg mb-4">
+              {error}
+            </div>
+          )}
+        
           {/* Email */}
           <div>
             <label htmlFor="email" className="block text-sm font-medium text-gray-700">
@@ -25,6 +61,8 @@ const Login = () => {
               type="email"
               id="email"
               required
+              value={email}
+              onChange={(e) => setEmail(e.target.value)}
               className="mt-1 block w-full px-4 py-2 border border-gray-300 rounded-xl shadow-sm focus:outline-none focus:ring-2 focus:ring-black"
             />
           </div>
@@ -38,6 +76,8 @@ const Login = () => {
               type="password"
               id="password"
               required
+              value={password}
+              onChange={(e) => setPassword(e.target.value)}
               className="mt-1 block w-full px-4 py-2 border border-gray-300 rounded-xl shadow-sm focus:outline-none focus:ring-2 focus:ring-black"
             />
           </div>
@@ -51,25 +91,41 @@ const Login = () => {
             <a href="#" className="text-blue-600 hover:underline">
               Forgot password?
             </a>
-          </div>
-
-          {/* Submit */}
+          </div>          {/* Submit */}
           <button
             type="submit"
-            className="w-full bg-black text-white py-2 rounded-xl hover:bg-gray-800 transition"
+            disabled={loading}
+            className="w-full bg-black text-white py-2 rounded-xl hover:bg-gray-800 transition disabled:bg-gray-400"
           >
-            Sign in
+            {loading ? "Signing in..." : "Sign in"}
+          </button>
+          
+          {/* Google Sign In */}
+          <div className="relative my-4">
+            <div className="absolute inset-0 flex items-center">
+              <div className="w-full border-t border-gray-300"></div>
+            </div>
+            <div className="relative flex justify-center text-sm">
+              <span className="px-2 bg-white text-gray-500">or continue with</span>
+            </div>
+          </div>
+
+          <button
+            type="button"
+            onClick={handleGoogleSignIn}
+            disabled={loading}
+            className="w-full flex items-center justify-center py-2 px-4 border border-gray-300 rounded-xl hover:bg-gray-50 transition-colors"
+          >
+            <FcGoogle className="text-xl mr-2" />
+            Sign in with Google
           </button>
         </form>
 
         <p className="mt-6 text-center text-sm">
           Don't have an account?{" "}
-          <span
-            className="text-blue-600 hover:underline cursor-pointer"
-            onClick={() => navigate("/register")}
-          >
+          <Link to="/register" className="text-blue-600 hover:underline">
             Sign up
-          </span>
+          </Link>
         </p>
       </div>
     </div>

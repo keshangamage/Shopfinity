@@ -1,17 +1,49 @@
-import { useState } from "react";
-import { FaSearch, FaShoppingCart, FaBars, FaUser } from "react-icons/fa";
+import { useState, useRef, useEffect } from "react";
+import { FaSearch, FaShoppingCart, FaBars, FaUser, FaSignOutAlt } from "react-icons/fa";
 import { Link, useNavigate } from "react-router-dom";
 import logo from "../assets/logobgremove.png"; // Adjust path as needed
 import { useCart } from "../utils/CartContext";
+import { useAuth } from "../utils/AuthContext";
 
 const Navbar = () => {
   const [isDropdownOpen, setIsDropdownOpen] = useState(false);
+  const [isUserMenuOpen, setIsUserMenuOpen] = useState(false);
   const navigate = useNavigate();
   const { cartItems } = useCart();
+  const { currentUser, logout } = useAuth();
+  const userMenuRef = useRef(null);
 
   const toggleDropdown = () => {
     setIsDropdownOpen((prev) => !prev);
   };
+  
+  const toggleUserMenu = () => {
+    setIsUserMenuOpen((prev) => !prev);
+  };
+  
+  const handleLogout = async () => {
+    try {
+      await logout();
+      setIsUserMenuOpen(false);
+      navigate("/");
+    } catch (error) {
+      console.error("Failed to log out", error);
+    }
+  };
+  
+  // Close user menu when clicking outside
+  useEffect(() => {
+    const handleClickOutside = (event) => {
+      if (userMenuRef.current && !userMenuRef.current.contains(event.target)) {
+        setIsUserMenuOpen(false);
+      }
+    };
+    
+    document.addEventListener("mousedown", handleClickOutside);
+    return () => {
+      document.removeEventListener("mousedown", handleClickOutside);
+    };
+  }, []);
 
   const handleCategoryClick = (category) => {
     setIsDropdownOpen(false);
@@ -98,16 +130,51 @@ const Navbar = () => {
           >
             Download the <br /> Shopfinity app
           </button>
-        </div>
-
-        {/* Sign In/Register Button */}
-        <Link
-          to="/login"
-          className="flex items-center gap-2 px-4 py-2 rounded-full border border-gray-300 text-gray-700 hover:bg-gray-100 transition duration-200 shadow-sm"
-        >
-          <FaUser className="text-gray-500" />
-          <span className="font-medium">Sign In / Register</span>
-        </Link>        {/* Cart Button */}
+        </div>        {/* Authentication */}
+        {currentUser ? (
+          // User is logged in - show profile dropdown
+          <div className="relative" ref={userMenuRef}>
+            <button
+              onClick={toggleUserMenu}
+              className="flex items-center gap-2 px-4 py-2 rounded-full border border-gray-300 text-gray-700 hover:bg-gray-100 transition duration-200 shadow-sm"
+            >
+              <FaUser className="text-gray-500" />
+              <span className="font-medium">
+                {currentUser.displayName || currentUser.email.split("@")[0]}
+              </span>
+            </button>
+            
+            {isUserMenuOpen && (
+              <div className="absolute right-0 mt-2 w-48 bg-white rounded-md shadow-lg py-1 z-50">
+                <div className="px-4 py-2 text-sm text-gray-700 border-b">
+                  Signed in as <span className="font-semibold">{currentUser.email}</span>
+                </div>
+                <Link to="/profile" className="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100">
+                  Profile
+                </Link>
+                <Link to="/orders" className="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100">
+                  My Orders
+                </Link>
+                <button
+                  onClick={handleLogout}
+                  className="w-full text-left flex items-center gap-2 px-4 py-2 text-sm text-red-600 hover:bg-gray-100"
+                >
+                  <FaSignOutAlt size={14} />
+                  Sign out
+                </button>
+              </div>
+            )}
+          </div>
+        ) : (
+          // User is not logged in - show sign in button
+          <Link
+            to="/login"
+            className="flex items-center gap-2 px-4 py-2 rounded-full border border-gray-300 text-gray-700 hover:bg-gray-100 transition duration-200 shadow-sm"
+          >
+            <FaUser className="text-gray-500" />
+            <span className="font-medium">Sign In / Register</span>
+          </Link>
+        )}{/* Cart Button */}
         <Link
           to="/cart"
           className="flex items-center gap-2 px-4 py-2 rounded-full border border-gray-300 text-gray-700 hover:bg-gray-100 transition duration-200 shadow-sm relative"

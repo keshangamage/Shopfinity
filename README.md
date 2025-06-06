@@ -19,6 +19,28 @@ Shopfinity is a feature-rich e-commerce platform built with React and Vite, offe
 - **Frontend Framework**: React.js
 - **Build Tool**: Vite
 - **Styling**: Tailwind CSS for responsive and modern UI
+- **Authentication**: Firebase Authentication
+
+## Environment Setup
+
+To run this project locally, you'll need to set up environment variables:
+
+1. Create a `.env` file in the root directory
+2. Copy the contents from `.env.example`
+3. Replace the placeholder values with your Firebase project credentials
+
+Example `.env` file structure:
+```
+VITE_FIREBASE_API_KEY=your_api_key_here
+VITE_FIREBASE_AUTH_DOMAIN=your_project_id.firebaseapp.com
+VITE_FIREBASE_PROJECT_ID=your_project_id
+VITE_FIREBASE_STORAGE_BUCKET=your_project_id.firebasestorage.app
+VITE_FIREBASE_MESSAGING_SENDER_ID=your_messaging_sender_id
+VITE_FIREBASE_APP_ID=your_app_id
+VITE_FIREBASE_MEASUREMENT_ID=your_measurement_id
+```
+
+You can obtain these values from your Firebase project console: https://console.firebase.google.com/
 - **Routing**: React Router for seamless navigation
 - **State Management**: React Hooks for efficient state management
 
