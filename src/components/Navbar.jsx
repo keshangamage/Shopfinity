@@ -1,9 +1,9 @@
 import { useState, useRef, useEffect } from "react";
-import { FaSearch, FaShoppingCart, FaBars, FaUser, FaSignOutAlt } from "react-icons/fa";
+import { FaSearch, FaShoppingCart, FaBars, FaUser, FaSignOutAlt, FaRegUser, FaClipboardList, FaCog } from "react-icons/fa";
 import { Link, useNavigate } from "react-router-dom";
-import logo from "../assets/logobgremove.png"; // Adjust path as needed
+import logo from "../assets/logobgremove.png"; 
 import { useCart } from "../utils/CartContext";
-import { useAuth } from "../utils/AuthContext";
+import { useAuth } from "../utils/AuthContext.jsx";
 
 const Navbar = () => {
   const [isDropdownOpen, setIsDropdownOpen] = useState(false);
@@ -130,59 +130,105 @@ const Navbar = () => {
           >
             Download the <br /> Shopfinity app
           </button>
-        </div>        {/* Authentication */}
+        </div>
+        
+        {/* Authentication */}
         {currentUser ? (
           // User is logged in - show profile dropdown
           <div className="relative" ref={userMenuRef}>
             <button
               onClick={toggleUserMenu}
-              className="flex items-center gap-2 px-4 py-2 rounded-full border border-gray-300 text-gray-700 hover:bg-gray-100 transition duration-200 shadow-sm"
+              className="flex items-center gap-2 px-4 py-2 rounded-full bg-gradient-to-r from-teal-500 to-teal-400 text-white hover:shadow-lg transition duration-300 shadow-md"
             >
-              <FaUser className="text-gray-500" />
+              <div className="w-7 h-7 bg-white text-teal-500 rounded-full flex items-center justify-center">
+                {currentUser.photoURL ? (
+                  <img 
+                    src={currentUser.photoURL} 
+                    alt="Profile" 
+                    className="w-full h-full rounded-full object-cover"
+                  />
+                ) : (
+                  <FaUser className="text-teal-500" />
+                )}
+              </div>
               <span className="font-medium">
                 {currentUser.displayName || currentUser.email.split("@")[0]}
               </span>
             </button>
             
             {isUserMenuOpen && (
-              <div className="absolute right-0 mt-2 w-48 bg-white rounded-md shadow-lg py-1 z-50">
-                <div className="px-4 py-2 text-sm text-gray-700 border-b">
-                  Signed in as <span className="font-semibold">{currentUser.email}</span>
+              <div className="absolute right-0 mt-3 w-72 bg-white rounded-xl shadow-xl py-2 z-50 border border-gray-100 overflow-hidden transition-all duration-300 transform origin-top-right">
+                {/* User Header */}
+                <div className="px-6 py-4 bg-gradient-to-r from-teal-500 to-teal-400 text-white">
+                  <div className="flex items-center gap-3">
+                    <div className="w-12 h-12 bg-white text-teal-500 rounded-full flex items-center justify-center shadow-md">
+                      {currentUser.photoURL ? (
+                        <img 
+                          src={currentUser.photoURL} 
+                          alt="Profile" 
+                          className="w-full h-full rounded-full object-cover"
+                        />
+                      ) : (
+                        <FaUser size={20} className="text-teal-500" />
+                      )}
+                    </div>
+                    <div>
+                      <div className="font-bold text-lg">{currentUser.displayName || currentUser.email.split("@")[0]}</div>
+                      <div className="text-xs text-teal-100">{currentUser.email}</div>
+                    </div>
+                  </div>
                 </div>
-                <Link to="/profile" className="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100">
-                  Profile
-                </Link>
-                <Link to="/orders" className="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100">
-                  My Orders
-                </Link>
-                <button
-                  onClick={handleLogout}
-                  className="w-full text-left flex items-center gap-2 px-4 py-2 text-sm text-red-600 hover:bg-gray-100"
-                >
-                  <FaSignOutAlt size={14} />
-                  Sign out
-                </button>
+                
+                {/* Menu Items */}
+                <div className="py-2">
+                  <Link to="/profile" className="flex items-center gap-3 px-6 py-3 text-gray-700 hover:bg-teal-50 transition-colors duration-200">
+                    <FaRegUser className="text-teal-500" size={16} />
+                    <span className="font-medium">My Profile</span>
+                  </Link>
+                  <Link to="/orders" className="flex items-center gap-3 px-6 py-3 text-gray-700 hover:bg-teal-50 transition-colors duration-200">
+                    <FaClipboardList className="text-teal-500" size={16} />
+                    <span className="font-medium">My Orders</span>
+                  </Link>
+                  <Link to="/settings" className="flex items-center gap-3 px-6 py-3 text-gray-700 hover:bg-teal-50 transition-colors duration-200">
+                    <FaCog className="text-teal-500" size={16} />
+                    <span className="font-medium">Account Settings</span>
+                  </Link>
+                  
+                  <div className="border-t border-gray-100 my-1"></div>
+                  
+                  <button
+                    onClick={handleLogout}
+                    className="w-full text-left flex items-center gap-3 px-6 py-3 text-gray-700 hover:bg-red-50 hover:text-red-600 transition-colors duration-200"
+                  >
+                    <FaSignOutAlt size={16} className="text-red-500" />
+                    <span className="font-medium">Sign out</span>
+                  </button>
+                </div>
               </div>
             )}
-          </div>
-        ) : (
+          </div>        ) : (
           // User is not logged in - show sign in button
           <Link
             to="/login"
-            className="flex items-center gap-2 px-4 py-2 rounded-full border border-gray-300 text-gray-700 hover:bg-gray-100 transition duration-200 shadow-sm"
+            className="flex items-center gap-2 px-4 py-2 rounded-full bg-gray-100 hover:bg-gray-200 text-gray-700 transition duration-200 shadow-sm hover:shadow-md"
           >
-            <FaUser className="text-gray-500" />
+            <div className="w-7 h-7 bg-teal-500 text-white rounded-full flex items-center justify-center">
+              <FaUser size={14} />
+            </div>
             <span className="font-medium">Sign In / Register</span>
           </Link>
-        )}{/* Cart Button */}
-        <Link
+        )}
+        
+        {/* Cart Button */}        <Link
           to="/cart"
-          className="flex items-center gap-2 px-4 py-2 rounded-full border border-gray-300 text-gray-700 hover:bg-gray-100 transition duration-200 shadow-sm relative"
+          className="flex items-center gap-2 px-4 py-2 rounded-full bg-gray-100 hover:bg-gray-200 text-gray-700 transition duration-200 shadow-sm hover:shadow-md relative"
         >
-          <FaShoppingCart className="text-gray-500" />
+          <div className="w-7 h-7 bg-teal-500 text-white rounded-full flex items-center justify-center">
+            <FaShoppingCart size={14} />
+          </div>
           <span className="font-medium">Cart</span>
           {cartItems.length > 0 && (
-            <span className="absolute -top-2 -right-2 bg-teal-500 text-white rounded-full w-5 h-5 flex items-center justify-center text-xs">
+            <span className="absolute -top-2 -right-2 bg-red-500 text-white rounded-full w-5 h-5 flex items-center justify-center text-xs font-bold shadow-md">
               {cartItems.reduce((total, item) => total + item.quantity, 0)}
             </span>
           )}

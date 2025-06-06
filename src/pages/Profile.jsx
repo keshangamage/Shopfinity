@@ -1,6 +1,6 @@
 import React, { useState } from "react";
 import { useNavigate } from "react-router-dom";
-import { useAuth } from "../utils/AuthContext";
+import { useAuth } from "../utils/AuthContext.jsx";
 
 const Profile = () => {
   const { currentUser, updateUserProfile, resetPassword, logout } = useAuth();

@@ -11,7 +11,7 @@ import CategoryPage from "./pages/CategoryPage";
 import Profile from "./pages/Profile";
 import Orders from "./pages/Orders";
 import { CartProvider } from "./utils/CartContext";
-import { AuthProvider } from "./utils/AuthContext";
+import { AuthProvider } from "./utils/AuthContext.jsx";
 import ProtectedRoute from "./components/ProtectedRoute";
 
 function App() {
