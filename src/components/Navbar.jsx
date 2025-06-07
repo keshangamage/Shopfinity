@@ -189,10 +189,7 @@ const Navbar = () => {
                     <FaClipboardList className="text-teal-500" size={16} />
                     <span className="font-medium">My Orders</span>
                   </Link>
-                  <Link to="/settings" className="flex items-center gap-3 px-6 py-3 text-gray-700 hover:bg-teal-50 transition-colors duration-200">
-                    <FaCog className="text-teal-500" size={16} />
-                    <span className="font-medium">Account Settings</span>
-                  </Link>
+                  
                   
                   <div className="border-t border-gray-100 my-1"></div>
                   
