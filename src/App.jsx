@@ -11,6 +11,7 @@ import CategoryPage from "./pages/CategoryPage";
 import Profile from "./pages/Profile";
 import Orders from "./pages/Orders";
 import OrderDetail from "./pages/OrderDetail";
+import SearchPage from "./pages/SearchPage";
 import { CartProvider } from "./utils/CartContext.jsx";
 import { AuthProvider } from "./utils/AuthContext.jsx";
 import { OrderProvider } from "./utils/OrderContext.jsx";
@@ -84,6 +85,7 @@ function App() {
                   } />
                   <Route path="/product/:id" element={<ProductDetail />} />
                   <Route path="/categories/:categoryName" element={<CategoryPage />} />
+                  <Route path="/search" element={<SearchPage />} />
                   <Route path="/profile" element={
                     <ProtectedRoute>
                       <Profile />

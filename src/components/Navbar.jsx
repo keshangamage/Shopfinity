@@ -4,10 +4,12 @@ import { Link, useNavigate } from "react-router-dom";
 import logo from "../assets/logobgremove.png"; 
 import { useCart } from "../utils/CartContext.jsx";
 import { useAuth } from "../utils/AuthContext.jsx";
+import { products } from "./Products.jsx";
 
 const Navbar = () => {
   const [isDropdownOpen, setIsDropdownOpen] = useState(false);
   const [isUserMenuOpen, setIsUserMenuOpen] = useState(false);
+  const [searchTerm, setSearchTerm] = useState("");
   const navigate = useNavigate();
   const { cartItems } = useCart();
   const { currentUser, logout } = useAuth();
@@ -44,10 +46,16 @@ const Navbar = () => {
       document.removeEventListener("mousedown", handleClickOutside);
     };
   }, []);
-
   const handleCategoryClick = (category) => {
     setIsDropdownOpen(false);
     navigate(`/categories/${category}`);
+  };
+  
+  const handleSearch = (e) => {
+    e.preventDefault();
+    if (searchTerm.trim()) {
+      navigate(`/search?q=${encodeURIComponent(searchTerm.trim())}`);
+    }
   };
 
   return (
@@ -101,20 +109,23 @@ const Navbar = () => {
           className="fixed inset-0 z-0"
           onClick={() => setIsDropdownOpen(false)}
         ></div>
-      )}
-
-      {/* Search Bar */}
+      )}      {/* Search Bar */}
       <div className="flex-1 mx-4 sm:mx-8">
-        <div className="flex border rounded-full overflow-hidden">
+        <form onSubmit={handleSearch} className="flex border rounded-full overflow-hidden">
           <input
             type="text"
             placeholder="Search in Shopfinity"
             className="w-full px-4 py-2 outline-none text-sm"
+            value={searchTerm}
+            onChange={(e) => setSearchTerm(e.target.value)}
           />
-          <button className="bg-teal-500 text-white px-4 flex items-center justify-center hover:bg-teal-600 transition duration-300">
+          <button 
+            type="submit"
+            className="bg-teal-500 text-white px-4 flex items-center justify-center hover:bg-teal-600 transition duration-300"
+          >
             <FaSearch />
           </button>
-        </div>
+        </form>
       </div>
 
       {/* Right Controls */}
