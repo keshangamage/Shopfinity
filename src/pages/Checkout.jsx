@@ -1,14 +1,18 @@
 import React, { useState } from "react";
 import { useNavigate } from "react-router-dom";
-import { useCart } from "../utils/CartContext";
+import { useCart } from "../utils/CartContext.jsx";
+import { useOrder } from "../utils/OrderContext.jsx";
+import { useAuth } from "../utils/AuthContext.jsx";
 
 const Checkout = () => {
   const navigate = useNavigate();
   const { cartItems, clearCart, getCartTotal } = useCart();
+  const { addOrder } = useOrder();
+  const { currentUser } = useAuth();
   const [cardNumber, setCardNumber] = useState("");
   const [expiryDate, setExpiryDate] = useState("");
   const [cvv, setCvv] = useState("");
-  const [isCardValid, setIsCardValid] = useState(true); // To track card validation state
+  const [isCardValid, setIsCardValid] = useState(true); 
   const [name, setName] = useState("");
   const [address, setAddress] = useState("");
   const [city, setCity] = useState("");
@@ -43,7 +47,7 @@ const Checkout = () => {
   };
 
   const handleCvvChange = (e) => {
-    // Only allow digits and limit to 3 or 4 characters
+   
     const value = e.target.value.replace(/\D/g, '').substring(0, 4);
     setCvv(value);
   };
@@ -64,12 +68,28 @@ const Checkout = () => {
     }
     
     setIsProcessing(true);
-    
-    // Simulate payment processing
+      // Simulate payment processing
     setTimeout(() => {
       // Generate random order ID
       const generatedOrderId = "SF" + Math.floor(100000 + Math.random() * 900000);
       setOrderId(generatedOrderId);
+      
+      // Save order information to OrderContext
+      const orderData = {
+        id: generatedOrderId,
+        userId: currentUser?.uid || "guest",
+        items: cartItems,
+        total: getCartTotal().toFixed(2),
+        status: "Processing",
+        shippingAddress: {
+          name,
+          address,
+          city,
+          phone
+        }
+      };
+      
+      addOrder(orderData);
       
       // Clear the cart after successful payment
       clearCart();
@@ -106,11 +126,19 @@ const Checkout = () => {
               <div className="bg-gray-50 p-5 rounded-xl inline-block mb-6">
                 <p className="text-gray-600">Order Number: <span className="font-semibold text-teal-600">#{orderId}</span></p>
                 <p className="text-gray-600 text-sm mt-1">A confirmation email has been sent to your email address.</p>
-              </div>
-              <div className="mt-8">
+              </div>              <div className="mt-8 flex flex-col md:flex-row gap-4 justify-center">
+                <button 
+                  onClick={() => navigate(`/orders/${orderId}`)} 
+                  className="px-8 py-3 bg-teal-600 text-white rounded-full font-medium hover:bg-teal-700 transition-colors shadow-md hover:shadow-lg flex items-center mx-auto"
+                >
+                  <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5 mr-2" viewBox="0 0 20 20" fill="currentColor">
+                    <path fillRule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm1-11a1 1 0 10-2 0v2H7a1 1 0 100 2h2v2a1 1 0 102 0v-2h2a1 1 0 100-2h-2V7z" clipRule="evenodd" />
+                  </svg>
+                  View Order
+                </button>
                 <button 
                   onClick={() => navigate("/")} 
-                  className="px-8 py-3 bg-teal-600 text-white rounded-full font-medium hover:bg-teal-700 transition-colors shadow-md hover:shadow-lg flex items-center mx-auto"
+                  className="px-8 py-3 bg-white text-teal-600 border border-teal-600 rounded-full font-medium hover:bg-teal-50 transition-colors shadow-sm flex items-center mx-auto"
                 >
                   <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5 mr-2" viewBox="0 0 20 20" fill="currentColor">
                     <path fillRule="evenodd" d="M9.707 14.707a1 1 0 01-1.414 0l-4-4a1 1 0 010-1.414l4-4a1 1 0 011.414 1.414L7.414 9H15a1 1 0 110 2H7.414l2.293 2.293a1 1 0 010 1.414z" clipRule="evenodd" />
@@ -383,7 +411,7 @@ const Checkout = () => {
                         <path d="M4 4a2 2 0 00-2 2v1h16V6a2 2 0 00-2-2H4z" />
                         <path fillRule="evenodd" d="M18 9H2v5a2 2 0 002 2h12a2 2 0 002-2V9zM4 13a1 1 0 011-1h1a1 1 0 110 2H5a1 1 0 01-1-1zm5-1a1 1 0 100 2h1a1 1 0 100-2H9z" clipRule="evenodd" />
                       </svg>
-                      Complete Payment · LKR {subtotal}
+                      Complete Payment · ${subtotal}
                     </div>
                   )}
                 </button>
@@ -437,15 +465,15 @@ const Checkout = () => {
                             <div>
                               {item.oldPrice && (
                                 <span className="text-xs text-gray-400 line-through mr-1">
-                                  LKR {item.oldPrice.toFixed(2)}
+                                  ${item.oldPrice.toFixed(2)}
                                 </span>
                               )}
                               <span className="text-sm font-medium text-gray-600">
-                                LKR {item.price.toFixed(2)}
+                                ${item.price.toFixed(2)}
                               </span>
                             </div>
                             <span className="text-sm font-semibold">
-                              LKR {(item.price * item.quantity).toFixed(2)}
+                              ${(item.price * item.quantity).toFixed(2)}
                             </span>
                           </div>
                         </div>
@@ -459,13 +487,13 @@ const Checkout = () => {
                   <div className="space-y-3 text-sm">
                     <div className="flex justify-between">
                       <span className="text-gray-600">Subtotal</span>
-                      <span className="font-medium">LKR {subtotal}</span>
+                      <span className="font-medium">${subtotal}</span>
                     </div>
                     
                     <div className="flex justify-between">
                       <span className="text-gray-600">Discount</span>
                       <span className="font-medium text-red-600">
-                        - LKR {cartItems.reduce((acc, item) => {
+                        - ${cartItems.reduce((acc, item) => {
                           const originalPrice = item.oldPrice || item.discountPrice 
                             ? (item.oldPrice || (item.price * 1.2)) 
                             : item.price;
@@ -482,7 +510,7 @@ const Checkout = () => {
                     <div className="border-t border-gray-200 mt-4 pt-4 flex justify-between items-center">
                       <span className="text-base font-semibold text-gray-700">Total</span>
                       <div className="text-right">
-                        <span className="block text-teal-600 text-xs">LKR</span>
+                        <span className="block text-teal-600 text-xs">$</span>
                         <span className="text-xl font-bold text-gray-800">{subtotal}</span>
                       </div>
                     </div>

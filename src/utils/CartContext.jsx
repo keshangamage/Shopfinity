@@ -6,17 +6,26 @@ const CartContext = createContext();
 // Custom hook to use the cart context
 export const useCart = () => useContext(CartContext);
 
-// Provider component that wraps the app and makes cart context available
+
 export const CartProvider = ({ children }) => {
   // Get cart items from local storage or start with empty array
   const [cartItems, setCartItems] = useState(() => {
-    const savedCart = localStorage.getItem("shopfinityCart");
-    return savedCart ? JSON.parse(savedCart) : [];
+    try {
+      const savedCart = localStorage.getItem("shopfinityCart");
+      return savedCart ? JSON.parse(savedCart) : [];
+    } catch (error) {
+      console.error("Error loading cart from localStorage:", error);
+      return [];
+    }
   });
 
-  // Save cart items to local storage whenever they change
+  
   useEffect(() => {
-    localStorage.setItem("shopfinityCart", JSON.stringify(cartItems));
+    try {
+      localStorage.setItem("shopfinityCart", JSON.stringify(cartItems));
+    } catch (error) {
+      console.error("Error saving cart to localStorage:", error);
+    }
   }, [cartItems]);
 
   // Add item to cart

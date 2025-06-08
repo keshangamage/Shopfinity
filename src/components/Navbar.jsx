@@ -2,7 +2,7 @@ import { useState, useRef, useEffect } from "react";
 import { FaSearch, FaShoppingCart, FaBars, FaUser, FaSignOutAlt, FaRegUser, FaClipboardList, FaCog } from "react-icons/fa";
 import { Link, useNavigate } from "react-router-dom";
 import logo from "../assets/logobgremove.png"; 
-import { useCart } from "../utils/CartContext";
+import { useCart } from "../utils/CartContext.jsx";
 import { useAuth } from "../utils/AuthContext.jsx";
 
 const Navbar = () => {

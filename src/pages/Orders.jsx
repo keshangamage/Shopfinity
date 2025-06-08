@@ -1,41 +1,33 @@
 import React, { useState } from "react";
-import { FaBox, FaSearch, FaShoppingBag, FaCalendarAlt, FaChevronRight } from "react-icons/fa";
+import { FaBox, FaSearch, FaShoppingBag, FaCalendarAlt, FaChevronRight, FaTimes } from "react-icons/fa";
+import { useOrder } from "../utils/OrderContext.jsx";
+import { useNavigate } from "react-router-dom";
 
 const Orders = () => {
   const [searchTerm, setSearchTerm] = useState("");
+  const { orders, cancelOrder } = useOrder();
+  const navigate = useNavigate();
+  const [showCancelModal, setShowCancelModal] = useState(false);
+  const [orderToCancel, setOrderToCancel] = useState(null);
   
-  // This would typically fetch orders from a database
-  const sampleOrders = [
-    {
-      id: "ORD-12345",
-      date: "May 22, 2025",
-      total: "$89.97",
-      status: "Delivered",
-      items: 3,
-      products: ["Bluetooth Headset", "Wireless Mouse", "USB-C Cable"]
-    },
-    {
-      id: "ORD-12344",
-      date: "May 15, 2025",
-      total: "$129.50",
-      status: "Processing",
-      items: 2,
-      products: ["Smart Watch", "Phone Case"]
-    },
-    {
-      id: "ORD-12343",
-      date: "April 28, 2025",
-      total: "$45.99",
-      status: "Delivered",
-      items: 1,
-      products: ["Wireless Earbuds"]
-    }
-  ];
   // Filter orders based on search term
-  const filteredOrders = sampleOrders.filter(order => 
+  const filteredOrders = orders.filter(order => 
     order.id.toLowerCase().includes(searchTerm.toLowerCase()) ||
-    order.products.some(product => product.toLowerCase().includes(searchTerm.toLowerCase()))
+    order.items.some(item => item.name.toLowerCase().includes(searchTerm.toLowerCase()))
   );
+
+  const handleCancelOrder = (e, orderId) => {
+    e.stopPropagation();
+    const orderToCancel = orders.find(order => order.id === orderId);
+    setOrderToCancel(orderToCancel);
+    setShowCancelModal(true);
+  };
+
+  const confirmCancelOrder = () => {
+    cancelOrder(orderToCancel.id);
+    setShowCancelModal(false);
+    setOrderToCancel(null);
+  };
 
   return (
     <div className="max-w-6xl mx-auto px-4 py-10">
@@ -76,7 +68,7 @@ const Orders = () => {
             </div>
             <div>
               <p className="text-teal-800 text-sm font-medium">Total Orders</p>
-              <p className="text-2xl font-bold text-gray-800">{sampleOrders.length}</p>
+              <p className="text-2xl font-bold text-gray-800">{orders.length}</p>
             </div>
           </div>
         </div>
@@ -89,7 +81,7 @@ const Orders = () => {
             <div>
               <p className="text-blue-800 text-sm font-medium">Items Purchased</p>
               <p className="text-2xl font-bold text-gray-800">
-                {sampleOrders.reduce((total, order) => total + order.items, 0)}
+                {orders.reduce((total, order) => total + order.items.reduce((itemTotal, item) => itemTotal + item.quantity, 0), 0)}
               </p>
             </div>
           </div>
@@ -103,7 +95,7 @@ const Orders = () => {
             <div>
               <p className="text-purple-800 text-sm font-medium">Last Order</p>
               <p className="text-2xl font-bold text-gray-800">
-                {sampleOrders.length > 0 ? sampleOrders[0].date : "N/A"}
+                {orders.length > 0 ? orders[0].date : "N/A"}
               </p>
             </div>
           </div>
@@ -143,6 +135,8 @@ const Orders = () => {
                           ? "bg-green-100 text-green-800" 
                           : order.status === "Processing" 
                           ? "bg-yellow-100 text-yellow-800" 
+                          : order.status === "Cancelled"
+                          ? "bg-red-100 text-red-800"
                           : "bg-gray-100 text-gray-800"
                       }`}>
                         {order.status}
@@ -153,24 +147,39 @@ const Orders = () => {
                     {/* Products List */}
                     <div className="mt-2">
                       <p className="text-sm text-gray-800">
-                        {order.products.join(", ")}
+                        {order.items.map(item => item.name).join(", ")}
                       </p>
                     </div>
                   </div>
                   
                   {/* Price and Action */}
                   <div className="flex flex-col items-start md:items-end">
-                    <p className="text-xl font-bold text-gray-900">{order.total}</p>
-                    <p className="text-sm text-gray-500 mb-2">{order.items} {order.items === 1 ? "item" : "items"}</p>
-                    <button className="inline-flex items-center px-4 py-2 bg-teal-500 bg-opacity-10 hover:bg-opacity-20 text-teal-700 rounded-full text-sm font-medium transition-colors">
-                      View Details <FaChevronRight size={12} className="ml-1" />
-                    </button>
+                    <p className="text-xl font-bold text-gray-900">${order.total}</p>
+                    <p className="text-sm text-gray-500 mb-2">{order.items.reduce((total, item) => total + item.quantity, 0)} {order.items.reduce((total, item) => total + item.quantity, 0) === 1 ? "item" : "items"}</p>
+                    <div className="flex space-x-2">
+                      <button 
+                        onClick={() => navigate(`/orders/${order.id}`)}
+                        className="inline-flex items-center px-4 py-2 bg-teal-500 bg-opacity-10 hover:bg-opacity-20 text-teal-700 rounded-full text-sm font-medium transition-colors"
+                      >
+                        View Details <FaChevronRight size={12} className="ml-1" />
+                      </button>
+                      
+                      {order.status === "Processing" && (
+                        <button 
+                          onClick={(e) => handleCancelOrder(e, order.id)}
+                          className="inline-flex items-center px-4 py-2 bg-red-500 bg-opacity-10 hover:bg-opacity-20 text-red-700 rounded-full text-sm font-medium transition-colors"
+                        >
+                          Cancel Order <FaTimes size={12} className="ml-1" />
+                        </button>
+                      )}
+                    </div>
                   </div>
                 </div>
               </div>
             </div>
           ))}
-        </div>      )}
+        </div>      
+      )}
       
       {/* Help Notice */}
       <div className="mt-10 bg-blue-50 border border-blue-200 rounded-xl p-6 flex items-start">
@@ -193,6 +202,32 @@ const Orders = () => {
           </button>
         </div>
       </div>
+
+      {/* Cancel Order Confirmation Modal */}
+      {showCancelModal && (
+        <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4">
+          <div className="bg-white rounded-xl shadow-lg p-6 max-w-md w-full animate-fade-in">
+            <h3 className="text-xl font-semibold text-gray-800 mb-3">Cancel Order</h3>
+            <p className="text-gray-600 mb-6">
+              Are you sure you want to cancel order <span className="font-medium">{orderToCancel?.id}</span>? This action cannot be undone.
+            </p>
+            <div className="flex justify-end space-x-3">
+              <button 
+                onClick={() => setShowCancelModal(false)}
+                className="px-4 py-2 border border-gray-300 text-gray-700 rounded-lg hover:bg-gray-50 font-medium transition-colors"
+              >
+                Keep Order
+              </button>
+              <button 
+                onClick={confirmCancelOrder}
+                className="px-4 py-2 bg-red-600 text-white rounded-lg hover:bg-red-700 font-medium transition-colors"
+              >
+                Yes, Cancel Order
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   );
 };
