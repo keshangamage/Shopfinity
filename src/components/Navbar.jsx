@@ -73,17 +73,14 @@ const Navbar = () => {
           >
             <FaBars />
             <span>All Categories</span>
-          </div>
-
-          {isDropdownOpen && (
-            <ul className="absolute left-0 mt-2 bg-white shadow-md rounded-md w-48 text-sm z-50">
-              {[
+          </div>          {isDropdownOpen && (
+            <ul className="absolute left-0 mt-2 bg-white shadow-md rounded-md w-48 text-sm z-50">              {[
                 "electronics",
                 "fashion",
-                "home-appliances",
-                "accessories",
+                "fitness",
+                "home",
                 "toys",
-                "sports",
+                "accessories",
               ].map((category) => (
                 <li
                   key={category}

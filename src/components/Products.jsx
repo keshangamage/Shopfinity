@@ -803,6 +803,248 @@ export const products = [
     image: "src/assets/Running Armband.jpg",
     price: 11.99,
     description: "Secure your phone while jogging or at the gym. Adjustable strap, sweat-resistant material, and clear screen window for full device access on the go."
+  },
+ 
+  {
+    id: 101,
+    name: "Building Blocks Set",
+    category: "Toys",
+    image: "",
+    price: 29.99,
+    description: "Creative building blocks for ages 3+. Develops spatial awareness, fine motor skills, and imagination. Compatible with major building block brands."
+  },
+  {
+    id: 102,
+    name: "Remote Control Car",
+    category: "Toys",
+    image: "",
+    price: 34.99,
+    description: "Fast and durable remote control race car. Realistic controls with long battery life. All-terrain wheels for indoor and outdoor play."
+  },
+  {
+    id: 103,
+    name: "Educational Science Kit",
+    category: "Toys",
+    image: "",
+    price: 24.99,
+    description: "Hands-on experiments for young scientists. Includes illustrated guide and all materials needed. Perfect introduction to basic scientific principles."
+  },
+  {
+    id: 104,
+    name: "Plush Teddy Bear",
+    category: "Toys",
+    image: "",
+    price: 19.99,
+    description: "Soft and huggable teddy bear made from premium materials. Hypoallergenic stuffing and child-safe eyes. Perfect bedtime companion."
+  },
+  {
+    id: 105,
+    name: "Wooden Puzzle Set",
+    category: "Toys",
+    image: "",
+    price: 15.99,
+    description: "Educational wooden puzzles with vibrant colors. Develops problem-solving skills and hand-eye coordination. Set of 5 different patterns."
+  },
+  {
+    id: 106,
+    name: "Art and Drawing Set",
+    category: "Toys",
+    image: "",
+    price: 22.99,
+    description: "Complete kit for young artists. Includes colored pencils, markers, crayons, and paper. Encourages creativity and artistic expression."
+  },
+  {
+    id: 107,
+    name: "Board Game Collection",
+    category: "Toys",
+    image: "",
+    price: 32.99,
+    description: "Family-friendly board game set with 4 classic games. Perfect for game nights and developing strategic thinking. Suitable for ages 6 and up."
+  },
+  {
+    id: 108,
+    name: "Dinosaur Action Figures",
+    category: "Toys",
+    image: "",
+    price: 18.99,
+    description: "Realistic dinosaur figures set with 12 different species. Educational cards included with fun facts about each dinosaur. Durable plastic construction."
+  },
+  {
+    id: 109,
+    name: "Kids Play Kitchen",
+    category: "Toys",
+    image: "",
+    price: 59.99,
+    description: "Interactive play kitchen with realistic sounds and lights. Includes play food and utensils. Encourages imaginative role play and social skills."
+  },
+  {
+    id: 110,
+    name: "Musical Toy Piano",
+    category: "Toys",
+    image: "",
+    price: 27.99,
+    description: "Colorful piano with multiple instrument sounds and demo songs. Helps develop musical skills and auditory recognition. Durable construction for years of play."
+  },
+  {
+    id: 111,
+    name: "STEM Robotics Kit",
+    category: "Toys",
+    image: "",
+    price: 49.99,
+    description: "Build-your-own robot kit with programmable features. Introduces coding concepts through play. Includes detailed instructions for multiple projects."
+  },
+  {
+    id: 112,
+    name: "Sports Ball Set",
+    category: "Toys",
+    image: "",
+    price: 21.99,
+    description: "Set of 4 sports balls for active play. Includes soccer ball, basketball, football, and playground ball. Promotes active lifestyle and coordination skills."
+  },
+  {
+    id: 113,
+    name: "Dollhouse with Furniture",
+    category: "Toys",
+    image: "",
+    price: 64.99,
+    description: "Charming wooden dollhouse with complete furniture set. Three stories and multiple rooms for creative play. Perfect for imaginative storytelling."
+  },
+  {
+    id: 114,
+    name: "Magic Trick Set",
+    category: "Toys",
+    image: "",
+    price: 23.99,
+    description: "Learn amazing magic tricks with this complete beginner set. Includes magic wand, cards, and props for 25 different tricks. Illustrated instruction booklet included."
+  },
+  {
+    id: 115,
+    name: "Water Play Table",
+    category: "Toys",
+    image: "",
+    price: 44.99,
+    description: "Interactive water table for outdoor summer fun. Features water wheel, funnels, and floating toys. Develops sensory skills and scientific concepts."
+  },
+  
+  {
+    id: 116,
+    name: "Designer Watch",
+    category: "Accessories",
+    image: "",
+    price: 89.99,
+    description: "Elegant timepiece with stainless steel band. Water-resistant with precise quartz movement. Perfect blend of style and functionality for any occasion."
+  },
+  {
+    id: 117,
+    name: "Silver Necklace",
+    category: "Accessories",
+    image: "",
+    price: 59.99,
+    description: "Handcrafted sterling silver necklace with pendant. Hypoallergenic and tarnish-resistant. Comes in elegant gift box, perfect for special occasions."
+  },
+  {
+    id: 118,
+    name: "Stylish Backpack",
+    category: "Accessories",
+    image: "src/assets/Travel Backpack.webp",
+    price: 49.99,
+    description: "Modern backpack with laptop compartment and USB charging port. Water-resistant material and ergonomic design. Perfect for work, school, or travel."
+  },
+  {
+    id: 119,
+    name: "Patterned Scarf",
+    category: "Accessories",
+    image: "",
+    price: 19.99,
+    description: "Soft, lightweight scarf with vibrant pattern. Versatile accessory for all seasons. Can be styled multiple ways to complement any outfit."
+  },
+  {
+    id: 120,
+    name: "Leather Belt",
+    category: "Accessories",
+    image: "",
+    price: 34.99,
+    description: "Genuine leather belt with classic buckle. Durable construction for everyday wear. Available in black and brown to match any style."
+  },
+  {
+    id: 121,
+    name: "Fashion Sunglasses",
+    category: "Accessories",
+    image: "src/assets/Sunglasses.avif",
+    price: 29.99,
+    description: "Trendy sunglasses with UV400 protection. Lightweight frame with polarized lenses. Reduces glare while adding a stylish touch to your look."
+  },
+  {
+    id: 122,
+    name: "Hair Accessory Set",
+    category: "Accessories",
+    image: "",
+    price: 14.99,
+    description: "Complete hair styling set with clips, bands, and pins. Variety of colors and styles for different looks. High-quality materials for durability."
+  },
+  {
+    id: 123,
+    name: "Designer Tie",
+    category: "Accessories",
+    image: "",
+    price: 24.99,
+    description: "Premium silk tie with modern pattern. Professional finish perfect for business or formal events. Comes in reusable storage case."
+  },
+  {
+    id: 124,
+    name: "Phone Case Collection",
+    category: "Accessories",
+    image: "",
+    price: 17.99,
+    description: "Stylish and protective phone cases for popular models. Drop-tested for impact resistance. Available in multiple designs to suit your personality."
+  },
+  {
+    id: 125,
+    name: "Cycling Gloves",
+    category: "Accessories",
+    image: "",
+    price: 15.99,
+    description: "Padded gloves for cycling comfort. Breathable material with adjustable wrist closure. Reduces hand fatigue and improves grip during long rides."
+  },
+  {
+    id: 126,
+    name: "Vintage Keychain",
+    category: "Accessories",
+    image: "",
+    price: 9.99,
+    description: "Collectible vintage-style keychain with intricate design. Solid metal construction with antique finish. Makes a great gift or personal accessory."
+  },
+  {
+    id: 127,
+    name: "Statement Earrings",
+    category: "Accessories",
+    image: "",
+    price: 22.99,
+    description: "Bold and eye-catching statement earrings. Lightweight design despite their size. Perfect for adding a dramatic touch to any outfit."
+  },
+  {
+    id: 128,
+    name: "Leather Card Holder",
+    category: "Accessories",
+    image: "",
+    price: 19.99,
+    description: "Slim leather card holder with multiple slots. RFID blocking technology protects your information. Perfect minimalist alternative to bulky wallets."
+  },
+  {
+    id: 129,
+    name: "Silicone Watch Band",
+    category: "Accessories",
+    image: "",
+    price: 12.99,
+    description: "Comfortable silicone replacement watch band. Compatible with popular smartwatch models. Waterproof and sweat-resistant for active lifestyles."
+  },
+  {
+    id: 130,
+    name: "Travel Jewelry Case",
+    category: "Accessories",
+    image: "",
+    price: 18.99,
+    description: "Compact travel case for jewelry organization. Multiple compartments and soft lining protect your valuables. Zippered closure for secure storage during travel."
   }
 ];
 

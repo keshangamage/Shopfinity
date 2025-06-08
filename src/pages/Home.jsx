@@ -4,7 +4,6 @@ import { products } from "../components/Products";
 import webbanner from "../assets/banner.png";
 import { useCart } from "../utils/CartContext";
 
-
 const Home = () => {
   const [visibleCount, setVisibleCount] = useState(15);
   const { addToCart } = useCart();
@@ -34,8 +33,9 @@ const Home = () => {
 
       {/* Featured Categories */}
       <section className="py-12 bg-gray-50 text-center">
-        <h2 className="text-3xl font-bold text-gray-800 mb-10">Shop by Category</h2>
-
+        <h2 className="text-3xl font-bold text-gray-800 mb-10">
+          Shop by Category
+        </h2>{" "}
         <div className="flex justify-center gap-8 overflow-x-auto px-4">
           {[
             {
@@ -49,14 +49,14 @@ const Home = () => {
               link: "/categories/fashion",
             },
             {
-              name: "Home Appliances",
+              name: "Home",
               image: "./src/assets/home appliances.jpg",
-              link: "/categories/home-appliances",
+              link: "/categories/home",
             },
             {
-              name: "Accessories",
-              image: "./src/assets/accessories.webp",
-              link: "/categories/accessories",
+              name: "Fitness",
+              image: "./src/assets/sports.jpg",
+              link: "/categories/fitness",
             },
             {
               name: "Toys",
@@ -64,9 +64,9 @@ const Home = () => {
               link: "/categories/toys",
             },
             {
-              name: "Sports",
-              image: "./src/assets/sports.jpg",
-              link: "/categories/sports",
+              name: "Accessories",
+              image: "./src/assets/accessories.webp",
+              link: "/categories/accessories",
             },
           ].map((category, index) => (
             <Link
@@ -74,7 +74,9 @@ const Home = () => {
               key={index}
               className="bg-white rounded-lg shadow-md p-6 transform hover:scale-105 transition-all duration-300 cursor-pointer w-53 flex-shrink-0 mb-2 mt-1"
             >
-              <h3 className="font-semibold text-lg text-teal-500">{category.name}</h3>
+              <h3 className="font-semibold text-lg text-teal-500">
+                {category.name}
+              </h3>
               <img
                 src={category.image}
                 alt={category.name}
@@ -88,7 +90,9 @@ const Home = () => {
 
       {/* Featured Products*/}
       <section className="py-16 px-6 bg-white text-center">
-        <h2 className="text-3xl font-bold text-gray-800 mb-10">Featured Products</h2>
+        <h2 className="text-3xl font-bold text-gray-800 mb-10">
+          Featured Products
+        </h2>
 
         <div className="mr-15 ml-15 grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-5 gap-10">
           {products.slice(0, visibleCount).map((product) => (
@@ -108,11 +112,14 @@ const Home = () => {
                 <p className="text-gray-600 mt-2">
                   <span className={product.discountPrice ? "line-through" : ""}>
                     ${product.price.toFixed(2)}
-                  </span>                  {product.discountPrice && (
-                    <span className="text-red-500 ml-2">(${product.discountPrice.toFixed(2)})</span>
+                  </span>{" "}
+                  {product.discountPrice && (
+                    <span className="text-red-500 ml-2">
+                      (${product.discountPrice.toFixed(2)})
+                    </span>
                   )}
                 </p>
-                <button 
+                <button
                   onClick={(e) => {
                     e.preventDefault(); // Prevent navigation to product page
                     addToCart(product, 1);
@@ -144,7 +151,7 @@ const Home = () => {
           <div className="absolute top-0 left-0 w-40 h-40 bg-white opacity-10 rounded-full -translate-x-1/2 -translate-y-1/2"></div>
           <div className="absolute bottom-0 right-0 w-60 h-60 bg-white opacity-10 rounded-full translate-x-1/2 translate-y-1/2"></div>
         </div>
-        
+
         <div className="relative container mx-auto px-6">
           <div className="text-center mb-16">
             <h2 className="text-5xl font-extrabold mb-6 text-white tracking-tight">
@@ -160,18 +167,18 @@ const Home = () => {
               {
                 title: "Limited Time Offers",
                 discount: "Up to 70% OFF",
-                description: "Premium selections at unbeatable prices"
+                description: "Premium selections at unbeatable prices",
               },
               {
                 title: "Flash Discount",
                 discount: "24HR Deal",
-                description: "New deals every day at midnight"
+                description: "New deals every day at midnight",
               },
               {
                 title: "New Arrivals",
                 discount: "First Access",
-                description: "Be the first to grab new products"
-              }
+                description: "Be the first to grab new products",
+              },
             ].map((deal, index) => (
               <div
                 key={index}

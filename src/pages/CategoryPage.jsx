@@ -1,15 +1,37 @@
 import { useParams } from "react-router-dom";
 import { products } from "../components/Products";
-import React from "react";
+import React, { useEffect, useState } from "react";
 import { Link } from "react-router-dom";
 import { useCart } from "../utils/CartContext";
 
 const CategoryPage = () => {
   const { categoryName } = useParams();
   const { addToCart } = useCart();
-  const categoryProducts = products.filter(
-    (item) => item.category.toLowerCase() === categoryName.toLowerCase()
-  );
+  const [categoryProducts, setCategoryProducts] = useState([]);
+    
+  const categoryMap = {
+    'electronics': 'Electronics',
+    'fashion': 'Fashion',
+    'home-appliances': 'Home',
+    'accessories': 'Accessories',
+    'toys': 'Toys',
+    'sports': 'Fitness',
+    'home': 'Home',
+    'fitness': 'Fitness',
+    'books': 'Toys'
+  };
+  
+  useEffect(() => {
+    
+    const standardCategory = categoryMap[categoryName.toLowerCase()] || categoryName;
+    
+    // Filter products that match the standardized category name
+    const filteredProducts = products.filter(item => 
+      item.category.toLowerCase() === standardCategory.toLowerCase()
+    );
+    
+    setCategoryProducts(filteredProducts);
+  }, [categoryName]);
 
   return (
     <div className="py-16 px-6 bg-white text-center">
