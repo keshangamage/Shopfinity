@@ -68,15 +68,17 @@ const SearchPage = () => {
                   className="bg-white rounded-lg shadow-md hover:shadow-lg transform hover:scale-105 transition-all duration-300"
                 >
                   <Link to={`/product/${product.id}`}>
-                    <img
-                      src={product.image}
-                      alt={product.name}
-                      className="w-full h-60 object-cover rounded-t-lg"
-                      onError={(e) => {
-                        e.target.onerror = null;
-                        e.target.src = 'https://via.placeholder.com/400x400?text=Image+Not+Found';
-                      }}
-                    />
+                    <div className="aspect-square overflow-hidden rounded-t-lg">
+                      <img
+                        src={product.image}
+                        alt={product.name}
+                        className="w-full h-60 object-contain"
+                        onError={(e) => {
+                          e.target.onerror = null;
+                          e.target.src = 'https://via.placeholder.com/400x400?text=Image+Not+Found';
+                        }}
+                      />
+                    </div>
                   </Link>
                   <div className="p-4">
                     <h2 className="text-lg font-semibold">{product.name}</h2>
