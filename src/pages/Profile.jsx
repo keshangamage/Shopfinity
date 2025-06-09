@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from "react";
 import { useNavigate, Link } from "react-router-dom";
 import { useAuth } from "../utils/AuthContext.jsx";
+import { useOrder } from "../utils/OrderContext.jsx";
 import { 
   FiUser, FiMail, FiLock, FiLogOut, FiAlertTriangle, FiCheckCircle, 
   FiAlertCircle, FiShield, FiPackage, FiMapPin, FiCreditCard, 
@@ -10,6 +11,7 @@ import { motion } from "framer-motion";
 
 const Profile = () => {
   const { currentUser, updateUserProfile, resetPassword, logout } = useAuth();
+  const { orders } = useOrder();
   const [displayName, setDisplayName] = useState(currentUser?.displayName || "");
   const [loading, setLoading] = useState(false);
   const [message, setMessage] = useState({ text: "", type: "" });
@@ -166,9 +168,8 @@ const Profile = () => {
         </div>
       </div>      {/* Stats Overview */}
       <div className="max-w-7xl mx-auto px-4 py-8 -mt-6">
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-          {[
-            { label: "Orders", value: "12", icon: <FiPackage className="text-indigo-600" /> },
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-6">          {[
+            { label: "Orders", value: orders.length.toString(), icon: <FiPackage className="text-indigo-600" />, tabId: "orders" },
             { label: "Saved Items", value: "8", icon: <FiCheckCircle className="text-emerald-600" /> },
             { label: "Rewards Points", value: "1,240", icon: <FiUser className="text-amber-600" /> }
           ].map((stat, i) => (
@@ -177,7 +178,8 @@ const Profile = () => {
               initial={{ opacity: 0, y: 20 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ duration: 0.3, delay: i * 0.1 }}
-              className="bg-white rounded-xl shadow-sm p-6 flex items-center gap-4 hover:shadow-md transition-shadow border border-gray-50"
+              className="bg-white rounded-xl shadow-sm p-6 flex items-center gap-4 hover:shadow-md transition-shadow border border-gray-50 cursor-pointer"
+              onClick={() => stat.tabId && setActiveTab(stat.tabId)}
             >
               <div className="bg-indigo-50/50 rounded-xl p-4">
                 {stat.icon}
@@ -528,41 +530,57 @@ const Profile = () => {
                   </h2>
                 </div>
                 <div className="p-6">
-                  {/* Sample Orders */}
-                  {[
-                    { id: '#98765', date: 'June 2, 2025', status: 'Delivered', total: '$49.99' },
-                    { id: '#87654', date: 'May 28, 2025', status: 'Shipped', total: '$129.95' },
-                    { id: '#76543', date: 'May 15, 2025', status: 'Processing', total: '$85.75' },
-                  ].map((order, index) => (
-                    <div key={index} className="border border-gray-100 rounded-xl p-4 mb-4 hover:border-indigo-100 transition-colors">
-                      <div className="flex flex-wrap justify-between items-center gap-4">
-                        <div>
-                          <h3 className="font-medium">Order {order.id}</h3>
-                          <p className="text-sm text-gray-500">{order.date}</p>
-                        </div>
-                        <div className="text-right">
-                          <span className={`px-3 py-1 rounded-full text-xs font-medium 
-                            ${order.status === 'Delivered' ? 'bg-green-50 text-green-700' : 
-                              order.status === 'Shipped' ? 'bg-blue-50 text-blue-700' : 
-                              'bg-amber-50 text-amber-700'}`}>
-                            {order.status}
-                          </span>
-                        </div>
+                  {orders.length === 0 ? (
+                    <div className="text-center py-8">
+                      <div className="inline-flex items-center justify-center h-16 w-16 bg-indigo-100 text-indigo-600 rounded-full mb-4">
+                        <FiPackage size={24} />
                       </div>
-                      <div className="mt-4 flex justify-between items-center">
-                        <span className="font-medium text-gray-900">{order.total}</span>
-                        <button className="text-indigo-600 hover:text-indigo-800 flex items-center gap-1 text-sm font-medium">
-                          View details <FiArrowRight />
-                        </button>
-                      </div>
+                      <h3 className="text-lg font-medium text-gray-800 mb-2">No orders yet</h3>
+                      <p className="text-gray-600 mb-6">You haven't placed any orders yet</p>
+                      <Link
+                        to="/"
+                        className="inline-flex items-center px-5 py-3 bg-indigo-600 text-white text-sm font-medium rounded-full hover:bg-indigo-700 transition transform hover:-translate-y-0.5"
+                      >
+                        Start Shopping
+                        <FiArrowRight size={12} className="ml-2" />
+                      </Link>
                     </div>
-                  ))}
-                  
-                  <div className="mt-4 text-center">
-                    <Link to="/orders" className="inline-flex items-center gap-1 text-indigo-600 hover:text-indigo-800 font-medium">
-                      View all orders <FiArrowRight />
-                    </Link>
-                  </div>
+                  ) : (
+                    <>
+                      {/* Display the 3 most recent orders */}
+                      {orders.slice(0, 3).map((order, index) => (
+                        <div key={index} className="border border-gray-100 rounded-xl p-4 mb-4 hover:border-indigo-100 transition-colors">
+                          <div className="flex flex-wrap justify-between items-center gap-4">
+                            <div>
+                              <h3 className="font-medium">Order {order.id}</h3>
+                              <p className="text-sm text-gray-500">{order.date}</p>
+                            </div>
+                            <div className="text-right">
+                              <span className={`px-3 py-1 rounded-full text-xs font-medium 
+                                ${order.status === 'Delivered' ? 'bg-green-50 text-green-700' : 
+                                  order.status === 'Shipped' ? 'bg-blue-50 text-blue-700' : 
+                                  order.status === 'Cancelled' ? 'bg-red-50 text-red-700' :
+                                  'bg-amber-50 text-amber-700'}`}>
+                                {order.status}
+                              </span>
+                            </div>
+                          </div>
+                          <div className="mt-4 flex justify-between items-center">
+                            <span className="font-medium text-gray-900">${order.total}</span>
+                            <Link to={`/orders/${order.id}`} className="text-indigo-600 hover:text-indigo-800 flex items-center gap-1 text-sm font-medium">
+                              View details <FiArrowRight />
+                            </Link>
+                          </div>
+                        </div>
+                      ))}
+                      
+                      <div className="mt-4 text-center">
+                        <Link to="/orders" className="inline-flex items-center gap-1 text-indigo-600 hover:text-indigo-800 font-medium">
+                          View all orders ({orders.length}) <FiArrowRight />
+                        </Link>
+                      </div>
+                    </>
+                  )}
                 </div>
               </div>
             </motion.div>
