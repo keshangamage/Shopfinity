@@ -2,24 +2,37 @@ import React, { useState, useEffect } from "react";
 import { useNavigate, Link } from "react-router-dom";
 import { useAuth } from "../utils/AuthContext.jsx";
 import { useOrder } from "../utils/OrderContext.jsx";
+import { useAddress } from "../utils/AddressContext.jsx";
 import { 
   FiUser, FiMail, FiLock, FiLogOut, FiAlertTriangle, FiCheckCircle, 
   FiAlertCircle, FiShield, FiPackage, FiMapPin, FiCreditCard, 
-  FiSettings, FiArrowRight, FiUserPlus, FiHome
+  FiSettings, FiArrowRight, FiUserPlus, FiHome, FiEdit, FiPlus, FiTrash2
 } from "react-icons/fi";
 import { motion } from "framer-motion";
 
-const Profile = () => {
-  const { currentUser, updateUserProfile, resetPassword, logout } = useAuth();
+const Profile = () => {  const { currentUser, updateUserProfile, resetPassword, logout } = useAuth();
   const { orders } = useOrder();
+  const { addresses, addAddress, updateAddress, removeAddress, setDefaultAddress, defaultAddressId, countries } = useAddress();
   const [displayName, setDisplayName] = useState(currentUser?.displayName || "");
   const [loading, setLoading] = useState(false);
   const [message, setMessage] = useState({ text: "", type: "" });
-  const [activeTab, setActiveTab] = useState("profile");  const [menuOpen, setMenuOpen] = useState(false);
+  const [activeTab, setActiveTab] = useState("profile");  
+  const [menuOpen, setMenuOpen] = useState(false);
   const [showScrollProgress, setShowScrollProgress] = useState(false);
+  const [showAddressForm, setShowAddressForm] = useState(false);
+  const [editingAddress, setEditingAddress] = useState(null);  const [addressFormData, setAddressFormData] = useState({
+    name: '',
+    addressLine1: '',
+    addressLine2: '',
+    city: '',
+    state: '',
+    postalCode: '',
+    country: 'United States', 
+    addressType: 'Home'
+  });
   const navigate = useNavigate();
   
-  // Scroll progress indicator
+  
   useEffect(() => {
     const handleScroll = () => {
       if (window.scrollY > 300) {
@@ -33,7 +46,7 @@ const Profile = () => {
     return () => window.removeEventListener('scroll', handleScroll);
   }, []);
 
-  // Clear messages after 5 seconds
+  
   useEffect(() => {
     if (message.text) {
       const timer = setTimeout(() => {
@@ -78,7 +91,6 @@ const Profile = () => {
       });
     }
   };
-
   const handleLogout = async () => {
     try {
       await logout();
@@ -91,7 +103,86 @@ const Profile = () => {
     }
   };
 
-  // Generate user initials for avatar
+  // Handle address form submission
+  const handleAddressSubmit = (e) => {
+    e.preventDefault();
+    setLoading(true);
+    
+    try {
+      if (editingAddress) {
+        // Update existing address
+        updateAddress(editingAddress.id, addressFormData);
+        setMessage({
+          text: "Address updated successfully!",
+          type: "success",
+        });
+      } else {
+        // Add new address
+        addAddress(addressFormData);
+        setMessage({
+          text: "New address added successfully!",
+          type: "success",
+        });
+      }
+        // Reset form and state
+      setAddressFormData({
+        name: '',
+        addressLine1: '',
+        addressLine2: '',
+        city: '',
+        state: '',
+        postalCode: '',
+        country: 'United States',
+        addressType: 'Home'
+      });
+      setShowAddressForm(false);
+      setEditingAddress(null);
+    } catch (error) {
+      setMessage({
+        text: "Failed to save address: " + error.message,
+        type: "error",
+      });
+    } finally {
+      setLoading(false);
+    }
+  };
+  // Handle editing an address
+  const handleEditAddress = (address) => {
+    setEditingAddress(address);
+    setAddressFormData({
+      name: address.name || '',
+      addressLine1: address.addressLine1 || '',
+      addressLine2: address.addressLine2 || '',
+      city: address.city || '',
+      state: address.state || '',
+      postalCode: address.postalCode || '',
+      country: address.country || 'United States',
+      addressType: address.addressType || 'Home'
+    });
+    setShowAddressForm(true);
+  };
+
+  // Handle removing an address
+  const handleRemoveAddress = (id) => {
+    if (window.confirm("Are you sure you want to remove this address?")) {
+      removeAddress(id);
+      setMessage({
+        text: "Address removed successfully.",
+        type: "success",
+      });
+    }
+  };
+
+  // Handle setting an address as default
+  const handleSetDefaultAddress = (id) => {
+    setDefaultAddress(id);
+    setMessage({
+      text: "Default address updated.",
+      type: "success",
+    });
+  };
+
+  
   const userInitials = currentUser?.displayName 
     ? currentUser.displayName.split(' ').map(n => n[0]).join('').toUpperCase().slice(0, 2)
     : currentUser?.email?.substring(0, 2).toUpperCase() || "ME";
@@ -129,7 +220,7 @@ const Profile = () => {
               <div className="h-28 w-28 rounded-full flex items-center justify-center relative">
                 {/* Animated border */}
                 <div className="absolute inset-0 rounded-full bg-gradient-to-r from-indigo-600 via-purple-500 to-indigo-600 animate-spin-slow opacity-70"></div>
-                {/* Inner circle with user initials */}
+                
                 <div className="absolute inset-1 rounded-full bg-white/10 backdrop-blur-sm flex items-center justify-center text-3xl font-bold text-white shadow-xl overflow-hidden z-10">
                   {userInitials}
                 </div>
@@ -585,8 +676,7 @@ const Profile = () => {
               </div>
             </motion.div>
           )}
-          
-          {/* Addresses Tab */}
+            {/* Addresses Tab */}
           {activeTab === "addresses" && (
             <motion.div 
               initial={{ opacity: 0 }}
@@ -594,44 +684,282 @@ const Profile = () => {
               transition={{ duration: 0.3 }}
             >
               <div className="bg-white rounded-xl shadow-sm overflow-hidden">
-                <div className="border-b border-gray-100 p-6">
+                <div className="border-b border-gray-100 p-6 flex justify-between items-center">
                   <h2 className="text-xl font-semibold text-gray-800 flex items-center gap-2">
                     <FiMapPin className="text-indigo-600" />
                     Your Addresses
                   </h2>
+                  <button 
+                    onClick={() => {                      setEditingAddress(null);
+                      setAddressFormData({
+                        name: '',
+                        addressLine1: '',
+                        addressLine2: '',
+                        city: '',
+                        state: '',
+                        postalCode: '',
+                        country: 'United States',
+                        addressType: 'Home'
+                      });
+                      setShowAddressForm(true);
+                    }}
+                    className="px-4 py-2 bg-indigo-600 text-white rounded-lg text-sm font-medium hover:bg-indigo-700 transition flex items-center gap-1"
+                  >
+                    <FiPlus />
+                    <span>Add New</span>
+                  </button>
                 </div>
                 <div className="p-6">
-                  <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                    {/* Address Card */}
-                    <div className="border border-gray-100 rounded-xl p-5 hover:border-indigo-100 transition-colors relative group">
-                      <div className="absolute top-4 right-4">
-                        <span className="px-3 py-1 bg-indigo-50 text-indigo-700 rounded-full text-xs font-medium">Default</span>
+                  {showAddressForm ? (
+                    <motion.div
+                      initial={{ opacity: 0, y: 10 }}
+                      animate={{ opacity: 1, y: 0 }}
+                      className="mb-6 border border-indigo-100 rounded-xl p-6 bg-indigo-50/30"
+                    >
+                      <div className="flex justify-between items-center mb-4">
+                        <h3 className="text-lg font-semibold text-gray-800">
+                          {editingAddress ? 'Edit Address' : 'Add New Address'}
+                        </h3>
+                        <button 
+                          onClick={() => setShowAddressForm(false)}
+                          className="text-gray-500 hover:text-gray-700"
+                        >
+                          ✕
+                        </button>
                       </div>
-                      <h3 className="font-medium mb-2">Home</h3>
-                      <p className="text-gray-600 text-sm mb-1">John Doe</p>
-                      <p className="text-gray-600 text-sm mb-1">123 Main Street, Apt 4B</p>
-                      <p className="text-gray-600 text-sm mb-1">New York, NY 10001</p>
-                      <p className="text-gray-600 text-sm mb-4">United States</p>
                       
-                      <div className="flex items-center gap-2 opacity-0 group-hover:opacity-100 transition-opacity">
-                        <button className="text-sm text-indigo-600 hover:text-indigo-800">Edit</button>
-                        <span className="text-gray-300">|</span>
-                        <button className="text-sm text-gray-600 hover:text-gray-800">Remove</button>
+                      <form onSubmit={handleAddressSubmit}>
+                        <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-4">
+                          {/* Name */}
+                          <div>
+                            <label className="block text-sm font-medium text-gray-700 mb-1">Full Name</label>
+                            <input 
+                              type="text"
+                              value={addressFormData.name}
+                              onChange={e => setAddressFormData({...addressFormData, name: e.target.value})}
+                              required
+                              className="w-full px-4 py-2 border border-gray-200 rounded-lg focus:ring-2 focus:ring-indigo-500 focus:outline-none"
+                              placeholder="John Doe"
+                            />
+                          </div>
+                          
+                          {/* Address Type */}
+                          <div>
+                            <label className="block text-sm font-medium text-gray-700 mb-1">Address Type</label>
+                            <select
+                              value={addressFormData.addressType}
+                              onChange={e => setAddressFormData({...addressFormData, addressType: e.target.value})}
+                              className="w-full px-4 py-2 border border-gray-200 rounded-lg focus:ring-2 focus:ring-indigo-500 focus:outline-none"
+                            >
+                              <option value="Home">Home</option>
+                              <option value="Work">Work</option>
+                              <option value="Other">Other</option>
+                            </select>
+                          </div>
+                        </div>
+                        
+                        {/* Address Line 1 */}
+                        <div className="mb-4">
+                          <label className="block text-sm font-medium text-gray-700 mb-1">Address Line 1</label>
+                          <input 
+                            type="text"
+                            value={addressFormData.addressLine1}
+                            onChange={e => setAddressFormData({...addressFormData, addressLine1: e.target.value})}
+                            required
+                            className="w-full px-4 py-2 border border-gray-200 rounded-lg focus:ring-2 focus:ring-indigo-500 focus:outline-none"
+                            placeholder="123 Main Street"
+                          />
+                        </div>
+                        
+                        {/* Address Line 2 */}
+                        <div className="mb-4">
+                          <label className="block text-sm font-medium text-gray-700 mb-1">Address Line 2 (Optional)</label>
+                          <input 
+                            type="text"
+                            value={addressFormData.addressLine2}
+                            onChange={e => setAddressFormData({...addressFormData, addressLine2: e.target.value})}
+                            className="w-full px-4 py-2 border border-gray-200 rounded-lg focus:ring-2 focus:ring-indigo-500 focus:outline-none"
+                            placeholder="Apt 4B"
+                          />
+                        </div>
+                        
+                        <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mb-4">
+                          {/* City */}
+                          <div>
+                            <label className="block text-sm font-medium text-gray-700 mb-1">City</label>
+                            <input 
+                              type="text"
+                              value={addressFormData.city}
+                              onChange={e => setAddressFormData({...addressFormData, city: e.target.value})}
+                              required
+                              className="w-full px-4 py-2 border border-gray-200 rounded-lg focus:ring-2 focus:ring-indigo-500 focus:outline-none"
+                              placeholder="New York"
+                            />
+                          </div>
+                          
+                          {/* State */}
+                          <div>
+                            <label className="block text-sm font-medium text-gray-700 mb-1">State/Province</label>
+                            <input 
+                              type="text"
+                              value={addressFormData.state}
+                              onChange={e => setAddressFormData({...addressFormData, state: e.target.value})}
+                              required
+                              className="w-full px-4 py-2 border border-gray-200 rounded-lg focus:ring-2 focus:ring-indigo-500 focus:outline-none"
+                              placeholder="NY"
+                            />
+                          </div>
+                          
+                          {/* Postal Code */}
+                          <div>
+                            <label className="block text-sm font-medium text-gray-700 mb-1">Postal Code</label>
+                            <input 
+                              type="text"
+                              value={addressFormData.postalCode}
+                              onChange={e => setAddressFormData({...addressFormData, postalCode: e.target.value})}
+                              required
+                              className="w-full px-4 py-2 border border-gray-200 rounded-lg focus:ring-2 focus:ring-indigo-500 focus:outline-none"
+                              placeholder="10001"
+                            />
+                          </div>
+                        </div>
+                          {/* Country */}
+                        <div className="mb-6">
+                          <label className="block text-sm font-medium text-gray-700 mb-1">Country</label>
+                          <select
+                            value={addressFormData.country}
+                            onChange={e => setAddressFormData({...addressFormData, country: e.target.value})}
+                            className="w-full px-4 py-2 border border-gray-200 rounded-lg focus:ring-2 focus:ring-indigo-500 focus:outline-none"
+                          >
+                            {countries.map((country) => (
+                              <option key={country} value={country}>
+                                {country}
+                              </option>
+                            ))}
+                          </select>
+                        </div>
+                        
+                        <div className="flex flex-wrap gap-3 justify-end">
+                          <button 
+                            type="button"
+                            onClick={() => setShowAddressForm(false)}
+                            className="px-6 py-2 border border-gray-300 text-gray-700 rounded-lg hover:bg-gray-50 transition"
+                          >
+                            Cancel
+                          </button>
+                          
+                          <button 
+                            type="submit"
+                            disabled={loading}
+                            className="px-6 py-2 bg-indigo-600 text-white rounded-lg hover:bg-indigo-700 transition flex items-center gap-2 disabled:bg-gray-400"
+                          >
+                            {loading ? (
+                              <>
+                                <svg className="animate-spin h-5 w-5 text-white" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+                                  <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"></circle>
+                                  <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+                                </svg>
+                                <span>Saving...</span>
+                              </>
+                            ) : (
+                              <>
+                                <FiCheckCircle />
+                                <span>{editingAddress ? 'Update Address' : 'Save Address'}</span>
+                              </>
+                            )}
+                          </button>
+                        </div>
+                      </form>
+                    </motion.div>
+                  ) : null}
+                  
+                  {addresses.length === 0 && !showAddressForm ? (
+                    <div className="text-center py-10">
+                      <div className="inline-flex items-center justify-center h-16 w-16 bg-indigo-100 text-indigo-600 rounded-full mb-4">
+                        <FiMapPin size={24} />
                       </div>
-                    </div>
-                    
-                    {/* Add New Address Card */}
-                    <div className="border border-dashed border-gray-200 rounded-xl p-5 flex flex-col items-center justify-center text-center hover:border-indigo-300 transition-colors cursor-pointer min-h-[200px]">
-                      <div className="bg-indigo-50 rounded-full p-4 mb-3">
-                        <FiMapPin className="text-indigo-600 text-xl" />
-                      </div>
-                      <h3 className="font-medium mb-1">Add a new address</h3>
-                      <p className="text-gray-500 text-sm mb-3">Save your shipping and billing addresses</p>
-                      <button className="mt-2 px-4 py-2 bg-indigo-600 text-white rounded-lg text-sm font-medium hover:bg-indigo-700 transition">
+                      <h3 className="text-lg font-medium text-gray-800 mb-2">No addresses yet</h3>
+                      <p className="text-gray-600 mb-6">Add your first shipping or billing address</p>
+                      <button
+                        onClick={() => setShowAddressForm(true)}
+                        className="inline-flex items-center px-5 py-3 bg-indigo-600 text-white text-sm font-medium rounded-full hover:bg-indigo-700 transition transform hover:-translate-y-0.5"
+                      >
+                        <FiPlus className="mr-2" />
                         Add Address
                       </button>
                     </div>
-                  </div>
+                  ) : (
+                    <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                      {/* Address Cards */}
+                      {addresses.map((address) => (
+                        <div key={address.id} className="border border-gray-100 rounded-xl p-5 hover:border-indigo-100 transition-colors relative group">
+                          {address.id === defaultAddressId && (
+                            <div className="absolute top-4 right-4">
+                              <span className="px-3 py-1 bg-indigo-50 text-indigo-700 rounded-full text-xs font-medium">Default</span>
+                            </div>
+                          )}
+                          <h3 className="font-medium mb-2 flex items-center gap-2">
+                            {address.addressType === 'Home' && <FiHome className="text-indigo-500" />}
+                            {address.addressType === 'Work' && <FiUser className="text-indigo-500" />}
+                            {address.addressType === 'Other' && <FiMapPin className="text-indigo-500" />}
+                            {address.addressType}
+                          </h3>
+                          <p className="text-gray-600 text-sm mb-1">{address.name}</p>
+                          <p className="text-gray-600 text-sm mb-1">{address.addressLine1}</p>
+                          {address.addressLine2 && <p className="text-gray-600 text-sm mb-1">{address.addressLine2}</p>}
+                          <p className="text-gray-600 text-sm mb-1">
+                            {address.city}, {address.state} {address.postalCode}
+                          </p>
+                          <p className="text-gray-600 text-sm mb-4">{address.country}</p>
+                          
+                          <div className="flex items-center gap-3 opacity-0 group-hover:opacity-100 transition-opacity">
+                            <button 
+                              className="text-sm text-indigo-600 hover:text-indigo-800 flex items-center gap-1"
+                              onClick={() => handleEditAddress(address)}
+                            >
+                              <FiEdit size={14} /> Edit
+                            </button>
+                            {address.id !== defaultAddressId && (
+                              <>
+                                <span className="text-gray-300">|</span>
+                                <button 
+                                  className="text-sm text-gray-600 hover:text-gray-800 flex items-center gap-1"
+                                  onClick={() => handleSetDefaultAddress(address.id)}
+                                >
+                                  <FiCheckCircle size={14} /> Set as Default
+                                </button>
+                              </>
+                            )}
+                            <span className="text-gray-300">|</span>
+                            <button 
+                              className="text-sm text-rose-600 hover:text-rose-800 flex items-center gap-1"
+                              onClick={() => handleRemoveAddress(address.id)}
+                            >
+                              <FiTrash2 size={14} /> Remove
+                            </button>
+                          </div>
+                        </div>
+                      ))}
+                      
+                      {/* Add New Address Card */}
+                      {!showAddressForm && (
+                        <div 
+                          onClick={() => setShowAddressForm(true)}
+                          className="border border-dashed border-gray-200 rounded-xl p-5 flex flex-col items-center justify-center text-center hover:border-indigo-300 transition-colors cursor-pointer min-h-[200px]"
+                        >
+                          <div className="bg-indigo-50 rounded-full p-4 mb-3">
+                            <FiMapPin className="text-indigo-600 text-xl" />
+                          </div>
+                          <h3 className="font-medium mb-1">Add a new address</h3>
+                          <p className="text-gray-500 text-sm mb-3">Save your shipping and billing addresses</p>
+                          <button className="mt-2 px-4 py-2 bg-indigo-600 text-white rounded-lg text-sm font-medium hover:bg-indigo-700 transition flex items-center gap-2">
+                            <FiPlus />
+                            <span>Add Address</span>
+                          </button>
+                        </div>
+                      )}
+                    </div>
+                  )}
                 </div>
               </div>
             </motion.div>

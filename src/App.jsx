@@ -15,6 +15,7 @@ import SearchPage from "./pages/SearchPage";
 import { CartProvider } from "./utils/CartContext.jsx";
 import { AuthProvider } from "./utils/AuthContext.jsx";
 import { OrderProvider } from "./utils/OrderContext.jsx";
+import { AddressProvider } from "./utils/AddressContext.jsx";
 import ProtectedRoute from "./components/ProtectedRoute";
 
 function App() {
@@ -67,12 +68,13 @@ function App() {
         <AuthProvider>
           <CartProvider>
             <OrderProvider>
-              <Router>
-                <Navbar />
-                <Routes>
-                  <Route path="/" element={<Home />} /> 
-                  <Route path="/login" element={<Login />} /> 
-                  <Route path="/register" element={<Register />} /> 
+              <AddressProvider>
+                <Router>
+                  <Navbar />
+                  <Routes>
+                    <Route path="/" element={<Home />} /> 
+                    <Route path="/login" element={<Login />} /> 
+                    <Route path="/register" element={<Register />} /> 
                   <Route path="/cart" element={
                     <ProtectedRoute>
                       <Cart />
@@ -103,6 +105,7 @@ function App() {
                   } />
                 </Routes>
               </Router>
+              </AddressProvider>
             </OrderProvider>
           </CartProvider>
         </AuthProvider>
