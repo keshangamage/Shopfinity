@@ -3,6 +3,7 @@ import { useNavigate, Link } from "react-router-dom";
 import { useAuth } from "../utils/AuthContext.jsx";
 import { useOrder } from "../utils/OrderContext.jsx";
 import { useAddress } from "../utils/AddressContext.jsx";
+import { usePayment } from "../utils/PaymentContext.jsx";
 import { 
   FiUser, FiMail, FiLock, FiLogOut, FiAlertTriangle, FiCheckCircle, 
   FiAlertCircle, FiShield, FiPackage, FiMapPin, FiCreditCard, 
@@ -13,6 +14,7 @@ import { motion } from "framer-motion";
 const Profile = () => {  const { currentUser, updateUserProfile, resetPassword, logout } = useAuth();
   const { orders } = useOrder();
   const { addresses, addAddress, updateAddress, removeAddress, setDefaultAddress, defaultAddressId, countries } = useAddress();
+  const { paymentMethods, addPaymentMethod, updatePaymentMethod, removePaymentMethod, setDefaultPaymentMethod, defaultPaymentMethodId, cardTypes } = usePayment();
   const [displayName, setDisplayName] = useState(currentUser?.displayName || "");
   const [loading, setLoading] = useState(false);
   const [message, setMessage] = useState({ text: "", type: "" });
@@ -20,7 +22,9 @@ const Profile = () => {  const { currentUser, updateUserProfile, resetPassword, 
   const [menuOpen, setMenuOpen] = useState(false);
   const [showScrollProgress, setShowScrollProgress] = useState(false);
   const [showAddressForm, setShowAddressForm] = useState(false);
-  const [editingAddress, setEditingAddress] = useState(null);  const [addressFormData, setAddressFormData] = useState({
+  const [editingAddress, setEditingAddress] = useState(null);
+  const [showPaymentForm, setShowPaymentForm] = useState(false);
+  const [editingPayment, setEditingPayment] = useState(null);  const [addressFormData, setAddressFormData] = useState({
     name: '',
     addressLine1: '',
     addressLine2: '',
@@ -29,6 +33,16 @@ const Profile = () => {  const { currentUser, updateUserProfile, resetPassword, 
     postalCode: '',
     country: 'United States', 
     addressType: 'Home'
+  });
+  
+  const [paymentFormData, setPaymentFormData] = useState({
+    cardholderName: '',
+    cardNumber: '',
+    cardType: 'Visa',
+    expiryMonth: '',
+    expiryYear: '',
+    cvv: '',
+    isDefault: false
   });
   const navigate = useNavigate();
   
@@ -172,7 +186,6 @@ const Profile = () => {  const { currentUser, updateUserProfile, resetPassword, 
       });
     }
   };
-
   // Handle setting an address as default
   const handleSetDefaultAddress = (id) => {
     setDefaultAddress(id);
@@ -182,6 +195,117 @@ const Profile = () => {  const { currentUser, updateUserProfile, resetPassword, 
     });
   };
 
+  // Handle payment form submission
+  const handlePaymentSubmit = (e) => {
+    e.preventDefault();
+    setLoading(true);
+
+    try {
+      // Format expiry date for display
+      const formattedPayment = {
+        ...paymentFormData,
+        
+        maskedCardNumber: maskCardNumber(paymentFormData.cardNumber),
+        // Format expiry date as MM/YY
+        expiryDate: `${paymentFormData.expiryMonth}/${paymentFormData.expiryYear.substring(2)}`
+      };
+      
+      if (editingPayment) {
+        // Update existing payment method
+        updatePaymentMethod(editingPayment.id, formattedPayment);
+        setMessage({
+          text: "Payment method updated successfully!",
+          type: "success",
+        });
+      } else {
+        // Add new payment method
+        const newPayment = addPaymentMethod(formattedPayment);
+        
+        
+        if (paymentFormData.isDefault || paymentMethods.length === 0) {
+          setDefaultPaymentMethod(newPayment.id);
+        }
+        
+        setMessage({
+          text: "New payment method added successfully!",
+          type: "success",
+        });
+      }
+
+      // Reset form and state
+      setPaymentFormData({
+        cardholderName: '',
+        cardNumber: '',
+        cardType: 'Visa',
+        expiryMonth: '',
+        expiryYear: '',
+        cvv: '',
+        isDefault: false
+      });
+      setShowPaymentForm(false);
+      setEditingPayment(null);
+    } catch (error) {
+      setMessage({
+        text: "Failed to save payment method: " + error.message,
+        type: "error",
+      });
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  // Handle editing a payment method
+  const handleEditPayment = (payment) => {
+    setEditingPayment(payment);
+
+    
+    const [month, shortYear] = payment.expiryDate.split('/');
+    const year = `20${shortYear}`; 
+    
+    setPaymentFormData({
+      cardholderName: payment.cardholderName || '',
+      cardNumber: payment.cardNumber || '',  
+      cardType: payment.cardType || 'Visa',
+      expiryMonth: month || '',
+      expiryYear: year || '',
+      cvv: '',  // 
+      isDefault: payment.id === defaultPaymentMethodId
+    });
+    
+    setShowPaymentForm(true);
+  };
+
+  // Handle removing a payment method
+  const handleRemovePayment = (id) => {
+    if (window.confirm("Are you sure you want to remove this payment method?")) {
+      removePaymentMethod(id);
+      setMessage({
+        text: "Payment method removed successfully.",
+        type: "success",
+      });
+    }
+  };
+
+  // Handle setting a payment method as default
+  const handleSetDefaultPayment = (id) => {
+    setDefaultPaymentMethod(id);
+    setMessage({
+      text: "Default payment method updated.",
+      type: "success",
+    });
+  };
+
+ 
+  const maskCardNumber = (number) => {
+    if (!number) return "";
+    const lastFour = number.slice(-4);
+    return `**** **** **** ${lastFour}`;
+  };
+
+  // Generate current year and next 10 years for expiry dropdown
+  const currentYear = new Date().getFullYear();
+  const years = Array.from({ length: 10 }, (_, i) => (currentYear + i).toString());
+  const months = Array.from({ length: 12 }, (_, i) => (i + 1).toString().padStart(2, '0'));
   
   const userInitials = currentUser?.displayName 
     ? currentUser.displayName.split(' ').map(n => n[0]).join('').toUpperCase().slice(0, 2)
@@ -965,67 +1089,323 @@ const Profile = () => {  const { currentUser, updateUserProfile, resetPassword, 
             </motion.div>
           )}
           
-          {/* Payment Methods Tab */}
-          {activeTab === "payment" && (
+          {/* Payment Methods Tab */}          {activeTab === "payment" && (
             <motion.div 
               initial={{ opacity: 0 }}
               animate={{ opacity: 1 }}
               transition={{ duration: 0.3 }}
             >
               <div className="bg-white rounded-xl shadow-sm overflow-hidden">
-                <div className="border-b border-gray-100 p-6">
+                <div className="border-b border-gray-100 p-6 flex justify-between items-center">
                   <h2 className="text-xl font-semibold text-gray-800 flex items-center gap-2">
                     <FiCreditCard className="text-indigo-600" />
                     Payment Methods
                   </h2>
+                  <button 
+                    onClick={() => {
+                      setEditingPayment(null);
+                      setPaymentFormData({
+                        cardholderName: '',
+                        cardNumber: '',
+                        cardType: 'Visa',
+                        expiryMonth: '',
+                        expiryYear: '',
+                        cvv: '',
+                        isDefault: false
+                      });
+                      setShowPaymentForm(true);
+                    }}
+                    className="px-4 py-2 bg-indigo-600 text-white rounded-lg text-sm font-medium hover:bg-indigo-700 transition flex items-center gap-1"
+                  >
+                    <FiPlus />
+                    <span>Add New</span>
+                  </button>
                 </div>
                 <div className="p-6">
-                  <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                    {/* Credit Card */}
-                    <div className="bg-gradient-to-r from-gray-800 to-gray-900 text-white rounded-xl p-5 relative overflow-hidden group">
-                      <div className="absolute top-0 right-0 h-32 w-32 bg-white/5 rounded-full -mr-10 -mt-10"></div>
-                      <div className="absolute bottom-0 left-0 h-20 w-20 bg-white/5 rounded-full -ml-10 -mb-10"></div>
-                      
-                      <div className="flex justify-between mb-8">
-                        <span className="font-medium">Credit Card</span>
-                        <span className="font-bold">VISA</span>
-                      </div>
-                      
-                      <div className="mb-8">
-                        <div className="text-sm text-white/70 mb-1">Card Number</div>
-                        <div className="font-mono">**** **** **** 4242</div>
-                      </div>
-                      
-                      <div className="flex justify-between">
-                        <div>
-                          <div className="text-sm text-white/70 mb-1">Cardholder Name</div>
-                          <div>John Doe</div>
-                        </div>
-                        <div>
-                          <div className="text-sm text-white/70 mb-1">Expiry</div>
-                          <div>12/25</div>
-                        </div>
-                      </div>
-                      
-                      <div className="absolute inset-0 bg-black/0 group-hover:bg-black/10 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-all duration-300">
-                        <button className="bg-white/20 backdrop-blur-sm px-4 py-2 rounded-lg text-white border border-white/20 hover:bg-white/30 transition-colors">
-                          Edit Card
+                  {showPaymentForm ? (
+                    <motion.div
+                      initial={{ opacity: 0, y: 10 }}
+                      animate={{ opacity: 1, y: 0 }}
+                      className="mb-6 border border-indigo-100 rounded-xl p-6 bg-indigo-50/30"
+                    >
+                      <div className="flex justify-between items-center mb-4">
+                        <h3 className="text-lg font-semibold text-gray-800">
+                          {editingPayment ? 'Edit Payment Method' : 'Add New Payment Method'}
+                        </h3>
+                        <button 
+                          onClick={() => setShowPaymentForm(false)}
+                          className="text-gray-500 hover:text-gray-700"
+                        >
+                          ✕
                         </button>
                       </div>
-                    </div>
-                    
-                    {/* Add Payment Method */}
-                    <div className="border border-dashed border-gray-200 rounded-xl p-5 flex flex-col items-center justify-center text-center hover:border-indigo-300 transition-colors cursor-pointer min-h-[220px]">
-                      <div className="bg-indigo-50 rounded-full p-4 mb-3">
-                        <FiCreditCard className="text-indigo-600 text-xl" />
+                      
+                      <form onSubmit={handlePaymentSubmit} className="space-y-4">
+                        {/* Card Type */}
+                        <div>
+                          <label className="block text-sm font-medium text-gray-700 mb-1">Card Type</label>
+                          <select
+                            value={paymentFormData.cardType}
+                            onChange={e => setPaymentFormData({...paymentFormData, cardType: e.target.value})}
+                            className="w-full px-4 py-2 border border-gray-200 rounded-lg focus:ring-2 focus:ring-indigo-500 focus:outline-none"
+                            required
+                          >
+                            {cardTypes.map(type => (
+                              <option key={type} value={type}>
+                                {type}
+                              </option>
+                            ))}
+                          </select>
+                        </div>
+                        
+                        {/* Cardholder Name */}
+                        <div>
+                          <label className="block text-sm font-medium text-gray-700 mb-1">Cardholder Name</label>
+                          <input 
+                            type="text"
+                            value={paymentFormData.cardholderName}
+                            onChange={e => setPaymentFormData({...paymentFormData, cardholderName: e.target.value})}
+                            className="w-full px-4 py-2 border border-gray-200 rounded-lg focus:ring-2 focus:ring-indigo-500 focus:outline-none"
+                            placeholder="John Doe"
+                            required
+                          />
+                        </div>
+                        
+                        {/* Card Number */}
+                        <div>
+                          <label className="block text-sm font-medium text-gray-700 mb-1">Card Number</label>
+                          <input 
+                            type="text"
+                            value={paymentFormData.cardNumber}
+                            onChange={e => {
+                              
+                              const value = e.target.value.replace(/\D/g, '').substring(0, 16);
+                              setPaymentFormData({...paymentFormData, cardNumber: value});
+                            }}
+                            className="w-full px-4 py-2 border border-gray-200 rounded-lg focus:ring-2 focus:ring-indigo-500 focus:outline-none"
+                            placeholder="1234 5678 9012 3456"
+                            required
+                          />
+                          <p className="mt-1 text-xs text-gray-500">
+                            Enter the 16-digit number on your card
+                          </p>
+                        </div>
+                        
+                        {/* Expiration Date */}
+                        <div className="grid grid-cols-2 gap-4">
+                          <div>
+                            <label className="block text-sm font-medium text-gray-700 mb-1">Expiration Month</label>
+                            <select
+                              value={paymentFormData.expiryMonth}
+                              onChange={e => setPaymentFormData({...paymentFormData, expiryMonth: e.target.value})}
+                              className="w-full px-4 py-2 border border-gray-200 rounded-lg focus:ring-2 focus:ring-indigo-500 focus:outline-none"
+                              required
+                            >
+                              <option value="">Month</option>
+                              {months.map(month => (
+                                <option key={month} value={month}>{month}</option>
+                              ))}
+                            </select>
+                          </div>
+                          <div>
+                            <label className="block text-sm font-medium text-gray-700 mb-1">Expiration Year</label>
+                            <select
+                              value={paymentFormData.expiryYear}
+                              onChange={e => setPaymentFormData({...paymentFormData, expiryYear: e.target.value})}
+                              className="w-full px-4 py-2 border border-gray-200 rounded-lg focus:ring-2 focus:ring-indigo-500 focus:outline-none"
+                              required
+                            >
+                              <option value="">Year</option>
+                              {years.map(year => (
+                                <option key={year} value={year}>{year}</option>
+                              ))}
+                            </select>
+                          </div>
+                        </div>
+                        
+                        {/* CVV */}
+                        <div>
+                          <label className="block text-sm font-medium text-gray-700 mb-1">CVV</label>
+                          <input 
+                            type="password" 
+                            value={paymentFormData.cvv}
+                            onChange={e => {
+                              
+                              const value = e.target.value.replace(/\D/g, '').substring(0, 4);
+                              setPaymentFormData({...paymentFormData, cvv: value});
+                            }}
+                            className="w-full px-4 py-2 border border-gray-200 rounded-lg focus:ring-2 focus:ring-indigo-500 focus:outline-none"
+                            placeholder="123"
+                            required
+                          />
+                          <p className="mt-1 text-xs text-gray-500">
+                            3 or 4 digits, usually on the back of your card
+                          </p>
+                        </div>
+                        
+                        {/* Make Default */}
+                        <div className="flex items-center mt-2">
+                          <input
+                            type="checkbox"
+                            id="makeDefault"
+                            checked={paymentFormData.isDefault}
+                            onChange={() => setPaymentFormData({...paymentFormData, isDefault: !paymentFormData.isDefault})}
+                            className="h-4 w-4 text-indigo-600 focus:ring-indigo-500 border-gray-300 rounded"
+                          />
+                          <label htmlFor="makeDefault" className="ml-2 block text-sm text-gray-700">
+                            Make this my default payment method
+                          </label>
+                        </div>
+                        
+                        {/* Form Actions */}
+                        <div className="flex flex-wrap gap-3 justify-end pt-3">
+                          <button 
+                            type="button"
+                            onClick={() => setShowPaymentForm(false)}
+                            className="px-6 py-2 border border-gray-300 text-gray-700 rounded-lg hover:bg-gray-50 transition"
+                          >
+                            Cancel
+                          </button>
+                          
+                          <button 
+                            type="submit"
+                            disabled={loading}
+                            className="px-6 py-2 bg-indigo-600 text-white rounded-lg hover:bg-indigo-700 transition flex items-center gap-2 disabled:bg-gray-400"
+                          >
+                            {loading ? (
+                              <>
+                                <svg className="animate-spin h-5 w-5 text-white" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+                                  <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"></circle>
+                                  <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+                                </svg>
+                                <span>Saving...</span>
+                              </>
+                            ) : (
+                              <>
+                                <FiCheckCircle />
+                                <span>{editingPayment ? 'Update Payment Method' : 'Save Payment Method'}</span>
+                              </>
+                            )}
+                          </button>
+                        </div>
+                      </form>
+                    </motion.div>
+                  ) : null}
+                  
+                  {paymentMethods.length === 0 && !showPaymentForm ? (
+                    <div className="text-center py-10">
+                      <div className="inline-flex items-center justify-center h-16 w-16 bg-indigo-100 text-indigo-600 rounded-full mb-4">
+                        <FiCreditCard size={24} />
                       </div>
-                      <h3 className="font-medium mb-1">Add a payment method</h3>
-                      <p className="text-gray-500 text-sm mb-3">Add a credit card or other payment method</p>
-                      <button className="mt-2 px-4 py-2 bg-indigo-600 text-white rounded-lg text-sm font-medium hover:bg-indigo-700 transition">
+                      <h3 className="text-lg font-medium text-gray-800 mb-2">No payment methods yet</h3>
+                      <p className="text-gray-600 mb-6">Add your first payment method for easier checkout</p>
+                      <button
+                        onClick={() => setShowPaymentForm(true)}
+                        className="inline-flex items-center px-5 py-3 bg-indigo-600 text-white text-sm font-medium rounded-full hover:bg-indigo-700 transition transform hover:-translate-y-0.5"
+                      >
+                        <FiPlus className="mr-2" />
                         Add Payment Method
                       </button>
                     </div>
-                  </div>
+                  ) : (
+                    <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                      {/* Payment Method Cards */}
+                      {paymentMethods.map((paymentMethod) => {
+                        
+                        const cardBackground = 
+                          paymentMethod.cardType === 'Visa' ? "from-blue-800 to-blue-900" :
+                          paymentMethod.cardType === 'Mastercard' ? "from-red-800 to-orange-900" :
+                          paymentMethod.cardType === 'American Express' ? "from-indigo-800 to-indigo-900" :
+                          paymentMethod.cardType === 'Discover' ? "from-orange-800 to-amber-900" :
+                          "from-gray-800 to-gray-900";
+                        
+                        return (
+                          <div key={paymentMethod.id} 
+                            className={`bg-gradient-to-r ${cardBackground} text-white rounded-xl p-5 relative overflow-hidden group`}
+                          >
+                            {paymentMethod.id === defaultPaymentMethodId && (
+                              <div className="absolute top-4 right-4 z-10">
+                                <span className="px-3 py-1 bg-white/20 text-white rounded-full text-xs font-medium backdrop-blur-sm">Default</span>
+                              </div>
+                            )}
+                            <div className="absolute top-0 right-0 h-32 w-32 bg-white/5 rounded-full -mr-10 -mt-10"></div>
+                            <div className="absolute bottom-0 left-0 h-20 w-20 bg-white/5 rounded-full -ml-10 -mb-10"></div>
+                            
+                            <div className="flex justify-between mb-8">
+                              <span className="font-medium">Credit Card</span>
+                              <span className="font-bold">{paymentMethod.cardType}</span>
+                            </div>
+                            
+                            <div className="mb-8">
+                              <div className="text-sm text-white/70 mb-1">Card Number</div>
+                              <div className="font-mono">{paymentMethod.maskedCardNumber}</div>
+                            </div>
+                            
+                            <div className="flex justify-between">
+                              <div>
+                                <div className="text-sm text-white/70 mb-1">Cardholder Name</div>
+                                <div>{paymentMethod.cardholderName}</div>
+                              </div>
+                              <div>
+                                <div className="text-sm text-white/70 mb-1">Expiry</div>
+                                <div>{paymentMethod.expiryDate}</div>
+                              </div>
+                            </div>
+                            
+                            <div className="absolute inset-0 bg-black/0 group-hover:bg-black/10 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-all duration-300">
+                              <div className="flex gap-2">
+                                <button 
+                                  onClick={() => handleEditPayment(paymentMethod)}
+                                  className="bg-white/20 backdrop-blur-sm px-4 py-2 rounded-lg text-white border border-white/20 hover:bg-white/30 transition-colors flex items-center gap-2"
+                                >
+                                  <FiEdit size={14} />
+                                  Edit
+                                </button>
+                                
+                                {paymentMethod.id !== defaultPaymentMethodId && (
+                                  <>
+                                    <button 
+                                      onClick={() => handleSetDefaultPayment(paymentMethod.id)}
+                                      className="bg-white/20 backdrop-blur-sm px-4 py-2 rounded-lg text-white border border-white/20 hover:bg-white/30 transition-colors flex items-center gap-2"
+                                    >
+                                      <FiCheckCircle size={14} />
+                                      Set Default
+                                    </button>
+                                    
+                                    <button 
+                                      onClick={() => handleRemovePayment(paymentMethod.id)}
+                                      className="bg-rose-500/70 backdrop-blur-sm px-4 py-2 rounded-lg text-white border border-white/20 hover:bg-rose-600/70 transition-colors flex items-center gap-2"
+                                    >
+                                      <FiTrash2 size={14} />
+                                      Remove
+                                    </button>
+                                  </>
+                                )}
+                              </div>
+                            </div>
+                          </div>
+                        );
+                      })}
+                      
+                      {/* Add New Payment Card */}
+                      {!showPaymentForm && (
+                        <div 
+                          onClick={() => setShowPaymentForm(true)}
+                          className="border border-dashed border-gray-200 rounded-xl p-5 flex flex-col items-center justify-center text-center hover:border-indigo-300 transition-colors cursor-pointer min-h-[220px]"
+                        >
+                          <div className="bg-indigo-50 rounded-full p-4 mb-3">
+                            <FiCreditCard className="text-indigo-600 text-xl" />
+                          </div>
+                          <h3 className="font-medium mb-1">Add a payment method</h3>
+                          <p className="text-gray-500 text-sm mb-3">Add a credit card or other payment method</p>
+                          <button className="mt-2 px-4 py-2 bg-indigo-600 text-white rounded-lg text-sm font-medium hover:bg-indigo-700 transition flex items-center gap-2">
+                            <FiPlus />
+                            <span>Add Payment Method</span>
+                          </button>
+                        </div>
+                      )}
+                    </div>
+                  )}
                 </div>
               </div>
             </motion.div>
