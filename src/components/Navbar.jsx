@@ -1,7 +1,16 @@
 import { useState, useRef, useEffect } from "react";
-import { FaSearch, FaShoppingCart, FaBars, FaUser, FaSignOutAlt, FaRegUser, FaClipboardList, FaCog } from "react-icons/fa";
+import {
+  FaSearch,
+  FaShoppingCart,
+  FaBars,
+  FaUser,
+  FaSignOutAlt,
+  FaRegUser,
+  FaClipboardList,
+  FaCog,
+} from "react-icons/fa";
 import { Link, useNavigate } from "react-router-dom";
-import logo from "../assets/logobgremove.png"; 
+import logo from "../assets/logobgremove.png";
 import { useCart } from "../utils/CartContext.jsx";
 import { useAuth } from "../utils/AuthContext.jsx";
 import { products } from "./Products.jsx";
@@ -18,11 +27,11 @@ const Navbar = () => {
   const toggleDropdown = () => {
     setIsDropdownOpen((prev) => !prev);
   };
-  
+
   const toggleUserMenu = () => {
     setIsUserMenuOpen((prev) => !prev);
   };
-  
+
   const handleLogout = async () => {
     try {
       await logout();
@@ -32,7 +41,7 @@ const Navbar = () => {
       console.error("Failed to log out", error);
     }
   };
-  
+
   // Close user menu when clicking outside
   useEffect(() => {
     const handleClickOutside = (event) => {
@@ -40,7 +49,7 @@ const Navbar = () => {
         setIsUserMenuOpen(false);
       }
     };
-    
+
     document.addEventListener("mousedown", handleClickOutside);
     return () => {
       document.removeEventListener("mousedown", handleClickOutside);
@@ -50,7 +59,7 @@ const Navbar = () => {
     setIsDropdownOpen(false);
     navigate(`/categories/${category}`);
   };
-  
+
   const handleSearch = (e) => {
     e.preventDefault();
     if (searchTerm.trim()) {
@@ -81,8 +90,11 @@ const Navbar = () => {
           >
             <FaBars />
             <span>All Categories</span>
-          </div>          {isDropdownOpen && (
-            <ul className="absolute left-0 mt-2 bg-white shadow-md rounded-md w-48 text-sm z-50">              {[
+          </div>{" "}
+          {isDropdownOpen && (
+            <ul className="absolute left-0 mt-2 bg-white shadow-md rounded-md w-48 text-sm z-50">
+              {" "}
+              {[
                 "electronics",
                 "fashion",
                 "fitness",
@@ -102,16 +114,19 @@ const Navbar = () => {
           )}
         </div>
       </div>
-
       {/* Close dropdown when clicking outside */}
       {isDropdownOpen && (
         <div
           className="fixed inset-0 z-0"
           onClick={() => setIsDropdownOpen(false)}
         ></div>
-      )}      {/* Search Bar */}
+      )}{" "}
+      {/* Search Bar */}
       <div className="flex-1 mx-4 sm:mx-8">
-        <form onSubmit={handleSearch} className="flex border rounded-full overflow-hidden">
+        <form
+          onSubmit={handleSearch}
+          className="flex border rounded-full overflow-hidden"
+        >
           <input
             type="text"
             placeholder="Search in Shopfinity"
@@ -119,7 +134,7 @@ const Navbar = () => {
             value={searchTerm}
             onChange={(e) => setSearchTerm(e.target.value)}
           />
-          <button 
+          <button
             type="submit"
             className="bg-teal-500 text-white px-4 flex items-center justify-center hover:bg-teal-600 transition duration-300"
           >
@@ -127,7 +142,6 @@ const Navbar = () => {
           </button>
         </form>
       </div>
-
       {/* Right Controls */}
       <div className="flex items-center space-x-4 sm:space-x-6">
         {/* App Download */}
@@ -139,7 +153,6 @@ const Navbar = () => {
             Download the <br /> Shopfinity app
           </button>
         </div>
-        
         {/* Authentication */}
         {currentUser ? (
           // User is logged in - show profile dropdown
@@ -150,9 +163,9 @@ const Navbar = () => {
             >
               <div className="w-7 h-7 bg-white text-teal-500 rounded-full flex items-center justify-center">
                 {currentUser.photoURL ? (
-                  <img 
-                    src={currentUser.photoURL} 
-                    alt="Profile" 
+                  <img
+                    src={currentUser.photoURL}
+                    alt="Profile"
                     className="w-full h-full rounded-full object-cover"
                   />
                 ) : (
@@ -163,44 +176,43 @@ const Navbar = () => {
                 {currentUser.displayName || currentUser.email.split("@")[0]}
               </span>
             </button>
-            
+
             {isUserMenuOpen && (
               <div className="absolute right-0 mt-3 w-72 bg-white rounded-xl shadow-xl py-2 z-50 border border-gray-100 overflow-hidden transition-all duration-300 transform origin-top-right">
                 {/* User Header */}
                 <div className="px-6 py-4 bg-gradient-to-r from-teal-500 to-teal-400 text-white">
                   <div className="flex items-center gap-3">
-                    <div className="w-12 h-12 bg-white text-teal-500 rounded-full flex items-center justify-center shadow-md">
-                      {currentUser.photoURL ? (
-                        <img 
-                          src={currentUser.photoURL} 
-                          alt="Profile" 
-                          className="w-full h-full rounded-full object-cover"
-                        />
-                      ) : (
-                        <FaUser size={20} className="text-teal-500" />
-                      )}
-                    </div>
                     <div>
-                      <div className="font-bold text-lg">{currentUser.displayName || currentUser.email.split("@")[0]}</div>
-                      <div className="text-xs text-teal-100">{currentUser.email}</div>
+                      <div className="font-bold text-lg">
+                        {currentUser.displayName ||
+                          currentUser.email.split("@")[0]}
+                      </div>
+                      <div className="text-xs text-teal-100">
+                        {currentUser.email}
+                      </div>
                     </div>
                   </div>
                 </div>
-                
+
                 {/* Menu Items */}
                 <div className="py-2">
-                  <Link to="/profile" className="flex items-center gap-3 px-6 py-3 text-gray-700 hover:bg-teal-50 transition-colors duration-200">
+                  <Link
+                    to="/profile"
+                    className="flex items-center gap-3 px-6 py-3 text-gray-700 hover:bg-teal-50 transition-colors duration-200"
+                  >
                     <FaRegUser className="text-teal-500" size={16} />
                     <span className="font-medium">My Profile</span>
                   </Link>
-                  <Link to="/orders" className="flex items-center gap-3 px-6 py-3 text-gray-700 hover:bg-teal-50 transition-colors duration-200">
+                  <Link
+                    to="/orders"
+                    className="flex items-center gap-3 px-6 py-3 text-gray-700 hover:bg-teal-50 transition-colors duration-200"
+                  >
                     <FaClipboardList className="text-teal-500" size={16} />
                     <span className="font-medium">My Orders</span>
                   </Link>
-                  
-                  
+
                   <div className="border-t border-gray-100 my-1"></div>
-                  
+
                   <button
                     onClick={handleLogout}
                     className="w-full text-left flex items-center gap-3 px-6 py-3 text-gray-700 hover:bg-red-50 hover:text-red-600 transition-colors duration-200"
@@ -211,7 +223,8 @@ const Navbar = () => {
                 </div>
               </div>
             )}
-          </div>        ) : (
+          </div>
+        ) : (
           // User is not logged in - show sign in button
           <Link
             to="/login"
@@ -223,8 +236,8 @@ const Navbar = () => {
             <span className="font-medium">Sign In / Register</span>
           </Link>
         )}
-        
-        {/* Cart Button */}        <Link
+        {/* Cart Button */}{" "}
+        <Link
           to="/cart"
           className="flex items-center gap-2 px-4 py-2 rounded-full bg-gray-100 hover:bg-gray-200 text-gray-700 transition duration-200 shadow-sm hover:shadow-md relative"
         >

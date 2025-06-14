@@ -17,6 +17,7 @@ import { AuthProvider } from "./utils/AuthContext.jsx";
 import { OrderProvider } from "./utils/OrderContext.jsx";
 import { AddressProvider } from "./utils/AddressContext.jsx";
 import { PaymentProvider } from "./utils/PaymentContext.jsx";
+import { SavedItemsProvider } from "./utils/SavedItemsContext.jsx";
 import ProtectedRoute from "./components/ProtectedRoute";
 
 function App() {
@@ -33,20 +34,21 @@ function App() {
     return () => window.removeEventListener("error", handleError);
   }, []);
 
-  
   if (error) {
     return (
-      <div style={{ 
-        padding: "20px", 
-        margin: "20px", 
-        border: "1px solid #f44336",
-        borderRadius: "4px", 
-        backgroundColor: "#ffebee" 
-      }}>
+      <div
+        style={{
+          padding: "20px",
+          margin: "20px",
+          border: "1px solid #f44336",
+          borderRadius: "4px",
+          backgroundColor: "#ffebee",
+        }}
+      >
         <h2>Something went wrong</h2>
         <p>{error}</p>
-        <button 
-          onClick={() => window.location.reload()} 
+        <button
+          onClick={() => window.location.reload()}
           style={{
             padding: "8px 16px",
             backgroundColor: "#f44336",
@@ -54,7 +56,7 @@ function App() {
             border: "none",
             borderRadius: "4px",
             cursor: "pointer",
-            marginTop: "10px"
+            marginTop: "10px",
           }}
         >
           Reload Page
@@ -70,44 +72,67 @@ function App() {
           <CartProvider>
             <OrderProvider>
               <AddressProvider>
-                <PaymentProvider>
-                  <Router>
-                    <Navbar />
-                    <Routes>
-                      <Route path="/" element={<Home />} /> 
-                      <Route path="/login" element={<Login />} /> 
-                      <Route path="/register" element={<Register />} /> 
-                      <Route path="/cart" element={
-                        <ProtectedRoute>
-                          <Cart />
-                        </ProtectedRoute>
-                      } /> 
-                      <Route path="/checkout" element={
-                        <ProtectedRoute>
-                          <Checkout />
-                        </ProtectedRoute>
-                      } />
-                      <Route path="/product/:id" element={<ProductDetail />} />
-                      <Route path="/categories/:categoryName" element={<CategoryPage />} />
-                      <Route path="/search" element={<SearchPage />} />
-                      <Route path="/profile" element={
-                        <ProtectedRoute>
-                          <Profile />
-                        </ProtectedRoute>
-                      } />
-                      <Route path="/orders" element={
-                        <ProtectedRoute>
-                          <Orders />
-                        </ProtectedRoute>
-                      } />
-                      <Route path="/orders/:orderId" element={
-                        <ProtectedRoute>
-                          <OrderDetail />
-                        </ProtectedRoute>
-                      } />
-                    </Routes>
-                  </Router>
-                </PaymentProvider>
+                <SavedItemsProvider>
+                  <PaymentProvider>
+                    <Router>
+                      <Navbar />
+                      <Routes>
+                        <Route path="/" element={<Home />} />
+                        <Route path="/login" element={<Login />} />
+                        <Route path="/register" element={<Register />} />
+                        <Route
+                          path="/cart"
+                          element={
+                            <ProtectedRoute>
+                              <Cart />
+                            </ProtectedRoute>
+                          }
+                        />
+                        <Route
+                          path="/checkout"
+                          element={
+                            <ProtectedRoute>
+                              <Checkout />
+                            </ProtectedRoute>
+                          }
+                        />
+                        <Route
+                          path="/product/:id"
+                          element={<ProductDetail />}
+                        />
+                        <Route
+                          path="/categories/:categoryName"
+                          element={<CategoryPage />}
+                        />
+                        <Route path="/search" element={<SearchPage />} />
+                        <Route
+                          path="/profile"
+                          element={
+                            <ProtectedRoute>
+                              <Profile />
+                            </ProtectedRoute>
+                          }
+                        />
+                        <Route
+                          path="/orders"
+                          element={
+                            <ProtectedRoute>
+                              <Orders />
+                            </ProtectedRoute>
+                          }
+                        />
+                        <Route
+                          path="/orders/:orderId"
+                          element={
+                            <ProtectedRoute>
+                              <OrderDetail />
+                            </ProtectedRoute>
+                          }
+                        />
+                      </Routes>
+                    </Router>
+                  </PaymentProvider>
+                </SavedItemsProvider>
               </AddressProvider>
             </OrderProvider>
           </CartProvider>
@@ -135,17 +160,19 @@ class ErrorBoundary extends React.Component {
   render() {
     if (this.state.hasError) {
       return (
-        <div style={{ 
-          padding: "20px", 
-          margin: "20px", 
-          border: "1px solid #f44336",
-          borderRadius: "4px", 
-          backgroundColor: "#ffebee" 
-        }}>
+        <div
+          style={{
+            padding: "20px",
+            margin: "20px",
+            border: "1px solid #f44336",
+            borderRadius: "4px",
+            backgroundColor: "#ffebee",
+          }}
+        >
           <h2>Something went wrong in the application</h2>
           <p>{this.state.error?.message || "Unknown error"}</p>
-          <button 
-            onClick={() => window.location.reload()} 
+          <button
+            onClick={() => window.location.reload()}
             style={{
               padding: "8px 16px",
               backgroundColor: "#f44336",
@@ -153,7 +180,7 @@ class ErrorBoundary extends React.Component {
               border: "none",
               borderRadius: "4px",
               cursor: "pointer",
-              marginTop: "10px"
+              marginTop: "10px",
             }}
           >
             Reload Page
