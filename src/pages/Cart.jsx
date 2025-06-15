@@ -4,21 +4,19 @@ import { useCart } from "../utils/CartContext";
 
 const Cart = () => {
   const navigate = useNavigate();
-  const { cartItems, updateQuantity, removeFromCart } = useCart();
+  const { cartItems, updateQuantity, removeFromCart, getCartTotal } = useCart();
 
-  const subtotal = cartItems
-    .reduce((acc, item) => acc + item.price * item.quantity, 0)
-    .toFixed(2);
-  
+  const subtotal = getCartTotal().toFixed(2);
+
   const discount = cartItems
     .reduce((acc, item) => {
-      const originalPrice = item.oldPrice || item.discountPrice 
-        ? (item.oldPrice || (item.price * 1.2)) 
-        : item.price;
-      return acc + ((originalPrice - item.price) * item.quantity);
+      if (item.discountPrice) {
+        return acc + (item.price - item.discountPrice) * item.quantity;
+      }
+      return acc;
     }, 0)
     .toFixed(2);
-    
+
   return (
     <div className="min-h-screen bg-gray-100 py-10 px-4">
       <div className="max-w-7xl mx-auto flex flex-col md:flex-row gap-8">
@@ -29,39 +27,61 @@ const Cart = () => {
           {cartItems.length === 0 ? (
             <div className="py-8 text-center">
               <p className="text-gray-500 mb-4">Your cart is empty</p>
-              <Link to="/" className="bg-teal-600 text-white py-2 px-4 rounded hover:bg-teal-700 transition">
+              <Link
+                to="/"
+                className="bg-teal-600 text-white py-2 px-4 rounded hover:bg-teal-700 transition"
+              >
                 Continue Shopping
               </Link>
             </div>
           ) : (
             cartItems.map((item) => (
-              <div key={item.id} className="flex items-start border-b py-4 gap-4">
+              <div
+                key={item.id}
+                className="flex items-start border-b py-4 gap-4"
+              >
                 <img
                   src={item.image}
                   alt={item.name}
                   className="w-20 h-20 rounded-lg object-cover"
                   onError={(e) => {
                     e.target.onerror = null;
-                    e.target.src = 'https://via.placeholder.com/100x100.png?text=No+Image';
+                    e.target.src =
+                      "https://via.placeholder.com/100x100.png?text=No+Image";
                   }}
                 />
                 <div className="flex-1">
                   <h3 className="text-lg font-semibold">{item.name}</h3>
-                  <p className="text-red-600 font-semibold">
-                    ${item.price.toFixed(2)}
-                  </p>
+                  {item.discountPrice ? (
+                    <div>
+                      <p className="text-red-600 font-semibold">
+                        ${item.discountPrice.toFixed(2)}
+                      </p>
+                      <p className="text-gray-500 line-through text-sm">
+                        ${item.price.toFixed(2)}
+                      </p>
+                    </div>
+                  ) : (
+                    <p className="text-red-600 font-semibold">
+                      ${item.price.toFixed(2)}
+                    </p>
+                  )}
                 </div>
                 <div className="flex flex-col items-center gap-1">
-                  <button 
+                  <button
                     className="bg-gray-200 px-2 rounded hover:bg-gray-300"
                     onClick={() => updateQuantity(item.id, item.quantity + 1)}
                   >
                     +
                   </button>
                   <p>{item.quantity}</p>
-                  <button 
+                  <button
                     className="bg-gray-200 px-2 rounded hover:bg-gray-300"
-                    onClick={() => item.quantity > 1 ? updateQuantity(item.id, item.quantity - 1) : removeFromCart(item.id)}
+                    onClick={() =>
+                      item.quantity > 1
+                        ? updateQuantity(item.id, item.quantity - 1)
+                        : removeFromCart(item.id)
+                    }
                   >
                     -
                   </button>
@@ -83,7 +103,9 @@ const Cart = () => {
           <div className="space-y-2 text-sm">
             <div className="flex justify-between">
               <span>Subtotal</span>
-              <span>${subtotal}</span>
+              <span>
+                ${(parseFloat(subtotal) + parseFloat(discount)).toFixed(2)}
+              </span>
             </div>
             <div className="flex justify-between">
               <span>Discount</span>

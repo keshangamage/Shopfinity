@@ -63,7 +63,20 @@ const ProductDetail = () => {
         />{" "}
         <div>
           <h2 className="text-3xl font-bold mb-4">{product.name}</h2>
-          <p className="text-xl text-teal-600 mb-4">${product.price}</p>
+          {product.discountPrice ? (
+            <div className="mb-4">
+              <p className="text-xl text-teal-600">
+                ${product.discountPrice.toFixed(2)}
+              </p>
+              <p className="text-gray-500 line-through text-sm">
+                ${product.price.toFixed(2)}
+              </p>
+            </div>
+          ) : (
+            <p className="text-xl text-teal-600 mb-4">
+              ${product.price.toFixed(2)}
+            </p>
+          )}
           <p className="text-gray-700 mb-6">{product.description}</p>
           <div className="flex items-center gap-4 mb-4">
             <div className="flex items-center border rounded">

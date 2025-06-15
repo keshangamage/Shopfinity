@@ -130,20 +130,7 @@ const CategoryPage = () => {
                     {saveMessage.message}
                   </div>
                 )}
-                <button
-                  onClick={(e) => {
-                    e.preventDefault();
-                    handleSaveItem(product);
-                  }}
-                  className={`mt-2 p-2 rounded-full transition-all ${
-                    isItemSaved(product.id)
-                      ? "bg-red-500 text-white"
-                      : "bg-gray-200 text-gray-800"
-                  }`}
-                >
-                  <FiHeart className="inline-block mr-1" />
-                  {isItemSaved(product.id) ? "Saved" : "Save"}
-                </button>
+
                 {saveMessage.id === product.id && (
                   <p className="mt-2 text-sm text-gray-500">
                     {saveMessage.message}

@@ -6,7 +6,6 @@ const CartContext = createContext();
 // Custom hook to use the cart context
 export const useCart = () => useContext(CartContext);
 
-
 export const CartProvider = ({ children }) => {
   // Get cart items from local storage or start with empty array
   const [cartItems, setCartItems] = useState(() => {
@@ -19,7 +18,6 @@ export const CartProvider = ({ children }) => {
     }
   });
 
-  
   useEffect(() => {
     try {
       localStorage.setItem("shopfinityCart", JSON.stringify(cartItems));
@@ -30,10 +28,12 @@ export const CartProvider = ({ children }) => {
 
   // Add item to cart
   const addToCart = (product, quantity = 1) => {
-    setCartItems(prevItems => {
+    setCartItems((prevItems) => {
       // Check if the item is already in the cart
-      const existingItemIndex = prevItems.findIndex(item => item.id === product.id);
-      
+      const existingItemIndex = prevItems.findIndex(
+        (item) => item.id === product.id
+      );
+
       if (existingItemIndex > -1) {
         // If item exists, update the quantity
         const updatedItems = [...prevItems];
@@ -48,15 +48,17 @@ export const CartProvider = ({ children }) => {
 
   // Remove item from cart
   const removeFromCart = (productId) => {
-    setCartItems(prevItems => prevItems.filter(item => item.id !== productId));
+    setCartItems((prevItems) =>
+      prevItems.filter((item) => item.id !== productId)
+    );
   };
 
   // Update item quantity in cart
   const updateQuantity = (productId, newQuantity) => {
     if (newQuantity < 1) return;
-    
-    setCartItems(prevItems => 
-      prevItems.map(item => 
+
+    setCartItems((prevItems) =>
+      prevItems.map((item) =>
         item.id === productId ? { ...item, quantity: newQuantity } : item
       )
     );
@@ -69,7 +71,12 @@ export const CartProvider = ({ children }) => {
 
   // Calculate cart totals
   const getCartTotal = () => {
-    return cartItems.reduce((total, item) => total + item.price * item.quantity, 0);
+    return cartItems.reduce((total, item) => {
+      // Use discount price if available, otherwise use regular price
+      const priceToUse =
+        item.discountPrice !== undefined ? item.discountPrice : item.price;
+      return total + priceToUse * item.quantity;
+    }, 0);
   };
 
   const cartContextValue = {

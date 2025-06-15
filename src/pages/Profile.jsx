@@ -534,11 +534,6 @@ const Profile = () => {
                     icon: <FiCreditCard />,
                     label: "Payment Methods",
                   },
-                  {
-                    id: "preferences",
-                    icon: <FiSettings />,
-                    label: "Preferences",
-                  },
                 ].map((tab) => (
                   <button
                     key={tab.id}
@@ -1913,107 +1908,6 @@ const Profile = () => {
               </motion.div>
             )}
             {/* Preferences Tab */}
-            {activeTab === "preferences" && (
-              <motion.div
-                initial={{ opacity: 0 }}
-                animate={{ opacity: 1 }}
-                transition={{ duration: 0.3 }}
-              >
-                <div className="bg-white rounded-xl shadow-sm overflow-hidden">
-                  <div className="border-b border-gray-100 p-6">
-                    <h2 className="text-xl font-semibold text-gray-800 flex items-center gap-2">
-                      <FiSettings className="text-indigo-600" />
-                      Preferences
-                    </h2>
-                  </div>
-                  <div className="p-6">
-                    <div className="space-y-8">
-                      {/* Language Preference */}
-                      <div>
-                        <h3 className="font-medium text-gray-800 mb-4">
-                          Language
-                        </h3>
-                        <select className="w-full md:w-1/3 px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 focus:outline-none">
-                          <option value="en">English</option>
-                          <option value="es">Español</option>
-                          <option value="fr">Français</option>
-                          <option value="de">Deutsch</option>
-                        </select>
-                      </div>
-
-                      {/* Theme Preference */}
-                      <div>
-                        <h3 className="font-medium text-gray-800 mb-4">
-                          Theme
-                        </h3>
-                        <div className="flex gap-4 flex-wrap">
-                          {["Light", "Dark", "System"].map((theme, i) => (
-                            <div
-                              key={i}
-                              className={`border ${
-                                i === 0
-                                  ? "border-indigo-500 bg-indigo-50"
-                                  : "border-gray-200"
-                              } rounded-lg p-4 px-6 cursor-pointer hover:border-indigo-300 transition-colors`}
-                            >
-                              <div className="flex items-center gap-2">
-                                <div
-                                  className={`w-4 h-4 rounded-full border ${
-                                    i === 0
-                                      ? "border-indigo-600"
-                                      : "border-gray-400"
-                                  } flex items-center justify-center`}
-                                >
-                                  {i === 0 && (
-                                    <div className="w-2 h-2 rounded-full bg-indigo-600"></div>
-                                  )}
-                                </div>
-                                <span>{theme}</span>
-                              </div>
-                            </div>
-                          ))}
-                        </div>
-                      </div>
-
-                      {/* Notification Preferences */}
-                      <div>
-                        <h3 className="font-medium text-gray-800 mb-4">
-                          Notification Preferences
-                        </h3>
-                        <div className="space-y-3">
-                          {[
-                            "Push notifications",
-                            "Browser notifications",
-                            "SMS notifications",
-                          ].map((notif, i) => (
-                            <div
-                              key={i}
-                              className="flex items-center justify-between p-4 rounded-lg border border-gray-100 hover:border-indigo-100 transition-colors"
-                            >
-                              <span className="font-medium text-gray-700">
-                                {notif}
-                              </span>
-                              <label className="relative inline-flex items-center cursor-pointer">
-                                <input
-                                  type="checkbox"
-                                  defaultChecked={i !== 2}
-                                  className="sr-only peer"
-                                />
-                                <div className="w-11 h-6 bg-gray-200 rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-indigo-600"></div>
-                              </label>
-                            </div>
-                          ))}
-                        </div>
-                      </div>
-
-                      <button className="px-6 py-2.5 bg-indigo-600 text-white rounded-lg font-medium hover:bg-indigo-700 transition w-full md:w-auto">
-                        Save Preferences
-                      </button>
-                    </div>
-                  </div>
-                </div>
-              </motion.div>
-            )}{" "}
           </div>
         </div>
       </div>
