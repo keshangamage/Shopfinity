@@ -18,13 +18,27 @@ export const CartProvider = ({ children }) => {
     }
   });
 
+  // Save cart items to localStorage whenever they change
   useEffect(() => {
     try {
       localStorage.setItem("shopfinityCart", JSON.stringify(cartItems));
+      console.log("Cart saved to localStorage:", cartItems);
     } catch (error) {
       console.error("Error saving cart to localStorage:", error);
     }
   }, [cartItems]);
+
+  // Function to load cart from localStorage
+  const loadCartFromStorage = () => {
+    try {
+      const savedCart = localStorage.getItem("shopfinityCart");
+      if (savedCart) {
+        setCartItems(JSON.parse(savedCart));
+      }
+    } catch (error) {
+      console.error("Error loading cart from localStorage:", error);
+    }
+  };
 
   // Add item to cart
   const addToCart = (product, quantity = 1) => {
@@ -86,7 +100,12 @@ export const CartProvider = ({ children }) => {
     updateQuantity,
     clearCart,
     getCartTotal,
+    loadCartFromStorage,
   };
+
+  useEffect(() => {
+    loadCartFromStorage();
+  }, []);
 
   return (
     <CartContext.Provider value={cartContextValue}>

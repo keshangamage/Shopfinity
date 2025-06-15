@@ -721,53 +721,122 @@ const Profile = () => {
                   <div className="bg-white rounded-xl shadow-sm overflow-hidden">
                     <div className="border-b border-gray-100 p-6">
                       <h2 className="text-xl font-semibold text-gray-800 flex items-center gap-2">
-                        <FiAlertCircle className="text-indigo-600" />
-                        Recent Activity
+                        <FiPackage className="text-indigo-600" />
+                        Your Dashboard
                       </h2>
+                      <p className="text-sm text-gray-500 mt-1">
+                        Account summary
+                      </p>
                     </div>
                     <div className="p-6">
-                      <div className="relative">
-                        <div className="absolute left-4 top-0 bottom-0 w-0.5 bg-gray-100"></div>
-
-                        {[
-                          {
-                            date: "June 5",
-                            event: "Changed account password",
-                            time: "11:32 AM",
-                          },
-                          {
-                            date: "June 3",
-                            event: "Purchased 3 items",
-                            time: "02:14 PM",
-                          },
-                          {
-                            date: "May 29",
-                            event: "Updated shipping address",
-                            time: "09:45 AM",
-                          },
-                          {
-                            date: "May 24",
-                            event: "Signed in from new device",
-                            time: "07:20 PM",
-                          },
-                        ].map((activity, i) => (
-                          <div key={i} className="pl-8 pb-6 relative">
-                            <div className="absolute left-[14px] top-1 w-2 h-2 rounded-full bg-indigo-600 border-2 border-white"></div>
-                            <p className="text-xs text-gray-500 mb-1">
-                              {activity.date} • {activity.time}
-                            </p>
-                            <p className="text-gray-800">{activity.event}</p>
+                      <div className="grid grid-cols-2 gap-4">
+                        {/* Order Status Summary */}
+                        <div className="rounded-lg bg-gradient-to-br from-indigo-50 to-violet-50 p-4">
+                          <div className="flex items-center gap-2 mb-2">
+                            <FiPackage className="text-indigo-600" />
+                            <h3 className="font-medium text-indigo-800">
+                              Orders
+                            </h3>
                           </div>
-                        ))}
-
-                        <div className="pl-8 opacity-50">
-                          <a
-                            href="#"
-                            className="text-indigo-600 text-sm hover:text-indigo-800 flex items-center gap-1"
+                          <div className="flex flex-col gap-1">
+                            <p className="text-2xl font-semibold text-indigo-700">
+                              {orders.length}
+                            </p>
+                            <p className="text-xs text-indigo-600">
+                              {
+                                orders.filter(
+                                  (order) =>
+                                    order.status === "processing" ||
+                                    order.status === "shipped"
+                                ).length
+                              }{" "}
+                              active orders
+                            </p>
+                          </div>
+                          <Link
+                            to="/orders"
+                            className="text-xs text-indigo-700 mt-2 inline-block hover:underline"
                           >
-                            View all activity{" "}
-                            <FiArrowRight className="h-3 w-3" />
-                          </a>
+                            View order history
+                          </Link>
+                        </div>
+
+                        {/* Saved Items */}
+                        <div className="rounded-lg bg-gradient-to-br from-rose-50 to-amber-50 p-4">
+                          <div className="flex items-center gap-2 mb-2">
+                            <FiHome className="text-rose-600" />
+                            <h3 className="font-medium text-rose-800">
+                              Saved Items
+                            </h3>
+                          </div>
+                          <div className="flex flex-col gap-1">
+                            <p className="text-2xl font-semibold text-rose-700">
+                              {savedItems.length}
+                            </p>
+                            <p className="text-xs text-rose-600">
+                              Items in your wishlist
+                            </p>
+                          </div>
+                          <Link
+                            to="/saved-items"
+                            className="text-xs text-rose-700 mt-2 inline-block hover:underline"
+                          >
+                            View saved items
+                          </Link>
+                        </div>
+
+                        {/* Addresses */}
+                        <div className="rounded-lg bg-gradient-to-br from-emerald-50 to-teal-50 p-4">
+                          <div className="flex items-center gap-2 mb-2">
+                            <FiMapPin className="text-emerald-600" />
+                            <h3 className="font-medium text-emerald-800">
+                              Addresses
+                            </h3>
+                          </div>
+                          <div className="flex flex-col gap-1">
+                            <p className="text-2xl font-semibold text-emerald-700">
+                              {addresses.length}
+                            </p>
+                            <p className="text-xs text-emerald-600">
+                              Saved shipping addresses
+                            </p>
+                          </div>
+                          <button
+                            onClick={() => {
+                              setActiveTab("addresses");
+                              setShowAddressForm(true);
+                            }}
+                            className="text-xs text-emerald-700 mt-2 inline-block hover:underline"
+                          >
+                            Add new address
+                          </button>
+                        </div>
+
+                        {/* Payment Methods */}
+                        <div className="rounded-lg bg-gradient-to-br from-amber-50 to-orange-50 p-4">
+                          <div className="flex items-center gap-2 mb-2">
+                            <FiCreditCard className="text-amber-600" />
+                            <h3 className="font-medium text-amber-800">
+                              Payment Methods
+                            </h3>
+                          </div>
+                          <div className="flex flex-col gap-1">
+                            <p className="text-2xl font-semibold text-amber-700">
+                              {paymentMethods.length}
+                            </p>
+                            <p className="text-xs text-amber-600">
+                              Saved payment cards
+                            </p>
+                          </div>
+                          <button
+                            onClick={() => {
+                              setActiveTab("payment");
+                              setShowPaymentForm(true);
+                            }}
+                            className="text-xs text-amber-700 mt-2 inline-block hover:underline"
+                          >
+                            Add payment method
+                          </button>
                         </div>
                       </div>
                     </div>
