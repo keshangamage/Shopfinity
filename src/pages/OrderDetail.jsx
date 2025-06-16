@@ -1,15 +1,28 @@
 import React, { useEffect, useState } from "react";
 import { useParams, useNavigate } from "react-router-dom";
 import { useOrder } from "../utils/OrderContext.jsx";
-import { FaArrowLeft, FaBox, FaTruck, FaMapMarkerAlt, FaCalendar, FaTimes } from "react-icons/fa";
+import {
+  FaArrowLeft,
+  FaBox,
+  FaTruck,
+  FaMapMarkerAlt,
+  FaCalendar,
+  FaTimes,
+  FaCheck,
+  FaShippingFast,
+  FaCircle,
+  FaClipboard,
+} from "react-icons/fa";
 
 const OrderDetail = () => {
   const { orderId } = useParams();
-  const { getOrderById, cancelOrder } = useOrder();
+  const { getOrderById, cancelOrder, trackOrder } = useOrder();
   const navigate = useNavigate();
   const [order, setOrder] = useState(null);
   const [showCancelModal, setShowCancelModal] = useState(false);
-  
+  const [showTrackingModal, setShowTrackingModal] = useState(false);
+  const [trackingInfo, setTrackingInfo] = useState(null);
+
   useEffect(() => {
     const orderData = getOrderById(orderId);
     if (orderData) {
@@ -30,6 +43,14 @@ const OrderDetail = () => {
     setShowCancelModal(false);
   };
 
+  const handleTrackOrder = () => {
+    if (order.status === "Processing" || order.status === "Delivered") {
+      const tracking = trackOrder(orderId);
+      setTrackingInfo(tracking);
+      setShowTrackingModal(true);
+    }
+  };
+
   if (!order) {
     return (
       <div className="max-w-5xl mx-auto px-4 py-16 text-center">
@@ -39,23 +60,22 @@ const OrderDetail = () => {
     );
   }
 
-  
   const orderDate = new Date(order.timestamp);
   const deliveryDate = new Date(orderDate);
   deliveryDate.setDate(deliveryDate.getDate() + 7);
-  
+
   // Format delivery date
-  const formattedDeliveryDate = deliveryDate.toLocaleDateString('en-US', {
-    year: 'numeric',
-    month: 'long', 
-    day: 'numeric'
+  const formattedDeliveryDate = deliveryDate.toLocaleDateString("en-US", {
+    year: "numeric",
+    month: "long",
+    day: "numeric",
   });
 
   return (
     <div className="max-w-5xl mx-auto px-4 py-10">
       {/* Header with Back Button */}
       <div className="mb-8">
-        <button 
+        <button
           onClick={() => navigate("/orders")}
           className="flex items-center text-gray-600 hover:text-teal-600 transition mb-4"
         >
@@ -63,19 +83,25 @@ const OrderDetail = () => {
         </button>
         <div className="flex flex-col md:flex-row justify-between items-start md:items-center">
           <div>
-            <h1 className="text-3xl font-bold text-gray-800">Order {order.id}</h1>
+            <h1 className="text-3xl font-bold text-gray-800">
+              Order {order.id}
+            </h1>
             <p className="text-gray-500 mt-1">Placed on {order.date}</p>
           </div>
-          <span className={`mt-3 md:mt-0 px-4 py-2 inline-flex items-center rounded-full text-sm font-medium ${
-            order.status === "Delivered" 
-              ? "bg-green-100 text-green-800" 
-              : order.status === "Processing" 
-              ? "bg-yellow-100 text-yellow-800" 
-              : order.status === "Cancelled"
-              ? "bg-red-100 text-red-800"
-              : "bg-gray-100 text-gray-800"
-          }`}>
-            {order.status === "Processing" && <div className="mr-2 h-2 w-2 rounded-full bg-yellow-500 animate-pulse"></div>}
+          <span
+            className={`mt-3 md:mt-0 px-4 py-2 inline-flex items-center rounded-full text-sm font-medium ${
+              order.status === "Delivered"
+                ? "bg-green-100 text-green-800"
+                : order.status === "Processing"
+                ? "bg-yellow-100 text-yellow-800"
+                : order.status === "Cancelled"
+                ? "bg-red-100 text-red-800"
+                : "bg-gray-100 text-gray-800"
+            }`}
+          >
+            {order.status === "Processing" && (
+              <div className="mr-2 h-2 w-2 rounded-full bg-yellow-500 animate-pulse"></div>
+            )}
             {order.status === "Delivered" && <FaTruck className="mr-2" />}
             {order.status === "Cancelled" && <FaTimes className="mr-2" />}
             {order.status}
@@ -84,7 +110,6 @@ const OrderDetail = () => {
       </div>
 
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
-        
         <div className="lg:col-span-2 space-y-6">
           {/* Order Items */}
           <div className="bg-white rounded-xl shadow-sm border border-gray-100 overflow-hidden">
@@ -93,20 +118,29 @@ const OrderDetail = () => {
                 <div className="h-8 w-8 rounded-full bg-teal-100 flex items-center justify-center mr-3">
                   <FaBox className="text-teal-600 text-sm" />
                 </div>
-                <h3 className="text-lg font-semibold text-gray-800">Order Items</h3>
+                <h3 className="text-lg font-semibold text-gray-800">
+                  Order Items
+                </h3>
               </div>
             </div>
-            
+
             <div className="divide-y divide-gray-100">
               {order.items.map((item) => (
-                <div key={item.id} className="p-5 flex items-start">                  <div className="h-20 w-20 rounded-lg bg-gray-100 overflow-hidden flex-shrink-0">
-                    <img 
-                      src={item.image.startsWith('/') ? item.image : `/${item.image}`} 
+                <div key={item.id} className="p-5 flex items-start">
+                  {" "}
+                  <div className="h-20 w-20 rounded-lg bg-gray-100 overflow-hidden flex-shrink-0">
+                    <img
+                      src={
+                        item.image.startsWith("/")
+                          ? item.image
+                          : `/${item.image}`
+                      }
                       alt={item.name}
                       className="w-full h-full object-cover"
                       onError={(e) => {
                         e.target.onerror = null;
-                        e.target.src = 'https://via.placeholder.com/100x100.png?text=No+Image';
+                        e.target.src =
+                          "https://via.placeholder.com/100x100.png?text=No+Image";
                       }}
                     />
                   </div>
@@ -115,12 +149,21 @@ const OrderDetail = () => {
                     <div className="flex justify-between mt-2">
                       <div>
                         <p className="text-sm text-gray-500">
-                          Quantity: <span className="font-medium text-gray-700">{item.quantity}</span>
-                        </p>                        <p className="text-sm text-gray-500">
-                          Price: <span className="font-medium text-gray-700">${item.price.toFixed(2)}</span>
+                          Quantity:{" "}
+                          <span className="font-medium text-gray-700">
+                            {item.quantity}
+                          </span>
+                        </p>{" "}
+                        <p className="text-sm text-gray-500">
+                          Price:{" "}
+                          <span className="font-medium text-gray-700">
+                            ${item.price.toFixed(2)}
+                          </span>
                         </p>
                       </div>
-                      <p className="font-medium">${(item.price * item.quantity).toFixed(2)}</p>
+                      <p className="font-medium">
+                        ${(item.price * item.quantity).toFixed(2)}
+                      </p>
                     </div>
                   </div>
                 </div>
@@ -134,27 +177,39 @@ const OrderDetail = () => {
               <div className="h-8 w-8 rounded-full bg-purple-100 flex items-center justify-center mr-3">
                 <FaTruck className="text-purple-600 text-sm" />
               </div>
-              <h3 className="text-lg font-semibold text-gray-800">Delivery Information</h3>
+              <h3 className="text-lg font-semibold text-gray-800">
+                Delivery Information
+              </h3>
             </div>
-            
+
             <div className="pl-11">
               <div className="mb-5">
                 <p className="text-gray-600 mb-1">Expected Delivery Date</p>
                 <div className="flex items-center">
                   <FaCalendar className="text-gray-400 mr-2" />
-                  <p className="font-medium text-gray-800">{formattedDeliveryDate}</p>
+                  <p className="font-medium text-gray-800">
+                    {formattedDeliveryDate}
+                  </p>
                 </div>
               </div>
-              
+
               <div>
                 <p className="text-gray-600 mb-1">Shipping Address</p>
                 <div className="flex items-start">
                   <FaMapMarkerAlt className="text-gray-400 mr-2 mt-1" />
                   <div>
-                    <p className="font-medium text-gray-800">{order.shippingAddress.name}</p>
-                    <p className="text-gray-600">{order.shippingAddress.address}</p>
-                    <p className="text-gray-600">{order.shippingAddress.city}</p>
-                    <p className="text-gray-600">Phone: {order.shippingAddress.phone}</p>
+                    <p className="font-medium text-gray-800">
+                      {order.shippingAddress.name}
+                    </p>
+                    <p className="text-gray-600">
+                      {order.shippingAddress.address}
+                    </p>
+                    <p className="text-gray-600">
+                      {order.shippingAddress.city}
+                    </p>
+                    <p className="text-gray-600">
+                      Phone: {order.shippingAddress.phone}
+                    </p>
                   </div>
                 </div>
               </div>
@@ -166,39 +221,57 @@ const OrderDetail = () => {
         <div className="space-y-6">
           <div className="bg-white rounded-xl shadow-sm border border-gray-100">
             <div className="p-6 border-b border-gray-100">
-              <h3 className="text-lg font-semibold text-gray-800">Order Summary</h3>
+              <h3 className="text-lg font-semibold text-gray-800">
+                Order Summary
+              </h3>
             </div>
-            
+
             <div className="p-6 space-y-4">
               <div className="flex justify-between text-sm">
                 <span className="text-gray-600">Subtotal</span>
                 <span className="font-medium">${order.total}</span>
               </div>
-              
+
               <div className="flex justify-between text-sm">
                 <span className="text-gray-600">Shipping</span>
                 <span className="text-green-600 font-medium">Free</span>
               </div>
-              
+
               <div className="pt-4 border-t border-gray-100 flex justify-between">
                 <span className="font-medium">Total</span>
                 <span className="font-bold text-xl">${order.total}</span>
               </div>
-              
+
               <div className="pt-4 mt-4 border-t border-gray-100">
                 {order.status === "Processing" && (
-                  <button 
+                  <button
                     onClick={handleCancelOrder}
                     className="w-full bg-red-600 hover:bg-red-700 text-white py-3 rounded-lg font-medium transition mb-3 flex items-center justify-center"
                   >
                     <FaTimes className="mr-2" /> Cancel Order
                   </button>
                 )}
-                
-                <button className={`w-full ${order.status === "Processing" ? "bg-teal-600 hover:bg-teal-700 text-white" : "bg-gray-300 text-gray-500 cursor-not-allowed"} py-3 rounded-lg font-medium transition`}>
+
+                <button
+                  onClick={handleTrackOrder}
+                  className={`w-full ${
+                    order.status === "Processing" ||
+                    order.status === "Delivered"
+                      ? "bg-teal-600 hover:bg-teal-700 text-white"
+                      : "bg-gray-300 text-gray-500 cursor-not-allowed"
+                  } py-3 rounded-lg font-medium transition flex items-center justify-center`}
+                  disabled={
+                    order.status !== "Processing" &&
+                    order.status !== "Delivered"
+                  }
+                >
+                  {order.status === "Processing" && (
+                    <FaShippingFast className="mr-2" />
+                  )}
+                  {order.status === "Delivered" && <FaCheck className="mr-2" />}
                   Track Order
                 </button>
-                
+
                 <button className="w-full mt-3 border border-gray-300 hover:border-gray-400 text-gray-700 py-3 rounded-lg font-medium transition">
                   Need Help?
                 </button>
@@ -208,26 +281,143 @@ const OrderDetail = () => {
         </div>
       </div>
 
-      {/* Cancel Order Confirmation Modal */}
+      {/* Cancel Order Confirmation */}
       {showCancelModal && (
         <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4">
           <div className="bg-white rounded-xl shadow-lg p-6 max-w-md w-full animate-fade-in">
-            <h3 className="text-xl font-semibold text-gray-800 mb-3">Cancel Order</h3>
+            <h3 className="text-xl font-semibold text-gray-800 mb-3">
+              Cancel Order
+            </h3>
             <p className="text-gray-600 mb-6">
-              Are you sure you want to cancel this order? This action cannot be undone.
+              Are you sure you want to cancel this order? This action cannot be
+              undone.
             </p>
             <div className="flex justify-end space-x-3">
-              <button 
+              <button
                 onClick={() => setShowCancelModal(false)}
                 className="px-4 py-2 border border-gray-300 text-gray-700 rounded-lg hover:bg-gray-50 font-medium transition-colors"
               >
                 Keep Order
               </button>
-              <button 
+              <button
                 onClick={confirmCancelOrder}
                 className="px-4 py-2 bg-red-600 text-white rounded-lg hover:bg-red-700 font-medium transition-colors"
               >
                 Yes, Cancel Order
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* Order Tracking*/}
+      {showTrackingModal && trackingInfo && (
+        <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4">
+          <div className="bg-white rounded-xl shadow-lg p-6 max-w-2xl w-full animate-fade-in overflow-y-auto max-h-[90vh]">
+            <div className="flex justify-between items-center mb-6">
+              <h3 className="text-xl font-semibold text-gray-800">
+                Track Order
+              </h3>
+              <button
+                onClick={() => setShowTrackingModal(false)}
+                className="text-gray-400 hover:text-gray-600 transition"
+              >
+                <FaTimes size={20} />
+              </button>
+            </div>
+
+            <div className="mb-6">
+              <div className="flex items-center justify-between mb-4">
+                <span className="text-sm text-gray-500">
+                  Order ID: {order.id}
+                </span>
+                <div className="flex items-center">
+                  <span className="text-sm font-medium mr-2">Tracking ID:</span>
+                  <div className="flex items-center bg-gray-100 px-3 py-1 rounded-md">
+                    <span className="text-sm font-medium text-gray-700 mr-2">
+                      {trackingInfo.trackingId}
+                    </span>
+                    <button
+                      onClick={() => {
+                        navigator.clipboard.writeText(trackingInfo.trackingId);
+                      }}
+                      className="text-gray-500 hover:text-teal-600"
+                      title="Copy tracking ID"
+                    >
+                      <FaClipboard size={14} />
+                    </button>
+                  </div>
+                </div>
+              </div>
+
+              <div
+                className={`inline-flex items-center px-3 py-1 rounded-full text-sm font-medium ${
+                  trackingInfo.status === "Delivered"
+                    ? "bg-green-100 text-green-800"
+                    : trackingInfo.status === "Processing"
+                    ? "bg-yellow-100 text-yellow-800"
+                    : trackingInfo.status === "Cancelled"
+                    ? "bg-red-100 text-red-800"
+                    : "bg-gray-100 text-gray-800"
+                }`}
+              >
+                {trackingInfo.status === "Processing" && (
+                  <div className="mr-2 h-2 w-2 rounded-full bg-yellow-500 animate-pulse"></div>
+                )}
+                {trackingInfo.status === "Delivered" && (
+                  <FaTruck className="mr-2" />
+                )}
+                {trackingInfo.status === "Cancelled" && (
+                  <FaTimes className="mr-2" />
+                )}
+                {trackingInfo.status}
+              </div>
+            </div>
+
+            <div className="relative pb-12">
+              {trackingInfo.timeline.map((step, index) => (
+                <div key={index} className="flex relative pb-8">
+                  {index !== trackingInfo.timeline.length - 1 && (
+                    <div className="absolute left-4 top-5 -ml-px h-full w-0.5 bg-gray-200" />
+                  )}
+
+                  <div className="flex items-center justify-center relative">
+                    <span
+                      className={`h-8 w-8 rounded-full flex items-center justify-center z-10 ${
+                        step.completed ? "bg-teal-500" : "bg-gray-200"
+                      }`}
+                    >
+                      {step.completed ? (
+                        <FaCheck className="text-white text-sm" />
+                      ) : (
+                        <FaCircle className="text-gray-400 text-[8px]" />
+                      )}
+                    </span>
+                  </div>
+
+                  <div className="ml-4 flex-grow">
+                    <h4
+                      className={`font-medium ${
+                        step.completed ? "text-gray-800" : "text-gray-500"
+                      }`}
+                    >
+                      {step.status}
+                    </h4>
+                    <time className="block text-sm text-gray-500 mb-1">
+                      {step.date}
+                    </time>
+                    <p className="text-sm text-gray-600">{step.description}</p>
+                  </div>
+                </div>
+              ))}
+            </div>
+
+            <div className="mt-6 pt-6 border-t border-gray-100">
+              <button
+                onClick={() => setShowTrackingModal(false)}
+                className="w-full bg-teal-600 hover:bg-teal-700 text-white py-3 rounded-lg font-medium transition"
+              >
+                Close
               </button>
             </div>
           </div>

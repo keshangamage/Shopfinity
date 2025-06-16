@@ -112,7 +112,18 @@ const CategoryPage = () => {
               <div className="p-4">
                 <h2 className="text-lg font-semibold">{product.name}</h2>
                 <p className="text-gray-600 mt-2">
-                  ${product.price.toFixed(2)}
+                  {product.discountPrice ? (
+                    <>
+                      <span className="line-through text-gray-400 mr-2">
+                        ${product.price.toFixed(2)}
+                      </span>
+                      <span className="text-red-500 font-medium">
+                        ${product.discountPrice.toFixed(2)}
+                      </span>
+                    </>
+                  ) : (
+                    `$${product.price.toFixed(2)}`
+                  )}
                 </p>
                 <button
                   onClick={(e) => {
