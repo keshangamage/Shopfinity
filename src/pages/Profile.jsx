@@ -6,6 +6,7 @@ import { useAddress } from "../utils/AddressContext.jsx";
 import { usePayment } from "../utils/PaymentContext.jsx";
 import { useSavedItems } from "../utils/SavedItemsContext.jsx";
 import { useCart } from "../utils/CartContext.jsx";
+import { useRewards } from "../utils/RewardsContext.jsx";
 import {
   FiUser,
   FiMail,
@@ -31,6 +32,11 @@ import { motion } from "framer-motion";
 const Profile = () => {
   const { currentUser, updateUserProfile, resetPassword, logout } = useAuth();
   const { orders } = useOrder();
+  const {
+    rewardsPoints,
+    formattedPoints,
+    loading: rewardsLoading,
+  } = useRewards();
   const {
     addresses,
     addAddress,
@@ -456,8 +462,9 @@ const Profile = () => {
             },
             {
               label: "Rewards Points",
-              value: "1,240",
+              value: rewardsLoading ? "Loading..." : formattedPoints,
               icon: <FiUser className="text-amber-600" />,
+              tabId: "rewards",
             },
           ].map((stat, i) => (
             <motion.div
@@ -527,6 +534,11 @@ const Profile = () => {
                     id: "savedItems",
                     icon: <FiCheckCircle />,
                     label: "Saved Items",
+                  },
+                  {
+                    id: "rewards",
+                    icon: <FiUser />,
+                    label: "Rewards",
                   },
                   { id: "addresses", icon: <FiMapPin />, label: "Addresses" },
                   {
@@ -845,6 +857,112 @@ const Profile = () => {
               </motion.div>
             )}
             {/* Security Content */}
+            {activeTab === "rewards" && (
+              <motion.div
+                initial={{ opacity: 0 }}
+                animate={{ opacity: 1 }}
+                transition={{ duration: 0.3 }}
+                className="space-y-6"
+              >
+                <div className="bg-white rounded-xl shadow-sm overflow-hidden">
+                  <div className="border-b border-gray-100 p-6">
+                    <h2 className="text-xl font-semibold text-gray-800 flex items-center gap-2">
+                      <FiUser className="text-amber-600" />
+                      Rewards Program
+                    </h2>
+                  </div>
+                  <div className="p-6">
+                    <div className="flex flex-col sm:flex-row sm:items-center gap-6 p-6 bg-gradient-to-r from-amber-50 to-amber-100/50 rounded-xl border border-amber-100">
+                      <div className="flex-shrink-0">
+                        <div className="bg-amber-100 p-4 rounded-full">
+                          <FiUser className="text-amber-600 text-2xl" />
+                        </div>
+                      </div>
+                      <div className="flex-1">
+                        <h3 className="font-medium text-lg mb-2">
+                          Your Rewards Balance
+                        </h3>
+                        <div className="flex items-center gap-2 mb-2">
+                          <span className="text-3xl font-bold text-amber-600">
+                            {rewardsLoading ? "Loading..." : formattedPoints}
+                          </span>
+                          <span className="text-gray-500">points</span>
+                        </div>
+                        <p className="text-gray-600 mb-4">
+                          Earn points with every purchase and redeem them for
+                          exclusive discounts and special offers.
+                        </p>
+                        <div className="space-y-3">
+                          <div className="flex justify-between items-center p-3 bg-white rounded-lg border border-gray-100">
+                            <span className="font-medium">Bronze Level</span>
+                            <span className="text-amber-600 font-medium">
+                              0 - 1,000 points
+                            </span>
+                          </div>
+                          <div className="flex justify-between items-center p-3 bg-white rounded-lg border border-gray-100">
+                            <span className="font-medium">Silver Level</span>
+                            <span className="text-amber-600 font-medium">
+                              1,001 - 5,000 points
+                            </span>
+                          </div>
+                          <div className="flex justify-between items-center p-3 bg-white rounded-lg border border-gray-100">
+                            <span className="font-medium">Gold Level</span>
+                            <span className="text-amber-600 font-medium">
+                              5,001+ points
+                            </span>
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+
+                    <div className="mt-8">
+                      <h3 className="text-xl font-semibold mb-4">
+                        How to Earn Rewards
+                      </h3>
+                      <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                        <div className="p-4 bg-white rounded-xl border border-gray-100 shadow-sm">
+                          <h4 className="font-medium mb-2 flex items-center gap-2">
+                            <FiPackage className="text-indigo-500" />
+                            Make a Purchase
+                          </h4>
+                          <p className="text-gray-600 text-sm">
+                            Earn 1 point for every $1 spent on our platform.
+                          </p>
+                        </div>
+                        <div className="p-4 bg-white rounded-xl border border-gray-100 shadow-sm">
+                          <h4 className="font-medium mb-2 flex items-center gap-2">
+                            <FiCheckCircle className="text-emerald-500" />
+                            Write Reviews
+                          </h4>
+                          <p className="text-gray-600 text-sm">
+                            Earn 50 points for every verified product review.
+                          </p>
+                        </div>
+                        <div className="p-4 bg-white rounded-xl border border-gray-100 shadow-sm">
+                          <h4 className="font-medium mb-2 flex items-center gap-2">
+                            <FiUser className="text-purple-500" />
+                            Refer Friends
+                          </h4>
+                          <p className="text-gray-600 text-sm">
+                            Earn 200 points when a friend makes their first
+                            purchase.
+                          </p>
+                        </div>
+                        <div className="p-4 bg-white rounded-xl border border-gray-100 shadow-sm">
+                          <h4 className="font-medium mb-2 flex items-center gap-2">
+                            <FiHome className="text-blue-500" />
+                            Create an Account
+                          </h4>
+                          <p className="text-gray-600 text-sm">
+                            Get 100 welcome points when you sign up.
+                          </p>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </motion.div>
+            )}
             {activeTab === "security" && (
               <motion.div
                 initial={{ opacity: 0 }}

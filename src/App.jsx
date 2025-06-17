@@ -18,6 +18,7 @@ import { OrderProvider } from "./utils/OrderContext.jsx";
 import { AddressProvider } from "./utils/AddressContext.jsx";
 import { PaymentProvider } from "./utils/PaymentContext.jsx";
 import { SavedItemsProvider } from "./utils/SavedItemsContext.jsx";
+import { RewardsProvider } from "./utils/RewardsContext.jsx";
 import ProtectedRoute from "./components/ProtectedRoute";
 
 function App() {
@@ -74,63 +75,65 @@ function App() {
               <AddressProvider>
                 <SavedItemsProvider>
                   <PaymentProvider>
-                    <Router>
-                      <Navbar />
-                      <Routes>
-                        <Route path="/" element={<Home />} />
-                        <Route path="/login" element={<Login />} />
-                        <Route path="/register" element={<Register />} />
-                        <Route
-                          path="/cart"
-                          element={
-                            <ProtectedRoute>
-                              <Cart />
-                            </ProtectedRoute>
-                          }
-                        />
-                        <Route
-                          path="/checkout"
-                          element={
-                            <ProtectedRoute>
-                              <Checkout />
-                            </ProtectedRoute>
-                          }
-                        />
-                        <Route
-                          path="/product/:id"
-                          element={<ProductDetail />}
-                        />
-                        <Route
-                          path="/categories/:categoryName"
-                          element={<CategoryPage />}
-                        />
-                        <Route path="/search" element={<SearchPage />} />
-                        <Route
-                          path="/profile"
-                          element={
-                            <ProtectedRoute>
-                              <Profile />
-                            </ProtectedRoute>
-                          }
-                        />
-                        <Route
-                          path="/orders"
-                          element={
-                            <ProtectedRoute>
-                              <Orders />
-                            </ProtectedRoute>
-                          }
-                        />
-                        <Route
-                          path="/orders/:orderId"
-                          element={
-                            <ProtectedRoute>
-                              <OrderDetail />
-                            </ProtectedRoute>
-                          }
-                        />
-                      </Routes>
-                    </Router>
+                    <RewardsProvider>
+                      <Router>
+                        <Navbar />
+                        <Routes>
+                          <Route path="/" element={<Home />} />
+                          <Route path="/login" element={<Login />} />
+                          <Route path="/register" element={<Register />} />
+                          <Route
+                            path="/cart"
+                            element={
+                              <ProtectedRoute>
+                                <Cart />
+                              </ProtectedRoute>
+                            }
+                          />
+                          <Route
+                            path="/checkout"
+                            element={
+                              <ProtectedRoute>
+                                <Checkout />
+                              </ProtectedRoute>
+                            }
+                          />
+                          <Route
+                            path="/product/:id"
+                            element={<ProductDetail />}
+                          />
+                          <Route
+                            path="/categories/:categoryName"
+                            element={<CategoryPage />}
+                          />
+                          <Route path="/search" element={<SearchPage />} />
+                          <Route
+                            path="/profile"
+                            element={
+                              <ProtectedRoute>
+                                <Profile />
+                              </ProtectedRoute>
+                            }
+                          />
+                          <Route
+                            path="/orders"
+                            element={
+                              <ProtectedRoute>
+                                <Orders />
+                              </ProtectedRoute>
+                            }
+                          />
+                          <Route
+                            path="/orders/:orderId"
+                            element={
+                              <ProtectedRoute>
+                                <OrderDetail />
+                              </ProtectedRoute>
+                            }
+                          />
+                        </Routes>
+                      </Router>
+                    </RewardsProvider>
                   </PaymentProvider>
                 </SavedItemsProvider>
               </AddressProvider>
