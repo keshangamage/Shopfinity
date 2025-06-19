@@ -69,26 +69,10 @@ const Profile = () => {
   const [editingAddress, setEditingAddress] = useState(null);
   const [showPaymentForm, setShowPaymentForm] = useState(false);
   const [editingPayment, setEditingPayment] = useState(null);
-  const [addressFormData, setAddressFormData] = useState({
-    name: "",
-    addressLine1: "",
-    addressLine2: "",
-    city: "",
-    state: "",
-    postalCode: "",
-    country: "United States",
-    addressType: "Home",
-  });
+  const [showChangeUserModal, setShowChangeUserModal] = useState(false);
+  const [newUserEmail, setNewUserEmail] = useState("");
+  const [changeUserError, setChangeUserError] = useState("");
 
-  const [paymentFormData, setPaymentFormData] = useState({
-    cardholderName: "",
-    cardNumber: "",
-    cardType: "Visa",
-    expiryMonth: "",
-    expiryYear: "",
-    cvv: "",
-    isDefault: false,
-  });
   const navigate = useNavigate();
 
   useEffect(() => {
@@ -340,6 +324,25 @@ const Profile = () => {
     });
   };
 
+  const handleChangeUser = async (e) => {
+    e.preventDefault();
+    setChangeUserError("");
+    setLoading(true);
+
+    try {
+      // Log out current user
+      await logout();
+
+      navigate(`/login?email=${encodeURIComponent(newUserEmail)}`);
+
+      setShowChangeUserModal(false);
+    } catch (error) {
+      setChangeUserError(`Failed to change user: ${error.message}`);
+    } finally {
+      setLoading(false);
+    }
+  };
+
   const maskCardNumber = (number) => {
     if (!number) return "";
     const lastFour = number.slice(-4);
@@ -418,6 +421,8 @@ const Profile = () => {
                 transition={{ delay: 0.5 }}
                 whileHover={{ scale: 1.1 }}
                 className="absolute bottom-0 right-0 bg-indigo-500 hover:bg-indigo-600 rounded-full p-1.5 border-2 border-white cursor-pointer z-20"
+                onClick={() => setShowChangeUserModal(true)}
+                title="Change User"
               >
                 <FiUserPlus className="h-4 w-4" />
               </motion.div>
@@ -2119,6 +2124,81 @@ const Profile = () => {
           </div>
         </div>
       </div>
+      {/* Change User Modal */}
+      {showChangeUserModal && (
+        <motion.div
+          initial={{ opacity: 0 }}
+          animate={{ opacity: 1 }}
+          exit={{ opacity: 0 }}
+          className="fixed inset-0 bg-black/50 flex items-center justify-center z-50 p-4"
+          onClick={() => setShowChangeUserModal(false)}
+        >
+          <motion.div
+            initial={{ scale: 0.9, opacity: 0 }}
+            animate={{ scale: 1, opacity: 1 }}
+            exit={{ scale: 0.9, opacity: 0 }}
+            className="bg-white rounded-xl shadow-xl max-w-md w-full p-6"
+            onClick={(e) => e.stopPropagation()}
+          >
+            <h2 className="text-2xl font-bold text-gray-800 mb-4">
+              Change User
+            </h2>
+            <p className="text-gray-600 mb-6">
+              Enter an email address to change to another user. You will be
+              logged out of your current account.
+            </p>
+
+            {changeUserError && (
+              <div className="bg-red-50 border border-red-200 text-red-700 px-4 py-3 rounded-lg mb-4">
+                {changeUserError}
+              </div>
+            )}
+
+            <form onSubmit={handleChangeUser}>
+              <div className="mb-4">
+                <label
+                  htmlFor="newUserEmail"
+                  className="block text-sm font-medium text-gray-700 mb-1"
+                >
+                  Email Address
+                </label>
+                <div className="relative">
+                  <span className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+                    <FiMail className="text-gray-400" />
+                  </span>
+                  <input
+                    type="email"
+                    id="newUserEmail"
+                    value={newUserEmail}
+                    onChange={(e) => setNewUserEmail(e.target.value)}
+                    className="pl-10 w-full py-2 px-4 border border-gray-300 rounded-lg focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500"
+                    placeholder="email@example.com"
+                    required
+                  />
+                </div>
+              </div>
+
+              <div className="flex justify-end gap-3 mt-6">
+                <button
+                  type="button"
+                  className="px-4 py-2 border border-gray-300 rounded-lg text-gray-700 hover:bg-gray-50"
+                  onClick={() => setShowChangeUserModal(false)}
+                >
+                  Cancel
+                </button>
+                <button
+                  type="submit"
+                  className="px-4 py-2 bg-indigo-600 text-white rounded-lg hover:bg-indigo-700 focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500 flex items-center gap-2"
+                  disabled={loading}
+                >
+                  {loading ? "Processing..." : "Change User"}
+                  {!loading && <FiArrowRight />}
+                </button>
+              </div>
+            </form>
+          </motion.div>
+        </motion.div>
+      )}
     </div>
   );
 };
