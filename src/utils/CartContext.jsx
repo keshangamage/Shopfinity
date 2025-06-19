@@ -1,4 +1,5 @@
 import React, { createContext, useContext, useState, useEffect } from "react";
+import { useAuth } from "./AuthContext.jsx";
 
 // Create a context for the cart
 const CartContext = createContext();
@@ -7,36 +8,40 @@ const CartContext = createContext();
 export const useCart = () => useContext(CartContext);
 
 export const CartProvider = ({ children }) => {
+  const { currentUser } = useAuth();
+  const userId = currentUser?.uid || "guest";
+
   // Get cart items from local storage or start with empty array
-  const [cartItems, setCartItems] = useState(() => {
-    try {
-      const savedCart = localStorage.getItem("shopfinityCart");
-      return savedCart ? JSON.parse(savedCart) : [];
-    } catch (error) {
-      console.error("Error loading cart from localStorage:", error);
-      return [];
-    }
-  });
+  const [cartItems, setCartItems] = useState([]);
+
+  useEffect(() => {
+    loadCartFromStorage();
+  }, [userId]);
 
   // Save cart items to localStorage whenever they change
   useEffect(() => {
     try {
-      localStorage.setItem("shopfinityCart", JSON.stringify(cartItems));
-      console.log("Cart saved to localStorage:", cartItems);
+      localStorage.setItem(
+        `shopfinity_cart_${userId}`,
+        JSON.stringify(cartItems)
+      );
     } catch (error) {
       console.error("Error saving cart to localStorage:", error);
     }
-  }, [cartItems]);
+  }, [cartItems, userId]);
 
   // Function to load cart from localStorage
   const loadCartFromStorage = () => {
     try {
-      const savedCart = localStorage.getItem("shopfinityCart");
+      const savedCart = localStorage.getItem(`shopfinity_cart_${userId}`);
       if (savedCart) {
         setCartItems(JSON.parse(savedCart));
+      } else {
+        setCartItems([]);
       }
     } catch (error) {
       console.error("Error loading cart from localStorage:", error);
+      setCartItems([]);
     }
   };
 
@@ -102,10 +107,6 @@ export const CartProvider = ({ children }) => {
     getCartTotal,
     loadCartFromStorage,
   };
-
-  useEffect(() => {
-    loadCartFromStorage();
-  }, []);
 
   return (
     <CartContext.Provider value={cartContextValue}>

@@ -1,7 +1,6 @@
 import React, { createContext, useContext, useState, useEffect } from "react";
-import * as AuthModule from "./AuthContext.jsx";
+import { useAuth } from "./AuthContext.jsx";
 
-const useAuth = AuthModule.useAuth || (() => ({ currentUser: null }));
 const OrderContext = createContext();
 
 // Custom hook to use the order context
@@ -11,26 +10,30 @@ export const OrderProvider = ({ children }) => {
   const { currentUser } = useAuth();
   const userId = currentUser?.uid || "guest";
 
-  // Get orders from local storage or start with empty array
-  const [orders, setOrders] = useState(() => {
+  // State for orders
+  const [orders, setOrders] = useState([]);
+
+  useEffect(() => {
+    loadOrdersFromStorage();
+  }, [userId]);
+
+  const loadOrdersFromStorage = () => {
     try {
       const savedOrders = localStorage.getItem(`shopfinity_orders_${userId}`);
-      return savedOrders ? JSON.parse(savedOrders) : [];
+      setOrders(savedOrders ? JSON.parse(savedOrders) : []);
     } catch (error) {
       console.error("Error loading orders from localStorage:", error);
-      return [];
+      setOrders([]);
     }
-  });
+  };
 
-  // Save orders to local storage whenever they change or user changes
+  // Save orders to local storage whenever they change
   useEffect(() => {
     try {
-      if (userId) {
-        localStorage.setItem(
-          `shopfinity_orders_${userId}`,
-          JSON.stringify(orders)
-        );
-      }
+      localStorage.setItem(
+        `shopfinity_orders_${userId}`,
+        JSON.stringify(orders)
+      );
     } catch (error) {
       console.error("Error saving orders to localStorage:", error);
     }

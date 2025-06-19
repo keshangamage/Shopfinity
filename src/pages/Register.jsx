@@ -15,23 +15,23 @@ const Register = () => {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-    
+
     if (password !== confirmPassword) {
       return setError("Passwords do not match");
     }
-    
+
     try {
       setError("");
       setLoading(true);
       const userCredential = await signup(email, password);
-      
+
       // Update profile with name
       if (name) {
         await updateUserProfile(userCredential.user, {
-          displayName: name
+          displayName: name,
         });
       }
-      
+
       navigate("/login");
     } catch (err) {
       setError("Failed to create an account");
@@ -40,7 +40,7 @@ const Register = () => {
       setLoading(false);
     }
   };
-  
+
   const handleGoogleSignIn = async () => {
     try {
       setError("");
@@ -58,17 +58,21 @@ const Register = () => {
   return (
     <div className="min-h-screen flex items-center justify-center bg-gray-100 px-4">
       <div className="w-full max-w-md bg-white rounded-2xl shadow-lg p-8">
-        <h2 className="text-2xl font-bold text-center text-gray-800 mb-6">Create an Account</h2>        <form className="space-y-5" onSubmit={handleSubmit}>
+        <h2 className="text-2xl font-bold text-center text-gray-800 mb-6">
+          Create an Account
+        </h2>{" "}
+        <form className="space-y-5" onSubmit={handleSubmit}>
           {/* Error message */}
           {error && (
             <div className="bg-red-50 border border-red-200 text-red-700 px-4 py-2 rounded-lg mb-4">
               {error}
             </div>
           )}
-        
           {/* Name */}
           <div>
-            <label className="block text-sm font-medium text-gray-700">Full Name</label>
+            <label className="block text-sm font-medium text-gray-700">
+              Full Name
+            </label>
             <input
               type="text"
               value={name}
@@ -77,10 +81,11 @@ const Register = () => {
               className="mt-1 w-full px-4 py-2 border border-gray-300 rounded-xl focus:outline-none focus:ring-2 focus:ring-black"
             />
           </div>
-
           {/* Email */}
           <div>
-            <label className="block text-sm font-medium text-gray-700">Email Address</label>
+            <label className="block text-sm font-medium text-gray-700">
+              Email Address
+            </label>
             <input
               type="email"
               value={email}
@@ -89,10 +94,11 @@ const Register = () => {
               className="mt-1 w-full px-4 py-2 border border-gray-300 rounded-xl focus:outline-none focus:ring-2 focus:ring-black"
             />
           </div>
-
           {/* Password */}
           <div>
-            <label className="block text-sm font-medium text-gray-700">Password</label>
+            <label className="block text-sm font-medium text-gray-700">
+              Password
+            </label>
             <input
               type="password"
               value={password}
@@ -100,9 +106,12 @@ const Register = () => {
               required
               className="mt-1 w-full px-4 py-2 border border-gray-300 rounded-xl focus:outline-none focus:ring-2 focus:ring-black"
             />
-          </div>          {/* Confirm Password */}
+          </div>{" "}
+          {/* Confirm Password */}
           <div>
-            <label className="block text-sm font-medium text-gray-700">Confirm Password</label>
+            <label className="block text-sm font-medium text-gray-700">
+              Confirm Password
+            </label>
             <input
               type="password"
               value={confirmPassword}
@@ -111,7 +120,6 @@ const Register = () => {
               className="mt-1 w-full px-4 py-2 border border-gray-300 rounded-xl focus:outline-none focus:ring-2 focus:ring-black"
             />
           </div>
-
           <button
             type="submit"
             disabled={loading}
@@ -119,17 +127,17 @@ const Register = () => {
           >
             {loading ? "Creating Account..." : "Register"}
           </button>
-
           {/* Google Sign In */}
           <div className="relative my-4">
             <div className="absolute inset-0 flex items-center">
               <div className="w-full border-t border-gray-300"></div>
             </div>
             <div className="relative flex justify-center text-sm">
-              <span className="px-2 bg-white text-gray-500">or continue with</span>
+              <span className="px-2 bg-white text-gray-500">
+                or continue with
+              </span>
             </div>
           </div>
-
           <button
             type="button"
             onClick={handleGoogleSignIn}
@@ -140,7 +148,6 @@ const Register = () => {
             Sign up with Google
           </button>
         </form>
-
         <p className="mt-6 text-center text-sm">
           Already have an account?{" "}
           <Link to="/login" className="text-blue-600 hover:underline">

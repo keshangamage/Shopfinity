@@ -1,5 +1,5 @@
-import { Navigate } from 'react-router-dom';
-import { useAuth } from '../utils/AuthContext.jsx';
+import { Navigate } from "react-router-dom";
+import { useAuth } from "../utils/AuthContext.jsx";
 
 // Protected route component that redirects to login if user is not authenticated
 const ProtectedRoute = ({ children }) => {

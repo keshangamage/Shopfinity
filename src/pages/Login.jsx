@@ -13,7 +13,7 @@ const Login = () => {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-    
+
     try {
       setError("");
       setLoading(true);
@@ -26,7 +26,7 @@ const Login = () => {
       setLoading(false);
     }
   };
-  
+
   const handleGoogleSignIn = async () => {
     try {
       setError("");
@@ -44,17 +44,23 @@ const Login = () => {
   return (
     <div className="min-h-screen flex items-center justify-center bg-gray-100 px-4">
       <div className="w-full max-w-md bg-white rounded-2xl shadow-lg p-8">
-        <h2 className="text-2xl font-bold text-center text-gray-800 mb-6">Sign in to your account</h2>
+        <h2 className="text-2xl font-bold text-center text-gray-800 mb-6">
+          Sign in to your account
+        </h2>
 
-        <form className="space-y-5" onSubmit={handleSubmit}>          {error && (
+        <form className="space-y-5" onSubmit={handleSubmit}>
+          {" "}
+          {error && (
             <div className="bg-red-50 border border-red-200 text-red-700 px-4 py-2 rounded-lg mb-4">
               {error}
             </div>
           )}
-        
           {/* Email */}
           <div>
-            <label htmlFor="email" className="block text-sm font-medium text-gray-700">
+            <label
+              htmlFor="email"
+              className="block text-sm font-medium text-gray-700"
+            >
               Email address
             </label>
             <input
@@ -66,10 +72,12 @@ const Login = () => {
               className="mt-1 block w-full px-4 py-2 border border-gray-300 rounded-xl shadow-sm focus:outline-none focus:ring-2 focus:ring-black"
             />
           </div>
-
           {/* Password */}
           <div>
-            <label htmlFor="password" className="block text-sm font-medium text-gray-700">
+            <label
+              htmlFor="password"
+              className="block text-sm font-medium text-gray-700"
+            >
               Password
             </label>
             <input
@@ -81,7 +89,6 @@ const Login = () => {
               className="mt-1 block w-full px-4 py-2 border border-gray-300 rounded-xl shadow-sm focus:outline-none focus:ring-2 focus:ring-black"
             />
           </div>
-
           {/* Remember + Forgot */}
           <div className="flex items-center justify-between text-sm">
             <label className="flex items-center">
@@ -91,7 +98,8 @@ const Login = () => {
             <a href="#" className="text-blue-600 hover:underline">
               Forgot password?
             </a>
-          </div>          {/* Submit */}
+          </div>{" "}
+          {/* Submit */}
           <button
             type="submit"
             disabled={loading}
@@ -99,17 +107,17 @@ const Login = () => {
           >
             {loading ? "Signing in..." : "Sign in"}
           </button>
-          
           {/* Google Sign In */}
           <div className="relative my-4">
             <div className="absolute inset-0 flex items-center">
               <div className="w-full border-t border-gray-300"></div>
             </div>
             <div className="relative flex justify-center text-sm">
-              <span className="px-2 bg-white text-gray-500">or continue with</span>
+              <span className="px-2 bg-white text-gray-500">
+                or continue with
+              </span>
             </div>
           </div>
-
           <button
             type="button"
             onClick={handleGoogleSignIn}

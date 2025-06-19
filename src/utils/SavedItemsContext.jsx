@@ -1,4 +1,4 @@
-import React, { createContext, useState, useContext, useEffect } from "react";
+import React, { createContext, useContext, useState, useEffect } from "react";
 import { useAuth } from "./AuthContext.jsx";
 import {
   getFirestore,
@@ -13,28 +13,34 @@ const SavedItemsContext = createContext();
 export const useSavedItems = () => useContext(SavedItemsContext);
 
 export const SavedItemsProvider = ({ children }) => {
+  const { currentUser } = useAuth();
+  const userId = currentUser?.uid || "guest";
+  const localStorageKey = `shopfinity_saved_items_${userId}`;
+
   const [savedItems, setSavedItems] = useState(() => {
     try {
-      const localSavedItems = localStorage.getItem("shopfinitySavedItems");
+      const localSavedItems = localStorage.getItem(localStorageKey);
       return localSavedItems ? JSON.parse(localSavedItems) : [];
     } catch (error) {
       console.error("Error loading saved items from localStorage:", error);
       return [];
     }
   });
-  const { currentUser } = useAuth();
   const db = getFirestore();
 
   useEffect(() => {
     const fetchSavedItems = async () => {
       if (!currentUser) {
         try {
-          const localSavedItems = localStorage.getItem("shopfinitySavedItems");
+          const localSavedItems = localStorage.getItem(localStorageKey);
           if (localSavedItems) {
             setSavedItems(JSON.parse(localSavedItems));
+          } else {
+            setSavedItems([]);
           }
         } catch (error) {
           console.error("Error loading saved items from localStorage:", error);
+          setSavedItems([]);
         }
         return;
       }
@@ -48,7 +54,7 @@ export const SavedItemsProvider = ({ children }) => {
           setSavedItems(firestoreItems);
 
           localStorage.setItem(
-            "shopfinitySavedItems",
+            localStorageKey,
             JSON.stringify(firestoreItems)
           );
         } else {
@@ -59,13 +65,13 @@ export const SavedItemsProvider = ({ children }) => {
             { merge: true }
           );
           setSavedItems([]);
-          localStorage.setItem("shopfinitySavedItems", JSON.stringify([]));
+          localStorage.setItem(localStorageKey, JSON.stringify([]));
         }
       } catch (error) {
         console.error("Error fetching saved items:", error);
 
         try {
-          const localSavedItems = localStorage.getItem("shopfinitySavedItems");
+          const localSavedItems = localStorage.getItem(localStorageKey);
           if (localSavedItems) {
             setSavedItems(JSON.parse(localSavedItems));
           } else {
@@ -78,11 +84,11 @@ export const SavedItemsProvider = ({ children }) => {
     };
 
     fetchSavedItems();
-  }, [currentUser, db]);
+  }, [currentUser, db, localStorageKey, userId]);
 
   const saveItemsToFirestore = async (items) => {
     try {
-      localStorage.setItem("shopfinitySavedItems", JSON.stringify(items));
+      localStorage.setItem(localStorageKey, JSON.stringify(items));
     } catch (error) {
       console.error("Error saving to localStorage:", error);
     }
@@ -134,15 +140,6 @@ export const SavedItemsProvider = ({ children }) => {
     setSavedItems([]);
     await saveItemsToFirestore([]);
   };
-
-  useEffect(() => {
-    try {
-      localStorage.setItem("shopfinitySavedItems", JSON.stringify(savedItems));
-      console.log("Saved items saved to localStorage:", savedItems);
-    } catch (error) {
-      console.error("Error saving saved items to localStorage:", error);
-    }
-  }, [savedItems]);
 
   const value = {
     savedItems,

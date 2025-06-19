@@ -1,49 +1,69 @@
 import React, { createContext, useContext, useState, useEffect } from "react";
+import { useAuth } from "./AuthContext.jsx";
 
 const RewardsContext = createContext();
 
 export const useRewards = () => useContext(RewardsContext);
 
 export const RewardsProvider = ({ children }) => {
-  const [rewardsPoints, setRewardsPoints] = useState(() => {
-    try {
-      const savedRewards = localStorage.getItem("shopfinityRewards");
-      return savedRewards ? JSON.parse(savedRewards) : 0;
-    } catch (error) {
-      console.error("Error loading rewards from localStorage:", error);
-      return 0;
-    }
-  });
+  const { currentUser } = useAuth();
+  const userId = currentUser?.uid || "guest";
+  const [loading, setLoading] = useState(true);
 
-  const [rewardsHistory, setRewardsHistory] = useState(() => {
+  const [rewardsPoints, setRewardsPoints] = useState(0);
+  const [rewardsHistory, setRewardsHistory] = useState([]);
+
+  // Load rewards data when user changes
+  useEffect(() => {
+    loadRewardsData();
+  }, [userId]);
+
+  // Load rewards data from localStorage
+  const loadRewardsData = () => {
     try {
-      const savedHistory = localStorage.getItem("shopfinityRewardsHistory");
-      return savedHistory ? JSON.parse(savedHistory) : [];
+      const savedRewards = localStorage.getItem(`shopfinity_rewards_${userId}`);
+      setRewardsPoints(savedRewards ? JSON.parse(savedRewards) : 0);
+
+      const savedHistory = localStorage.getItem(
+        `shopfinity_rewards_history_${userId}`
+      );
+      setRewardsHistory(savedHistory ? JSON.parse(savedHistory) : []);
+
+      setLoading(false);
     } catch (error) {
-      console.error("Error loading rewards history from localStorage:", error);
-      return [];
+      console.error("Error loading rewards data from localStorage:", error);
+      setRewardsPoints(0);
+      setRewardsHistory([]);
+      setLoading(false);
     }
-  });
+  };
 
   // Save rewards data to localStorage
   useEffect(() => {
+    if (loading) return;
+
     try {
-      localStorage.setItem("shopfinityRewards", JSON.stringify(rewardsPoints));
+      localStorage.setItem(
+        `shopfinity_rewards_${userId}`,
+        JSON.stringify(rewardsPoints)
+      );
     } catch (error) {
       console.error("Error saving rewards to localStorage:", error);
     }
-  }, [rewardsPoints]);
+  }, [rewardsPoints, userId, loading]);
 
   useEffect(() => {
+    if (loading) return;
+
     try {
       localStorage.setItem(
-        "shopfinityRewardsHistory",
+        `shopfinity_rewards_history_${userId}`,
         JSON.stringify(rewardsHistory)
       );
     } catch (error) {
       console.error("Error saving rewards history to localStorage:", error);
     }
-  }, [rewardsHistory]);
+  }, [rewardsHistory, userId, loading]);
 
   // Function to add rewards points
   const addPoints = (points, reason) => {
@@ -85,12 +105,16 @@ export const RewardsProvider = ({ children }) => {
     return (rewardsPoints / 100).toFixed(2);
   };
 
+  const formattedPoints = rewardsPoints.toLocaleString();
+
   const rewardsContextValue = {
     rewardsPoints,
+    formattedPoints,
     rewardsHistory,
     addPoints,
     usePoints,
     getPointsValue,
+    loading,
   };
 
   return (
