@@ -1183,4 +1183,101 @@ export const products = [
     discountPrice: 92.99,
     description: "Capture adventures in high-definition.",
   },
+
+  {
+    id: 131,
+    name: "Cycling Handlebar Grips",
+    category: "Accessories",
+    image: "src/assets/1Pair Silicone Cycling Bicycle Grips.jpg",
+    price: 14.99,
+    discountPrice: 12.99,
+    description:
+      "Ergonomic silicone handlebar grips for better control and comfort. Non-slip design with shock-absorbing properties reduces hand fatigue on long rides. Easy to install on most standard handlebars.",
+  },
+  {
+    id: 132,
+    name: "Luxury Wrist Watch",
+    category: "Accessories",
+    image: "src/assets/Luxury Wrist Watch.webp",
+    price: 129.99,
+    description:
+      "Sophisticated timepiece with premium craftsmanship. Features Japanese quartz movement, scratch-resistant sapphire crystal, and genuine leather band. Water-resistant up to 50 meters for everyday elegance.",
+  },
+  {
+    id: 133,
+    name: "Multi-function Tote",
+    category: "Accessories",
+    image: "src/assets/Multi-function Tote.webp",
+    price: 39.99,
+    discountPrice: 34.99,
+    description:
+      "Stylish and functional tote bag made from sustainable materials. Features multiple compartments, laptop sleeve, and water bottle holder. Perfect for work, school, or weekend getaways.",
+  },
+  {
+    id: 134,
+    name: "Winter Fashion Set",
+    category: "Accessories",
+    image: "src/assets/Winter Fashion Set.avif",
+    price: 49.99,
+    description:
+      "Complete winter accessories set including matching scarf, beanie, and gloves. Made from premium knit material that's both warm and soft. Available in multiple color combinations to match any outfit.",
+  },
+  {
+    id: 135,
+    name: "Premium Accessories Collection",
+    category: "Accessories",
+    image: "src/assets/Premium Accessories Collection.jpg",
+    price: 89.99,
+    discountPrice: 79.99,
+    description:
+      "Curated gift set of luxury accessories including wallet, keychain, and card holder. Crafted from genuine leather with elegant stitching and design. Perfect for gifting or treating yourself to everyday luxury.",
+  },
+  {
+    id: 136,
+    name: "Interactive Learning Tablet",
+    category: "Toys",
+    image: "src/assets/Interactive Learning Tablet.jpg",
+    price: 45.99,
+    discountPrice: 39.99,
+    description:
+      "Educational tablet designed for children ages 3-12. Features learning games, creative activities, and parental controls. Durable, kid-friendly design with bright colors and responsive touch screen.",
+  },
+  {
+    id: 137,
+    name: "Plush Animal Collection",
+    category: "Toys",
+    image: "src/assets/Plush Animal Collection.webp",
+    price: 34.99,
+    description:
+      "Set of 5 adorable plush animals including lion, elephant, giraffe, monkey, and penguin. Made with super-soft hypoallergenic materials safe for all ages. Perfect for cuddling and imaginative play.",
+  },
+  {
+    id: 138,
+    name: "Wooden Train Set",
+    category: "Toys",
+    image: "src/assets/Wooden Train Set.png",
+    price: 29.99,
+    discountPrice: 24.99,
+    description:
+      "Classic wooden train set with tracks, trains, and accessories. Compatible with major wooden railway systems. Encourages creativity, fine motor skills, and problem-solving through interactive play.",
+  },
+  {
+    id: 139,
+    name: "Space Explorer Kit",
+    category: "Toys",
+    image: "src/assets/Space Explorer Kit.jpg",
+    price: 32.99,
+    description:
+      "Astronomy kit for budding space enthusiasts. Includes telescope, star charts, planet models, and space-themed activities. Educational gift that inspires curiosity about the universe and science.",
+  },
+  {
+    id: 140,
+    name: "Construction Vehicle Set",
+    category: "Toys",
+    image: "src/assets/Construction Vehicle Set.webp",
+    price: 27.99,
+    discountPrice: 22.99,
+    description:
+      "Set of 6 durable construction vehicles including dump truck, bulldozer, crane, and more. Made from high-quality materials with realistic details and moving parts. Great for sandbox play and developing motor skills.",
+  },
 ];
