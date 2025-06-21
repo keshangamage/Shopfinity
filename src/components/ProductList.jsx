@@ -6,9 +6,10 @@ const ProductList = () => {
 
   const categories = ["All", ...new Set(products.map((p) => p.category))];
 
-  const filteredProducts = selectedCategory === "All"
-    ? products
-    : products.filter((p) => p.category === selectedCategory);
+  const filteredProducts =
+    selectedCategory === "All"
+      ? products
+      : products.filter((p) => p.category === selectedCategory);
 
   return (
     <div className="p-4">
@@ -34,13 +35,15 @@ const ProductList = () => {
         {filteredProducts.map((product) => (
           <div
             key={product.id}
-            className="border p-4 rounded shadow hover:shadow-lg transition"
+            className="product-card border p-4 rounded shadow hover:shadow-lg transition"
           >
-            <img
-              src={product.image}
-              alt={product.name}
-              className="w-full h-48 object-cover"
-            />
+            <div className="product-image-container">
+              <img
+                src={product.image}
+                alt={product.name}
+                className="product-image"
+              />
+            </div>
             <h2 className="mt-2 text-lg font-semibold">{product.name}</h2>
             <p className="text-blue-500 font-bold">${product.price}</p>
             <p className="text-sm text-gray-600">{product.description}</p>

@@ -31,17 +31,21 @@ const Home = () => {
       {/* Hero */}
       <section>
         <div
-          className="relative w-full h-96 bg-cover bg-center"
+          className="relative w-full h-64 sm:h-80 md:h-96 bg-cover bg-center"
           style={{
             backgroundImage: `url(${webbanner})`,
           }}
         >
           <div className="absolute inset-0 bg-opacity-50 flex flex-col items-center justify-center text-center text-white px-4">
-            <h2 className="text-4xl font-bold">Biggest Sale of the Year</h2>
-            <p className="mt-4 text-xl">Hurry, limited time only!</p>
+            <h2 className="text-2xl sm:text-3xl md:text-4xl font-bold">
+              Biggest Sale of the Year
+            </h2>
+            <p className="mt-2 sm:mt-4 text-base sm:text-xl">
+              Hurry, limited time only!
+            </p>
             <Link
               to="/categories/electronics"
-              className="mt-6 bg-teal-500 text-white px-6 py-2 rounded-full hover:bg-teal-600 transition-all"
+              className="mt-4 sm:mt-6 bg-teal-500 text-white px-4 sm:px-6 py-2 rounded-full hover:bg-teal-600 transition-all"
             >
               Shop Now
             </Link>
@@ -50,11 +54,11 @@ const Home = () => {
       </section>
 
       {/* Featured Categories */}
-      <section className="py-12 bg-gray-50 text-center">
-        <h2 className="text-3xl font-bold text-gray-800 mb-10">
+      <section className="py-8 sm:py-12 bg-gray-50 text-center">
+        <h2 className="text-2xl sm:text-3xl font-bold text-gray-800 mb-6 sm:mb-10 px-4">
           Shop by Category
-        </h2>{" "}
-        <div className="flex justify-center gap-8 overflow-x-auto px-4">
+        </h2>
+        <div className="flex justify-start sm:justify-center gap-4 sm:gap-8 overflow-x-auto px-4 py-2 pb-4 scrollbar-hide">
           {[
             {
               name: "Electronics",
@@ -90,15 +94,15 @@ const Home = () => {
             <Link
               to={category.link}
               key={index}
-              className="bg-white rounded-lg shadow-md p-6 transform hover:scale-105 transition-all duration-300 cursor-pointer w-53 flex-shrink-0 mb-2 mt-1"
+              className="bg-white rounded-lg shadow-md p-4 sm:p-6 transform hover:scale-105 transition-all duration-300 cursor-pointer w-40 sm:w-53 flex-shrink-0 mb-2 mt-1"
             >
-              <h3 className="font-semibold text-lg text-teal-500">
+              <h3 className="font-semibold text-base sm:text-lg text-teal-500">
                 {category.name}
               </h3>
               <img
                 src={category.image}
                 alt={category.name}
-                className="w-full h-40 object-cover mt-4 rounded-lg"
+                className="w-full h-32 sm:h-40 object-cover mt-4 rounded-lg"
                 loading="lazy"
               />
             </Link>
@@ -107,43 +111,66 @@ const Home = () => {
       </section>
 
       {/* Featured Products*/}
-      <section className="py-16 px-6 bg-white text-center">
-        <h2 className="text-3xl font-bold text-gray-800 mb-10">
+      <section className="py-8 sm:py-16 px-4 sm:px-6 bg-white text-center">
+        <h2 className="text-2xl sm:text-3xl font-bold text-gray-800 mb-6 sm:mb-10">
           Featured Products
         </h2>
 
-        <div className="mr-15 ml-15 grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-5 gap-10">
+        <div className="mr-4 ml-4 grid grid-cols-1 xs:grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 gap-6">
           {products.slice(0, visibleCount).map((product) => (
             <div
               key={product.id}
-              className="bg-white rounded-lg shadow-md hover:shadow-lg transform hover:scale-105 transition-all duration-300"
+              className="product-card bg-white rounded-lg shadow-md hover:shadow-xl transition-shadow duration-300 overflow-hidden"
             >
-              <Link to={`/product/${product.id}`}>
-                <img
-                  src={product.image}
-                  alt={product.name}
-                  className="w-full h-60 object-cover rounded-t-lg"
-                />
-              </Link>
-              <div className="p-4">
-                <h3 className="text-xl font-semibold">{product.name}</h3>
-                <p className="text-gray-600 mt-2">
-                  <span className={product.discountPrice ? "line-through" : ""}>
-                    ${product.price.toFixed(2)}
-                  </span>{" "}
+              <div className="product-image-container">
+                <Link to={`/product/${product.id}`}>
+                  <img
+                    src={product.image}
+                    alt={product.name}
+                    className="product-image"
+                    onError={(e) => {
+                      e.target.onerror = null;
+                      e.target.src =
+                        "https://via.placeholder.com/300x300?text=Image+Not+Found";
+                    }}
+                  />
                   {product.discountPrice && (
-                    <span className="text-red-500 ml-2">
-                      (${product.discountPrice.toFixed(2)})
-                    </span>
+                    <div className="sale-badge">SALE</div>
                   )}
-                </p>
+                </Link>
+              </div>
+              <div className="p-4">
+                <Link to={`/product/${product.id}`}>
+                  <h3 className="product-title hover:text-teal-600">
+                    {product.name}
+                  </h3>
+                </Link>
+                <div className="flex justify-between items-center mb-3">
+                  <div>
+                    {product.discountPrice ? (
+                      <>
+                        <span className="product-price">
+                          ${product.discountPrice.toFixed(2)}
+                        </span>
+                        <span className="product-price-original">
+                          ${product.price.toFixed(2)}
+                        </span>
+                      </>
+                    ) : (
+                      <span className="product-price">
+                        ${product.price.toFixed(2)}
+                      </span>
+                    )}
+                  </div>
+                  <div className="product-rating">★★★★☆</div>
+                </div>
                 <button
                   onClick={(e) => {
-                    e.preventDefault(); // Prevent navigation to product page
+                    e.preventDefault();
                     addToCart(product, 1);
                     alert(`${product.name} added to cart!`);
                   }}
-                  className="bg-orange-500 text-white py-1.5 px-6.5 rounded-full mt-3 hover:bg-orange-600 transition-all"
+                  className="add-to-cart-button"
                 >
                   Add to Cart
                 </button>
@@ -155,91 +182,216 @@ const Home = () => {
         {visibleCount < products.length && (
           <button
             onClick={() => setVisibleCount((prev) => prev + 15)}
-            className="mt-10 bg-zinc-950 text-white px-10 py-3 hover:bg-stale-950 transition-all"
+            className="mt-8 sm:mt-12 bg-teal-500 text-white px-6 py-2 rounded-full hover:bg-teal-600 transition-all"
           >
-            View More
+            Load More Products
           </button>
         )}
       </section>
 
-      <section className="py-12 bg-orange-500 text-white">
-        <div className="container mx-auto px-4">
-          <div className="text-center mb-8">
-            <h2 className="text-3xl font-bold mb-3">⚡ Flash Sale</h2>
-            <p className="text-lg mb-4">Limited time offers - Up to 70% off</p>
+      {/* Deal of the Day */}
+      <section className="py-8 sm:py-12 px-4 sm:px-6 bg-gray-50">
+        <div className="max-w-6xl mx-auto">
+          <h2 className="text-2xl sm:text-3xl font-bold text-center text-gray-800 mb-6 sm:mb-10">
+            Deal of the Day
+          </h2>
 
-            <div className="inline-block bg-white text-orange-600 font-bold px-6 py-2 rounded mb-4">
-              24:45:18 remaining
+          <div className="bg-white rounded-lg shadow-md overflow-hidden">
+            <div className="flex flex-col md:flex-row">
+              <div className="w-full md:w-1/2">
+                <img
+                  src="./src/assets/electronics.jpg"
+                  alt="Deal of the Day"
+                  className="w-full h-64 md:h-full object-cover"
+                />
+              </div>
+              <div className="w-full md:w-1/2 p-4 sm:p-6 md:p-8 flex flex-col justify-center">
+                <h3 className="text-xl sm:text-2xl font-bold mb-2 sm:mb-4">
+                  Special Offer Today!
+                </h3>
+                <p className="text-gray-600 mb-4 sm:mb-6">
+                  Get up to 50% off on selected electronics items. Limited time
+                  offer!
+                </p>
+                <div className="flex flex-wrap gap-3 mb-4 sm:mb-6">
+                  <div className="bg-gray-100 rounded-lg p-3 text-center flex-1">
+                    <span className="block text-xl sm:text-2xl font-bold">
+                      00
+                    </span>
+                    <span className="text-xs sm:text-sm text-gray-500">
+                      Days
+                    </span>
+                  </div>
+                  <div className="bg-gray-100 rounded-lg p-3 text-center flex-1">
+                    <span className="block text-xl sm:text-2xl font-bold">
+                      12
+                    </span>
+                    <span className="text-xs sm:text-sm text-gray-500">
+                      Hours
+                    </span>
+                  </div>
+                  <div className="bg-gray-100 rounded-lg p-3 text-center flex-1">
+                    <span className="block text-xl sm:text-2xl font-bold">
+                      30
+                    </span>
+                    <span className="text-xs sm:text-sm text-gray-500">
+                      Minutes
+                    </span>
+                  </div>
+                  <div className="bg-gray-100 rounded-lg p-3 text-center flex-1">
+                    <span className="block text-xl sm:text-2xl font-bold">
+                      45
+                    </span>
+                    <span className="text-xs sm:text-sm text-gray-500">
+                      Seconds
+                    </span>
+                  </div>
+                </div>
+                <Link
+                  to="/categories/electronics"
+                  className="bg-teal-500 text-white text-center py-2 px-6 rounded-full hover:bg-teal-600 transition-all inline-block"
+                >
+                  Shop Now
+                </Link>
+              </div>
             </div>
           </div>
+        </div>
+      </section>
 
-          {/* cards */}
-          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
-            {[
-              {
-                title: "Limited Edition",
-                discount: "70% OFF",
-                description: "Premium selections at unbeatable prices",
-                badge: "BESTSELLER",
-              },
-              {
-                title: "24HR Flash Deal",
-                discount: "BUY 1 GET 1",
-                description: "New deals every day at midnight",
-                badge: "HOT DEAL",
-              },
-              {
-                title: "New Arrivals",
-                discount: "EXCLUSIVE",
-                description: "Be the first to grab new products",
-                badge: "NEW",
-              },
-            ].map((deal, index) => (
-              <div
-                key={index}
-                className="bg-white text-gray-800 rounded shadow-md"
-              >
-                <div className="p-6 relative">
-                  {deal.badge && (
-                    <div className="absolute top-2 right-2 bg-orange-500 text-white text-xs font-bold py-1 px-2 rounded">
-                      {deal.badge}
-                    </div>
-                  )}
-
-                  <h3 className="text-xl font-bold mb-2">{deal.title}</h3>
-
-                  <p className="text-2xl font-bold text-orange-500 mb-2">
-                    {deal.discount}
-                  </p>
-
-                  <p className="text-gray-600 mb-4">{deal.description}</p>
-
-                  <Link
-                    to="/categories/home"
-                    className="block bg-orange-500 text-white text-center py-2 rounded hover:bg-orange-600"
-                  >
-                    Shop Now
-                  </Link>
-                </div>
-              </div>
-            ))}
-          </div>
-
-          {/* CTA */}
-          <div className="mt-8 text-center">
-            <Link
-              to="/categories/toys"
-              className="inline-block bg-white text-orange-500 font-medium px-6 py-2 rounded hover:bg-gray-100"
-            >
-              View All Deals
-            </Link>
+      {/* Newsletter */}
+      <section className="py-8 sm:py-12 px-4 sm:px-6 bg-white">
+        <div className="max-w-2xl mx-auto text-center">
+          <h2 className="text-2xl sm:text-3xl font-bold text-gray-800 mb-3 sm:mb-4">
+            Subscribe to Our Newsletter
+          </h2>
+          <p className="text-gray-600 mb-6">
+            Get updates on sales, special offers and more.
+          </p>
+          <div className="flex flex-col sm:flex-row gap-3 max-w-md mx-auto">
+            <input
+              type="email"
+              placeholder="Enter your email"
+              className="flex-1 px-4 py-3 rounded-full border border-gray-300 focus:outline-none focus:border-teal-500"
+            />
+            <button className="bg-teal-500 text-white px-6 py-3 rounded-full hover:bg-teal-600 transition-all">
+              Subscribe
+            </button>
           </div>
         </div>
       </section>
 
       {/* Footer */}
-      <footer className="bg-gray-900 text-white text-center py-6">
-        <p className="text-sm">&copy; 2025 Shopfinity - All Rights Reserved</p>
+      <footer className="bg-gray-800 text-white py-8 sm:py-12 px-4 sm:px-6">
+        <div className="max-w-6xl mx-auto grid grid-cols-2 md:grid-cols-4 gap-6 sm:gap-8">
+          <div>
+            <h3 className="text-lg font-semibold mb-3 sm:mb-4">Shop</h3>
+            <ul className="space-y-2 text-gray-300 text-sm sm:text-base">
+              <li>
+                <Link to="/categories/electronics" className="hover:text-white">
+                  Electronics
+                </Link>
+              </li>
+              <li>
+                <Link to="/categories/fashion" className="hover:text-white">
+                  Fashion
+                </Link>
+              </li>
+              <li>
+                <Link to="/categories/fitness" className="hover:text-white">
+                  Fitness
+                </Link>
+              </li>
+              <li>
+                <Link to="/categories/home" className="hover:text-white">
+                  Home
+                </Link>
+              </li>
+              <li>
+                <Link to="/categories/accessories" className="hover:text-white">
+                  Accessories
+                </Link>
+              </li>
+            </ul>
+          </div>
+          <div>
+            <h3 className="text-lg font-semibold mb-3 sm:mb-4">Account</h3>
+            <ul className="space-y-2 text-gray-300 text-sm sm:text-base">
+              <li>
+                <Link to="/profile" className="hover:text-white">
+                  My Profile
+                </Link>
+              </li>
+              <li>
+                <Link to="/orders" className="hover:text-white">
+                  Orders
+                </Link>
+              </li>
+              <li>
+                <Link to="/cart" className="hover:text-white">
+                  Shopping Cart
+                </Link>
+              </li>
+            </ul>
+          </div>
+          <div>
+            <h3 className="text-lg font-semibold mb-3 sm:mb-4">Information</h3>
+            <ul className="space-y-2 text-gray-300 text-sm sm:text-base">
+              <li>
+                <a href="#" className="hover:text-white">
+                  About Us
+                </a>
+              </li>
+              <li>
+                <a href="#" className="hover:text-white">
+                  Contact Us
+                </a>
+              </li>
+              <li>
+                <a href="#" className="hover:text-white">
+                  Privacy Policy
+                </a>
+              </li>
+              <li>
+                <a href="#" className="hover:text-white">
+                  Terms & Conditions
+                </a>
+              </li>
+              <li>
+                <a href="#" className="hover:text-white">
+                  FAQ
+                </a>
+              </li>
+            </ul>
+          </div>
+          <div>
+            <h3 className="text-lg font-semibold mb-3 sm:mb-4">Contact</h3>
+            <ul className="space-y-2 text-gray-300 text-sm sm:text-base">
+              <li>123 Shopping St, City</li>
+              <li>Email: info@shopfinity.com</li>
+              <li>Phone: +1 234 567 8901</li>
+            </ul>
+            <div className="mt-4 flex space-x-4">
+              <a href="#" className="hover:text-teal-300">
+                <i className="fab fa-facebook-f"></i>
+              </a>
+              <a href="#" className="hover:text-teal-300">
+                <i className="fab fa-twitter"></i>
+              </a>
+              <a href="#" className="hover:text-teal-300">
+                <i className="fab fa-instagram"></i>
+              </a>
+              <a href="#" className="hover:text-teal-300">
+                <i className="fab fa-pinterest"></i>
+              </a>
+            </div>
+          </div>
+        </div>
+        <div className="mt-8 pt-6 border-t border-gray-700 text-center text-gray-400 text-sm">
+          <p>
+            &copy; {new Date().getFullYear()} Shopfinity. All rights reserved.
+          </p>
+        </div>
       </footer>
     </div>
   );
