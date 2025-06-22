@@ -58,7 +58,7 @@ const Home = () => {
         <h2 className="text-2xl sm:text-3xl font-bold text-gray-800 mb-6 sm:mb-10 px-4">
           Shop by Category
         </h2>
-        <div className="flex justify-start sm:justify-center gap-4 sm:gap-8 overflow-x-auto px-4 py-2 pb-4 scrollbar-hide">
+        <div className="flex flex-nowrap justify-start sm:justify-center gap-4 sm:gap-6 overflow-x-auto px-4 py-2 pb-6 scrollbar-hide max-w-full min-h-[220px] sm:min-h-[240px]">
           {[
             {
               name: "Electronics",
@@ -94,17 +94,20 @@ const Home = () => {
             <Link
               to={category.link}
               key={index}
-              className="bg-white rounded-lg shadow-md p-4 sm:p-6 transform hover:scale-105 transition-all duration-300 cursor-pointer w-40 sm:w-53 flex-shrink-0 mb-2 mt-1"
+              className="bg-white rounded-lg shadow-md p-3 sm:p-4 transform hover:scale-105 transition-all duration-300 cursor-pointer w-44 sm:w-52 flex-shrink-0 mb-2 mt-1 block"
             >
-              <h3 className="font-semibold text-base sm:text-lg text-teal-500">
+              <h3 className="font-semibold text-base sm:text-lg text-teal-500 mb-3">
                 {category.name}
               </h3>
-              <img
-                src={category.image}
-                alt={category.name}
-                className="w-full h-32 sm:h-40 object-cover mt-4 rounded-lg"
-                loading="lazy"
-              />
+              <div className="aspect-square w-full">
+                <img
+                  src={category.image}
+                  alt={category.name}
+                  className="w-full h-full object-cover rounded-lg"
+                  style={{ aspectRatio: "1/1", objectFit: "cover" }}
+                  loading="lazy"
+                />
+              </div>
             </Link>
           ))}
         </div>
