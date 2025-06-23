@@ -8,6 +8,22 @@ const Home = () => {
   const [visibleCount, setVisibleCount] = useState(15);
   const { addToCart } = useCart();
 
+  // Trending products array
+  const trendingProducts = [
+    products.find((p) => p.name.includes("Fitness Tracker Pro")),
+    products.find((p) => p.name.includes("Smart Watch")),
+    products.find((p) => p.name.includes("Wireless Earbuds")),
+    products.find((p) => p.name.includes("Designer Watch")),
+    products.find((p) => p.name.includes("Bluetooth Speaker")),
+    products.find((p) => p.name.includes("Leather Jacket")),
+    products.find((p) => p.name.includes("Air Fryer")),
+    products.find((p) => p.name.includes("Smartphone")),
+    products.find((p) => p.name.includes("LED")),
+    products.find((p) => p.name.includes("Coffee Maker")),
+    products.find((p) => p.name.includes("Laptop")),
+    products.find((p) => p.name.includes("Headphones")),
+  ].filter(Boolean);
+
   // Save scroll position
   useEffect(() => {
     const handleBeforeUnload = () => {
@@ -192,94 +208,117 @@ const Home = () => {
         )}
       </section>
 
-      {/* Deal of the Day */}
-      <section className="py-8 sm:py-12 px-4 sm:px-6 bg-gray-50">
+      {/* Trending Now */}
+      <section className="py-10 sm:py-14 px-4 sm:px-6 bg-gradient-to-r from-teal-500/10 to-blue-500/10">
         <div className="max-w-6xl mx-auto">
-          <h2 className="text-2xl sm:text-3xl font-bold text-center text-gray-800 mb-6 sm:mb-10">
-            Deal of the Day
-          </h2>
-
-          <div className="bg-white rounded-lg shadow-md overflow-hidden">
-            <div className="flex flex-col md:flex-row">
-              <div className="w-full md:w-1/2">
-                <img
-                  src="./src/assets/electronics.jpg"
-                  alt="Deal of the Day"
-                  className="w-full h-64 md:h-full object-cover"
+          <div className="flex justify-between items-center mb-8">
+            <h2 className="text-2xl sm:text-3xl font-bold text-gray-800">
+              Trending Now
+            </h2>
+            <Link
+              to="/categories/accessories"
+              className="text-teal-600 hover:text-teal-800 font-medium flex items-center"
+            >
+              View All
+              <svg
+                xmlns="http://www.w3.org/2000/svg"
+                className="h-5 w-5 ml-1"
+                viewBox="0 0 20 20"
+                fill="currentColor"
+              >
+                <path
+                  fillRule="evenodd"
+                  d="M7.293 14.707a1 1 0 010-1.414L10.586 10 7.293 6.707a1 1 0 011.414-1.414l4 4a1 1 0 010 1.414l-4 4a1 1 0 01-1.414 0z"
+                  clipRule="evenodd"
                 />
-              </div>
-              <div className="w-full md:w-1/2 p-4 sm:p-6 md:p-8 flex flex-col justify-center">
-                <h3 className="text-xl sm:text-2xl font-bold mb-2 sm:mb-4">
-                  Special Offer Today!
-                </h3>
-                <p className="text-gray-600 mb-4 sm:mb-6">
-                  Get up to 50% off on selected electronics items. Limited time
-                  offer!
-                </p>
-                <div className="flex flex-wrap gap-3 mb-4 sm:mb-6">
-                  <div className="bg-gray-100 rounded-lg p-3 text-center flex-1">
-                    <span className="block text-xl sm:text-2xl font-bold">
-                      00
-                    </span>
-                    <span className="text-xs sm:text-sm text-gray-500">
-                      Days
-                    </span>
+              </svg>
+            </Link>
+          </div>
+
+          <div className="flex overflow-x-auto space-x-4 pb-4 scrollbar-hide">
+            {trendingProducts.map((product) => (
+              <div
+                key={product.id}
+                className="flex-none w-64 sm:w-72 bg-white rounded-lg shadow-md hover:shadow-xl transition-shadow duration-300"
+              >
+                <Link to={`/product/${product.id}`} className="block relative">
+                  <img
+                    src={product.image}
+                    alt={product.name}
+                    className="w-full h-48 object-cover rounded-t-lg"
+                    onError={(e) => {
+                      e.target.onerror = null;
+                      e.target.src =
+                        "https://via.placeholder.com/300x300?text=Image+Not+Found";
+                    }}
+                  />
+                  {product.discountPrice && (
+                    <div className="absolute top-2 right-2 bg-red-500 text-white text-xs font-bold px-2 py-1 rounded-md">
+                      {Math.round(
+                        ((product.price - product.discountPrice) /
+                          product.price) *
+                          100
+                      )}
+                      % OFF
+                    </div>
+                  )}
+                  <div className="absolute inset-0 bg-black bg-opacity-20 opacity-0 hover:opacity-100 transition-opacity flex items-center justify-center">
+                    <div className="bg-white bg-opacity-90 px-4 py-2 rounded-full">
+                      <span className="text-teal-600 font-medium">
+                        View Details
+                      </span>
+                    </div>
                   </div>
-                  <div className="bg-gray-100 rounded-lg p-3 text-center flex-1">
-                    <span className="block text-xl sm:text-2xl font-bold">
-                      12
-                    </span>
-                    <span className="text-xs sm:text-sm text-gray-500">
-                      Hours
-                    </span>
-                  </div>
-                  <div className="bg-gray-100 rounded-lg p-3 text-center flex-1">
-                    <span className="block text-xl sm:text-2xl font-bold">
-                      30
-                    </span>
-                    <span className="text-xs sm:text-sm text-gray-500">
-                      Minutes
-                    </span>
-                  </div>
-                  <div className="bg-gray-100 rounded-lg p-3 text-center flex-1">
-                    <span className="block text-xl sm:text-2xl font-bold">
-                      45
-                    </span>
-                    <span className="text-xs sm:text-sm text-gray-500">
-                      Seconds
-                    </span>
+                </Link>
+                <div className="p-4">
+                  <h3 className="font-medium text-gray-800 mb-2 truncate">
+                    {product.name}
+                  </h3>
+                  <div className="flex justify-between items-center">
+                    <div>
+                      {product.discountPrice ? (
+                        <div className="flex flex-col">
+                          <span className="text-teal-600 font-bold">
+                            ${product.discountPrice.toFixed(2)}
+                          </span>
+                          <span className="text-gray-400 line-through text-sm">
+                            ${product.price.toFixed(2)}
+                          </span>
+                        </div>
+                      ) : (
+                        <span className="text-teal-600 font-bold">
+                          ${product.price.toFixed(2)}
+                        </span>
+                      )}
+                    </div>
+                    <button
+                      onClick={(e) => {
+                        e.preventDefault();
+                        e.stopPropagation();
+                        addToCart(product, 1);
+                        alert(`${product.name} added to cart!`);
+                      }}
+                      className="text-teal-600 hover:bg-teal-50 p-2 rounded-full"
+                    >
+                      <svg
+                        xmlns="http://www.w3.org/2000/svg"
+                        className="h-6 w-6"
+                        fill="none"
+                        viewBox="0 0 24 24"
+                        stroke="currentColor"
+                      >
+                        <path
+                          strokeLinecap="round"
+                          strokeLinejoin="round"
+                          strokeWidth={2}
+                          d="M12 6v6m0 0v6m0-6h6m-6 0H6"
+                        />
+                      </svg>
+                    </button>
                   </div>
                 </div>
-                <Link
-                  to="/categories/electronics"
-                  className="bg-teal-500 text-white text-center py-2 px-6 rounded-full hover:bg-teal-600 transition-all inline-block"
-                >
-                  Shop Now
-                </Link>
               </div>
-            </div>
-          </div>
-        </div>
-      </section>
-
-      {/* Newsletter */}
-      <section className="py-8 sm:py-12 px-4 sm:px-6 bg-white">
-        <div className="max-w-2xl mx-auto text-center">
-          <h2 className="text-2xl sm:text-3xl font-bold text-gray-800 mb-3 sm:mb-4">
-            Subscribe to Our Newsletter
-          </h2>
-          <p className="text-gray-600 mb-6">
-            Get updates on sales, special offers and more.
-          </p>
-          <div className="flex flex-col sm:flex-row gap-3 max-w-md mx-auto">
-            <input
-              type="email"
-              placeholder="Enter your email"
-              className="flex-1 px-4 py-3 rounded-full border border-gray-300 focus:outline-none focus:border-teal-500"
-            />
-            <button className="bg-teal-500 text-white px-6 py-3 rounded-full hover:bg-teal-600 transition-all">
-              Subscribe
-            </button>
+            ))}
           </div>
         </div>
       </section>

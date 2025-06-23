@@ -80,11 +80,11 @@ const ProductDetail = () => {
       <div className="flex flex-col lg:flex-row gap-6 lg:gap-8">
         {/* Product Image */}
         <div className="w-full lg:w-1/2">
-          <div className="product-image-container !pt-[75%]">
+          <div className="relative rounded-lg shadow overflow-hidden">
             <img
               src={`/${product.image}`}
               alt={product.name}
-              className="product-image cursor-pointer hover:opacity-90 transition-opacity rounded-lg shadow"
+              className="w-full h-auto object-contain cursor-pointer hover:opacity-90 transition-opacity"
               onClick={() => setIsImageModalOpen(true)}
               onError={(e) => {
                 e.target.onerror = null; // Prevent infinite loop
@@ -214,16 +214,18 @@ const ProductDetail = () => {
                 key={relatedProduct.id}
                 className="bg-white rounded-lg shadow hover:shadow-md transition-shadow"
               >
-                <img
-                  src={`/${relatedProduct.image}`}
-                  alt={relatedProduct.name}
-                  className="w-full h-32 sm:h-40 object-cover rounded-t-lg"
-                  onError={(e) => {
-                    e.target.onerror = null;
-                    e.target.src =
-                      "https://via.placeholder.com/150?text=Image+Not+Found";
-                  }}
-                />
+                <div className="relative overflow-hidden rounded-t-lg aspect-square">
+                  <img
+                    src={`/${relatedProduct.image}`}
+                    alt={relatedProduct.name}
+                    className="w-full h-full object-contain"
+                    onError={(e) => {
+                      e.target.onerror = null;
+                      e.target.src =
+                        "https://via.placeholder.com/150?text=Image+Not+Found";
+                    }}
+                  />
+                </div>
                 <div className="p-3">
                   <h4 className="font-medium text-sm sm:text-base truncate">
                     {relatedProduct.name}
@@ -256,7 +258,7 @@ const ProductDetail = () => {
             <img
               src={`/${product.image}`}
               alt={product.name}
-              className="w-full h-auto max-h-[80vh] object-contain"
+              className="w-full h-auto object-contain"
               onError={(e) => {
                 e.target.onerror = null;
                 e.target.src =

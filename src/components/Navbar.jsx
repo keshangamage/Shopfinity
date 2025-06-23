@@ -212,12 +212,21 @@ const Navbar = () => {
               onClick={toggleUserMenu}
               className="flex items-center gap-2 px-2 sm:px-4 py-2 rounded-full bg-gradient-to-r from-teal-500 to-teal-400 text-white hover:shadow-lg transition duration-300 shadow-md"
             >
-              <div className="w-7 h-7 bg-white text-teal-500 rounded-full flex items-center justify-center">
+              <div className="w-7 h-7 bg-white text-teal-500 rounded-full flex items-center justify-center overflow-hidden">
                 {currentUser.photoURL ? (
                   <img
                     src={currentUser.photoURL}
                     alt="Profile"
                     className="w-full h-full rounded-full object-cover"
+                    onError={(e) => {
+                      e.target.onerror = null;
+                      e.target.src =
+                        "https://ui-avatars.com/api/?name=" +
+                        encodeURIComponent(
+                          currentUser.displayName ||
+                            currentUser.email.split("@")[0]
+                        );
+                    }}
                   />
                 ) : (
                   <FaUser className="text-teal-500" />
@@ -232,15 +241,13 @@ const Navbar = () => {
               <div className="absolute right-0 mt-3 w-72 bg-white rounded-xl shadow-xl py-2 z-50 border border-gray-100 overflow-hidden transition-all duration-300 transform origin-top-right">
                 {/* User Header */}
                 <div className="px-6 py-4 bg-gradient-to-r from-teal-500 to-teal-400 text-white">
-                  <div className="flex items-center gap-3">
-                    <div>
-                      <div className="font-bold text-lg">
-                        {currentUser.displayName ||
-                          currentUser.email.split("@")[0]}
-                      </div>
-                      <div className="text-xs text-teal-100">
-                        {currentUser.email}
-                      </div>
+                  <div>
+                    <div className="font-bold text-lg">
+                      {currentUser.displayName ||
+                        currentUser.email.split("@")[0]}
+                    </div>
+                    <div className="text-xs text-teal-100">
+                      {currentUser.email}
                     </div>
                   </div>
                 </div>
