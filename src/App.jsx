@@ -19,10 +19,29 @@ import { AddressProvider } from "./utils/AddressContext.jsx";
 import { PaymentProvider } from "./utils/PaymentContext.jsx";
 import { SavedItemsProvider } from "./utils/SavedItemsContext.jsx";
 import { RewardsProvider } from "./utils/RewardsContext.jsx";
+import PersistenceDebugger from "./components/PersistenceDebugger";
 import ProtectedRoute from "./components/ProtectedRoute";
 
 function App() {
   const [error, setError] = React.useState(null);
+
+  // Initialize app data from localStorage
+  React.useEffect(() => {
+    try {
+      if (typeof localStorage === "undefined") {
+        console.warn("localStorage is not available in this browser");
+        return;
+      }
+
+      window.addEventListener("focus", () => {
+        if (document.visibilityState === "visible") {
+          console.log("App focus - checking data persistence");
+        }
+      });
+    } catch (e) {
+      console.error("Error initializing app storage:", e);
+    }
+  }, []);
 
   React.useEffect(() => {
     //error handler
@@ -77,6 +96,7 @@ function App() {
                   <PaymentProvider>
                     <RewardsProvider>
                       <Router>
+                        <PersistenceDebugger />
                         <Navbar />
                         <Routes>
                           <Route path="/" element={<Home />} />
@@ -132,6 +152,7 @@ function App() {
                             }
                           />
                         </Routes>
+                        <PersistenceDebugger />
                       </Router>
                     </RewardsProvider>
                   </PaymentProvider>

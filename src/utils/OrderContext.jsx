@@ -12,14 +12,20 @@ export const OrderProvider = ({ children }) => {
 
   // State for orders
   const [orders, setOrders] = useState([]);
+  const [isInitialized, setIsInitialized] = useState(false);
 
   useEffect(() => {
     loadOrdersFromStorage();
+    setIsInitialized(true);
   }, [userId]);
 
   const loadOrdersFromStorage = () => {
     try {
       const savedOrders = localStorage.getItem(`shopfinity_orders_${userId}`);
+      console.log(
+        `Loading orders for user: ${userId}`,
+        savedOrders ? JSON.parse(savedOrders) : []
+      );
       setOrders(savedOrders ? JSON.parse(savedOrders) : []);
     } catch (error) {
       console.error("Error loading orders from localStorage:", error);
@@ -29,6 +35,8 @@ export const OrderProvider = ({ children }) => {
 
   // Save orders to local storage whenever they change
   useEffect(() => {
+    if (!isInitialized) return;
+
     try {
       localStorage.setItem(
         `shopfinity_orders_${userId}`,
@@ -37,7 +45,7 @@ export const OrderProvider = ({ children }) => {
     } catch (error) {
       console.error("Error saving orders to localStorage:", error);
     }
-  }, [orders, userId]);
+  }, [orders, userId, isInitialized]);
 
   // Add a new order
   const addOrder = (order) => {

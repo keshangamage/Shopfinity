@@ -1,5 +1,5 @@
 import { createContext, useContext, useEffect, useState } from "react";
-import { 
+import {
   createUserWithEmailAndPassword,
   signInWithEmailAndPassword,
   signOut,
@@ -7,18 +7,15 @@ import {
   sendPasswordResetEmail,
   updateProfile,
   GoogleAuthProvider,
-  signInWithPopup
+  signInWithPopup,
 } from "firebase/auth";
 import { auth } from "./firebase.js";
 
-
 const AuthContext = createContext();
-
 
 export const useAuth = () => {
   return useContext(AuthContext);
 };
-
 
 export const AuthProvider = ({ children }) => {
   const [currentUser, setCurrentUser] = useState(null);
@@ -57,26 +54,59 @@ export const AuthProvider = ({ children }) => {
 
   useEffect(() => {
     let unsubscribe;
-    
+
     try {
-      unsubscribe = onAuthStateChanged(auth, (user) => {
-        setCurrentUser(user);
-        setLoading(false);
-      }, (error) => {
-        console.error("Auth state change error:", error);
-        setLoading(false);
-      });
+      // Try to retrieve the user from localStorage first
+      const savedUser = localStorage.getItem("shopfinity_auth_user");
+      if (savedUser) {
+        try {
+          const parsedUser = JSON.parse(savedUser);
+          setCurrentUser(parsedUser);
+        } catch (e) {
+          console.error("Error parsing saved user:", e);
+          localStorage.removeItem("shopfinity_auth_user");
+        }
+      }
+
+      unsubscribe = onAuthStateChanged(
+        auth,
+        (user) => {
+          setCurrentUser(user);
+
+          // Save the user to localStorage
+          if (user) {
+            const userData = {
+              uid: user.uid,
+              email: user.email,
+              displayName: user.displayName,
+              photoURL: user.photoURL,
+              emailVerified: user.emailVerified,
+            };
+            localStorage.setItem(
+              "shopfinity_auth_user",
+              JSON.stringify(userData)
+            );
+          } else {
+            localStorage.removeItem("shopfinity_auth_user");
+          }
+
+          setLoading(false);
+        },
+        (error) => {
+          console.error("Auth state change error:", error);
+          setLoading(false);
+        }
+      );
     } catch (error) {
       console.error("Failed to set up auth listener:", error);
       setLoading(false);
     }
-    
+
     return () => {
       if (unsubscribe) unsubscribe();
     };
   }, []);
 
-  
   const value = {
     currentUser,
     signup,
@@ -87,7 +117,6 @@ export const AuthProvider = ({ children }) => {
     signInWithGoogle,
   };
 
-  
   return (
     <AuthContext.Provider value={value}>
       {!loading && children}

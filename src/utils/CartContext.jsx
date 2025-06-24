@@ -13,13 +13,17 @@ export const CartProvider = ({ children }) => {
 
   // Get cart items from local storage or start with empty array
   const [cartItems, setCartItems] = useState([]);
+  const [isInitialized, setIsInitialized] = useState(false);
 
   useEffect(() => {
     loadCartFromStorage();
+    setIsInitialized(true);
   }, [userId]);
 
   // Save cart items to localStorage whenever they change
   useEffect(() => {
+    if (!isInitialized) return;
+
     try {
       localStorage.setItem(
         `shopfinity_cart_${userId}`,
@@ -28,12 +32,16 @@ export const CartProvider = ({ children }) => {
     } catch (error) {
       console.error("Error saving cart to localStorage:", error);
     }
-  }, [cartItems, userId]);
+  }, [cartItems, userId, isInitialized]);
 
   // Function to load cart from localStorage
   const loadCartFromStorage = () => {
     try {
       const savedCart = localStorage.getItem(`shopfinity_cart_${userId}`);
+      console.log(
+        `Loading cart for user: ${userId}`,
+        savedCart ? JSON.parse(savedCart) : []
+      );
       if (savedCart) {
         setCartItems(JSON.parse(savedCart));
       } else {
