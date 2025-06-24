@@ -21,7 +21,10 @@ const Navbar = () => {
   const [isUserMenuOpen, setIsUserMenuOpen] = useState(false);
   const [searchTerm, setSearchTerm] = useState("");
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
-  const [isSearchVisible, setIsSearchVisible] = useState(false);
+  const [isSearchVisible, setIsSearchVisible] = useState(
+    window.innerWidth >= 640
+  );
+  const [windowWidth, setWindowWidth] = useState(window.innerWidth);
   const navigate = useNavigate();
   const { cartItems } = useCart();
   const { currentUser, logout } = useAuth();
@@ -69,11 +72,30 @@ const Navbar = () => {
       }
     };
 
+    const handleResize = () => {
+      setWindowWidth(window.innerWidth);
+
+      // Close mobile menu on larger screens
+      if (window.innerWidth >= 768 && isMobileMenuOpen) {
+        setIsMobileMenuOpen(false);
+      }
+
+      // Show search on larger screens
+      if (window.innerWidth >= 640) {
+        setIsSearchVisible(true);
+      } else {
+        setIsSearchVisible(false);
+      }
+    };
+
     document.addEventListener("mousedown", handleClickOutside);
+    window.addEventListener("resize", handleResize);
+
     return () => {
       document.removeEventListener("mousedown", handleClickOutside);
+      window.removeEventListener("resize", handleResize);
     };
-  }, []);
+  }, [isMobileMenuOpen]);
 
   const handleCategoryClick = (category) => {
     setIsDropdownOpen(false);
@@ -90,7 +112,7 @@ const Navbar = () => {
   };
 
   return (
-    <header className="shadow-md px-4 py-2 flex flex-wrap items-center justify-between text-sm relative z-50 bg-white">
+    <header className="shadow-md flex flex-wrap items-center justify-between text-sm relative z-50 bg-white navbar-container">
       {/* Mobile Menu Button */}
       <button
         className="md:hidden text-gray-700 mr-2"
@@ -103,7 +125,7 @@ const Navbar = () => {
       <div className="flex items-center">
         <Link
           to="/"
-          className="gap-1 text-xl md:text-2xl font-bold text-teal-400 cursor-pointer flex items-center"
+          className="gap-1 text-xl md:text-2xl font-bold text-teal-400 cursor-pointer flex items-center navbar-logo"
         >
           <img
             src={logo}
@@ -165,9 +187,9 @@ const Navbar = () => {
       <div
         ref={searchRef}
         className={`${
-          isSearchVisible || window.innerWidth >= 640 ? "flex" : "hidden"
-        } sm:flex flex-1 mx-2 sm:mx-8 ${
-          isSearchVisible && window.innerWidth < 640
+          isSearchVisible || windowWidth >= 640 ? "flex" : "hidden"
+        } sm:flex flex-1 mx-2 sm:mx-8 navbar-search ${
+          isSearchVisible && windowWidth < 640
             ? "absolute top-full left-0 right-0 p-2 bg-white z-50 shadow-md"
             : "relative"
         }`}
@@ -179,7 +201,7 @@ const Navbar = () => {
           <input
             type="text"
             placeholder="Search in Shopfinity"
-            className="w-full px-4 py-2 outline-none text-sm"
+            className="w-full px-4 py-2 outline-none text-sm search-transition"
             value={searchTerm}
             onChange={(e) => setSearchTerm(e.target.value)}
           />
@@ -193,7 +215,7 @@ const Navbar = () => {
       </div>
 
       {/* Right Controls */}
-      <div className="flex items-center space-x-2 sm:space-x-6">
+      <div className="flex items-center space-x-2 sm:space-x-6 navbar-items">
         {/* App Download - Hide on mobile */}
         <div className="text-xs text-gray-600 hover:text-black text-center leading-tight hidden lg:block">
           <button
@@ -305,7 +327,7 @@ const Navbar = () => {
           </div>
           <span className="font-medium hidden sm:inline">Cart</span>
           {cartItems.length > 0 && (
-            <span className="absolute -top-2 -right-2 bg-red-500 text-white rounded-full w-5 h-5 flex items-center justify-center text-xs font-bold shadow-md">
+            <span className="absolute bg-red-500 text-white rounded-full w-5 h-5 flex items-center justify-center text-xs font-bold shadow-md cart-badge">
               {cartItems.reduce((total, item) => total + item.quantity, 0)}
             </span>
           )}
@@ -322,7 +344,7 @@ const Navbar = () => {
 
       {/* Mobile Menu Panel */}
       <div
-        className={`fixed top-0 left-0 bottom-0 w-64 bg-white shadow-xl z-50 transform transition-transform duration-300 ease-in-out ${
+        className={`fixed top-0 left-0 bottom-0 bg-white shadow-xl z-50 transform transition-transform duration-300 ease-in-out mobile-menu ${
           isMobileMenuOpen ? "translate-x-0" : "-translate-x-full"
         }`}
       >

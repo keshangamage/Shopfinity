@@ -68,3 +68,151 @@ button {
     padding-right: 2rem;
   }
 }
+
+/* Navbar Responsive Styles */
+.navbar-container {
+  width: 100%;
+  max-width: 100%;
+  transition: padding 0.3s ease;
+}
+
+@media (max-width: 640px) {
+  .navbar-container {
+    padding: 0.5rem;
+  }
+
+  .navbar-logo {
+    font-size: 1.25rem;
+  }
+
+  .navbar-search {
+    position: absolute;
+    top: 100%;
+    left: 0;
+    right: 0;
+    z-index: 40;
+    padding: 0.5rem;
+    box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
+    background-color: white;
+  }
+
+  .navbar-items {
+    justify-content: space-between;
+  }
+
+  .navbar-search form {
+    width: 100%;
+  }
+
+  .navbar-search input {
+    font-size: 14px;
+  }
+}
+
+@media (min-width: 641px) and (max-width: 768px) {
+  .navbar-container {
+    padding: 0.5rem 1rem;
+  }
+
+  .navbar-search {
+    max-width: 40%;
+  }
+
+  .navbar-search input {
+    max-width: 100%;
+  }
+}
+
+@media (min-width: 769px) and (max-width: 1024px) {
+  .navbar-container {
+    padding: 0.75rem 1.5rem;
+  }
+
+  .navbar-search {
+    max-width: 50%;
+  }
+
+  .navbar-search input {
+    max-width: 100%;
+  }
+}
+
+@media (min-width: 1025px) and (max-width: 1280px) {
+  .navbar-container {
+    padding: 0.75rem 2rem;
+  }
+
+  .navbar-search {
+    max-width: 60%;
+  }
+}
+
+@media (min-width: 1281px) {
+  .navbar-container {
+    padding: 0.75rem 2.5rem;
+  }
+
+  .navbar-search {
+    max-width: 70%;
+  }
+}
+
+@media (max-width: 640px) {
+  .navbar-logo span {
+    font-size: 1.1rem;
+  }
+
+  .navbar-container button:first-child {
+    margin-right: 0.5rem;
+  }
+}
+
+@media (min-width: 641px) {
+  .navbar-logo span {
+    font-size: 1.2rem;
+  }
+}
+
+.cart-badge {
+  position: absolute;
+  top: -8px;
+  right: -8px;
+}
+
+@media (max-width: 640px) {
+  .cart-badge {
+    top: -6px;
+    right: -6px;
+    width: 18px;
+    height: 18px;
+    font-size: 10px;
+  }
+}
+
+.mobile-menu {
+  width: 80%;
+  max-width: 300px;
+  transition: transform 0.3s ease-in-out;
+}
+
+@media (max-width: 360px) {
+  .mobile-menu {
+    width: 90%;
+  }
+}
+
+.search-transition {
+  transition: all 0.3s ease-in-out;
+}
+
+@media (max-width: 640px) {
+  .nav-menu-item {
+    padding: 0.5rem 0.75rem;
+  }
+}
+
+@media (min-width: 641px) {
+  .nav-menu-item {
+    padding: 0.5rem 1rem;
+  }
+}

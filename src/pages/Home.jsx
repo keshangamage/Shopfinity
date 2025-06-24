@@ -5,7 +5,7 @@ import webbanner from "../assets/banner.png";
 import { useCart } from "../utils/CartContext";
 
 const Home = () => {
-  const [visibleCount, setVisibleCount] = useState(15);
+  const [visibleCount, setVisibleCount] = useState(20);
   const { addToCart } = useCart();
 
   // Trending products array
@@ -135,7 +135,7 @@ const Home = () => {
           Featured Products
         </h2>
 
-        <div className="mr-4 ml-4 grid grid-cols-1 xs:grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 gap-6">
+        <div className="mr-4 ml-4 grid grid-cols-2 xs:grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 gap-6">
           {products.slice(0, visibleCount).map((product) => (
             <div
               key={product.id}
