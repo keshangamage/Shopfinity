@@ -88,6 +88,58 @@ export const OrderProvider = ({ children }) => {
     return updatedOrders.find((order) => order.id === orderId);
   };
 
+  const updateOrderStatus = (orderId, newStatus, trackingNumber = null) => {
+    const updatedOrders = orders.map((order) => {
+      if (order.id === orderId) {
+        const updatedOrder = {
+          ...order,
+          status: newStatus,
+          lastUpdated: new Date().toISOString(),
+        };
+
+        if (trackingNumber) {
+          updatedOrder.trackingNumber = trackingNumber;
+        }
+
+        return updatedOrder;
+      }
+      return order;
+    });
+
+    setOrders(updatedOrders);
+    return updatedOrders.find((order) => order.id === orderId);
+  };
+
+  const addTrackingInfo = (orderId, trackingInfo) => {
+    const updatedOrders = orders.map((order) => {
+      if (order.id === orderId) {
+        return {
+          ...order,
+          trackingInfo: {
+            ...trackingInfo,
+            lastUpdated: new Date().toISOString(),
+          },
+        };
+      }
+      return order;
+    });
+
+    setOrders(updatedOrders);
+    return updatedOrders.find((order) => order.id === orderId);
+  };
+
+  const getAdminOrdersData = () => {
+    return orders.map((order) => ({
+      ...order,
+
+      formattedDate: order.date
+        ? new Date(order.date).toLocaleDateString()
+        : "N/A",
+      customerName: order.userId === userId ? "Current User" : "Other User",
+      hasPriorityFlag: Math.random() > 0.8,
+    }));
+  };
+
   const trackOrder = (orderId) => {
     const order = orders.find((order) => order.id === orderId);
     if (!order) return null;
@@ -98,9 +150,11 @@ export const OrderProvider = ({ children }) => {
       (currentDate - orderDate) / (1000 * 60 * 60 * 24)
     );
 
-    // Create a fake shipping timeline
+    // Create a shipping timeline
     let trackingInfo = {
-      trackingId: `SF-${Math.floor(Math.random() * 900000) + 100000}`,
+      trackingId:
+        order.trackingNumber ||
+        `SF-${Math.floor(Math.random() * 900000) + 100000}`,
       status: order.status,
       timeline: [
         {
@@ -122,7 +176,9 @@ export const OrderProvider = ({ children }) => {
           month: "long",
           day: "numeric",
         }),
-        completed: daysSinceOrder >= 1 || order.status === "Delivered",
+        completed:
+          daysSinceOrder >= 1 ||
+          ["Shipped", "Out for Delivery", "Delivered"].includes(order.status),
         description:
           "Your order has been processed and is being prepared for shipping.",
       });
@@ -136,7 +192,9 @@ export const OrderProvider = ({ children }) => {
           month: "long",
           day: "numeric",
         }),
-        completed: daysSinceOrder >= 2 || order.status === "Delivered",
+        completed:
+          daysSinceOrder >= 2 ||
+          ["Out for Delivery", "Delivered"].includes(order.status),
         description: "Your order has been shipped and is on its way to you.",
       });
 
@@ -170,11 +228,13 @@ export const OrderProvider = ({ children }) => {
       // Add cancelled step for cancelled orders
       trackingInfo.timeline.push({
         status: "Cancelled",
-        date: new Date().toLocaleDateString("en-US", {
-          year: "numeric",
-          month: "long",
-          day: "numeric",
-        }),
+        date:
+          order.lastUpdated &&
+          new Date(order.lastUpdated).toLocaleDateString("en-US", {
+            year: "numeric",
+            month: "long",
+            day: "numeric",
+          }),
         completed: true,
         description:
           "This order has been cancelled and will not be processed further.",
@@ -191,6 +251,9 @@ export const OrderProvider = ({ children }) => {
     getOrderById,
     cancelOrder,
     trackOrder,
+    updateOrderStatus,
+    addTrackingInfo,
+    getAdminOrdersData,
   };
 
   return (

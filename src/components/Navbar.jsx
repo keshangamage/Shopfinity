@@ -27,7 +27,7 @@ const Navbar = () => {
   const [windowWidth, setWindowWidth] = useState(window.innerWidth);
   const navigate = useNavigate();
   const { cartItems } = useCart();
-  const { currentUser, logout } = useAuth();
+  const { currentUser, logout, isAdmin } = useAuth();
   const userMenuRef = useRef(null);
   const searchRef = useRef(null);
 
@@ -290,6 +290,17 @@ const Navbar = () => {
                     <FaClipboardList className="text-teal-500" size={16} />
                     <span className="font-medium">My Orders</span>
                   </Link>
+
+                  {/* Admin Dashboard Link - Only visible for admins */}
+                  {isAdmin && isAdmin() && (
+                    <Link
+                      to="/admin"
+                      className="flex items-center gap-3 px-6 py-3 text-gray-700 hover:bg-purple-50 transition-colors duration-200"
+                    >
+                      <FaCog className="text-purple-500" size={16} />
+                      <span className="font-medium">Admin Dashboard</span>
+                    </Link>
+                  )}
 
                   <div className="border-t border-gray-100 my-1"></div>
 

@@ -107,6 +107,17 @@ export const AuthProvider = ({ children }) => {
     };
   }, []);
 
+  const isAdmin = () => {
+    if (!currentUser) return false;
+
+    const adminEmails = [
+      "admin@shopfinity.com",
+      "keshan.gimhana.gamage@gmail.com",
+    ]; // admin emails
+
+    return adminEmails.includes(currentUser.email);
+  };
+
   const value = {
     currentUser,
     signup,
@@ -115,6 +126,7 @@ export const AuthProvider = ({ children }) => {
     resetPassword,
     updateUserProfile,
     signInWithGoogle,
+    isAdmin,
   };
 
   return (

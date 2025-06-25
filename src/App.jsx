@@ -19,8 +19,15 @@ import { AddressProvider } from "./utils/AddressContext.jsx";
 import { PaymentProvider } from "./utils/PaymentContext.jsx";
 import { SavedItemsProvider } from "./utils/SavedItemsContext.jsx";
 import { RewardsProvider } from "./utils/RewardsContext.jsx";
+import { AdminProvider } from "./utils/AdminContext.jsx";
 import PersistenceDebugger from "./components/PersistenceDebugger";
 import ProtectedRoute from "./components/ProtectedRoute";
+import AdminRoute from "./components/AdminRoute";
+import AdminLayout from "./components/AdminLayout";
+import AdminDashboard from "./pages/admin/Dashboard";
+import AdminProducts from "./pages/admin/Products";
+import AdminOrders from "./pages/admin/Orders";
+import AdminUsers from "./pages/admin/Users";
 
 function App() {
   const [error, setError] = React.useState(null);
@@ -95,65 +102,108 @@ function App() {
                 <SavedItemsProvider>
                   <PaymentProvider>
                     <RewardsProvider>
-                      <Router>
-                        <PersistenceDebugger />
-                        <Navbar />
-                        <Routes>
-                          <Route path="/" element={<Home />} />
-                          <Route path="/login" element={<Login />} />
-                          <Route path="/register" element={<Register />} />
-                          <Route
-                            path="/cart"
-                            element={
-                              <ProtectedRoute>
-                                <Cart />
-                              </ProtectedRoute>
-                            }
-                          />
-                          <Route
-                            path="/checkout"
-                            element={
-                              <ProtectedRoute>
-                                <Checkout />
-                              </ProtectedRoute>
-                            }
-                          />
-                          <Route
-                            path="/product/:id"
-                            element={<ProductDetail />}
-                          />
-                          <Route
-                            path="/categories/:categoryName"
-                            element={<CategoryPage />}
-                          />
-                          <Route path="/search" element={<SearchPage />} />
-                          <Route
-                            path="/profile"
-                            element={
-                              <ProtectedRoute>
-                                <Profile />
-                              </ProtectedRoute>
-                            }
-                          />
-                          <Route
-                            path="/orders"
-                            element={
-                              <ProtectedRoute>
-                                <Orders />
-                              </ProtectedRoute>
-                            }
-                          />
-                          <Route
-                            path="/orders/:orderId"
-                            element={
-                              <ProtectedRoute>
-                                <OrderDetail />
-                              </ProtectedRoute>
-                            }
-                          />
-                        </Routes>
-                        <PersistenceDebugger />
-                      </Router>
+                      <AdminProvider>
+                        <Router>
+                          <PersistenceDebugger />
+                          <Navbar />
+                          <Routes>
+                            <Route path="/" element={<Home />} />
+                            <Route path="/login" element={<Login />} />
+                            <Route path="/register" element={<Register />} />
+                            <Route
+                              path="/cart"
+                              element={
+                                <ProtectedRoute>
+                                  <Cart />
+                                </ProtectedRoute>
+                              }
+                            />
+                            <Route
+                              path="/checkout"
+                              element={
+                                <ProtectedRoute>
+                                  <Checkout />
+                                </ProtectedRoute>
+                              }
+                            />
+                            <Route
+                              path="/product/:id"
+                              element={<ProductDetail />}
+                            />
+                            <Route
+                              path="/categories/:categoryName"
+                              element={<CategoryPage />}
+                            />
+                            <Route path="/search" element={<SearchPage />} />
+                            <Route
+                              path="/profile"
+                              element={
+                                <ProtectedRoute>
+                                  <Profile />
+                                </ProtectedRoute>
+                              }
+                            />
+                            <Route
+                              path="/orders"
+                              element={
+                                <ProtectedRoute>
+                                  <Orders />
+                                </ProtectedRoute>
+                              }
+                            />
+                            <Route
+                              path="/orders/:orderId"
+                              element={
+                                <ProtectedRoute>
+                                  <OrderDetail />
+                                </ProtectedRoute>
+                              }
+                            />
+                            {/* Admin Routes */}
+                            <Route
+                              path="/admin"
+                              element={
+                                <AdminRoute>
+                                  <AdminLayout>
+                                    <AdminDashboard />
+                                  </AdminLayout>
+                                </AdminRoute>
+                              }
+                            />
+                            <Route
+                              path="/admin/products"
+                              element={
+                                <AdminRoute>
+                                  <AdminLayout>
+                                    <AdminProducts />
+                                  </AdminLayout>
+                                </AdminRoute>
+                              }
+                            />
+                            <Route
+                              path="/admin/orders"
+                              element={
+                                <AdminRoute>
+                                  <AdminLayout>
+                                    <AdminOrders />
+                                  </AdminLayout>
+                                </AdminRoute>
+                              }
+                            />
+                            <Route
+                              path="/admin/users"
+                              element={
+                                <AdminRoute>
+                                  <AdminLayout>
+                                    <AdminUsers />
+                                  </AdminLayout>
+                                </AdminRoute>
+                              }
+                            />
+                          </Routes>
+                          <PersistenceDebugger />
+                        </Router>
+                      </AdminProvider>
                     </RewardsProvider>
                   </PaymentProvider>
                 </SavedItemsProvider>
