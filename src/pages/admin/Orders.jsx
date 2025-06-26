@@ -21,8 +21,13 @@ import { useOrder } from "../../utils/OrderContext";
 import OrdersAnalytics from "../../components/admin/OrdersAnalytics";
 
 const AdminOrders = () => {
-  const { orders, updateOrderStatus, addTrackingInfo, getAdminOrdersData } =
-    useOrder();
+  const {
+    orders,
+    updateOrderStatus,
+    addTrackingInfo,
+    getAdminOrdersData,
+    refreshAllOrders,
+  } = useOrder();
   const [filteredOrders, setFilteredOrders] = useState([]);
   const [searchTerm, setSearchTerm] = useState("");
   const [selectedOrder, setSelectedOrder] = useState(null);
@@ -41,12 +46,52 @@ const AdminOrders = () => {
   const [showAnalytics, setShowAnalytics] = useState(true);
 
   useEffect(() => {
-    const adminOrders = getAdminOrdersData();
-    setFilteredOrders(adminOrders);
-  }, [orders, getAdminOrdersData]);
+    const loadOrdersData = () => {
+      console.log("Loading admin orders data");
+      const adminOrders = getAdminOrdersData();
+      setFilteredOrders(adminOrders);
+    };
+
+    loadOrdersData();
+  }, [orders]);
 
   useEffect(() => {
-    let filtered = [...orders];
+    const handleOrderUpdate = (event) => {
+      console.log("Order update event received:", event.detail);
+      setIsLoading(true);
+
+      setTimeout(() => {
+        const refreshedOrders = getAdminOrdersData();
+        console.log("Refreshed orders:", refreshedOrders);
+        setFilteredOrders(refreshedOrders);
+        setIsLoading(false);
+
+        if (
+          selectedOrder &&
+          event.detail.orderId === selectedOrder.id &&
+          event.detail.updatedOrder
+        ) {
+          setSelectedOrder(event.detail.updatedOrder);
+        }
+      }, 100);
+    };
+
+    window.addEventListener("orderUpdated", handleOrderUpdate);
+
+    return () => {
+      window.removeEventListener("orderUpdated", handleOrderUpdate);
+    };
+  }, [selectedOrder]);
+
+  useEffect(() => {
+    console.log("Filtering orders with filters:", {
+      statusFilter,
+      dateFilter,
+      searchTerm,
+    });
+
+    const adminOrders = getAdminOrdersData();
+    let filtered = [...adminOrders];
 
     // status filter
     if (statusFilter !== "all") {
@@ -137,14 +182,15 @@ const AdminOrders = () => {
       });
     }
 
+    console.log("Setting filtered orders:", filtered.length);
     setFilteredOrders(filtered);
   }, [
     searchTerm,
-    orders,
     statusFilter,
     dateFilter,
     sortConfig,
-    getAdminOrdersData,
+
+    // Remove getAdminOrdersData from dependencies to avoid deep comparisons
   ]);
 
   const handleSearchChange = (e) => {
@@ -170,24 +216,27 @@ const AdminOrders = () => {
     setIsLoading(true);
 
     setTimeout(() => {
+      console.log(`Updating order ${orderId} to status ${newStatus}`);
+
       const updatedOrder = updateOrderStatus(
         orderId,
         newStatus,
         trackingNumber || undefined
       );
 
+      console.log("Updated order:", updatedOrder);
+
       if (trackingNumber && newStatus === "Shipped") {
-        addTrackingInfo(orderId, {
+        const trackingData = {
           carrier: "Shopfinity Express",
           trackingNumber,
           estimatedDelivery: new Date(
             Date.now() + 5 * 24 * 60 * 60 * 1000
           ).toLocaleDateString(),
-        });
-      }
+        };
 
-      if (selectedOrder && selectedOrder.id === orderId) {
-        setSelectedOrder(updatedOrder);
+        console.log(`Adding tracking info for order ${orderId}:`, trackingData);
+        addTrackingInfo(orderId, trackingData);
       }
 
       setIsLoading(false);
@@ -208,6 +257,10 @@ const AdminOrders = () => {
     setIsLoading(true);
 
     setTimeout(() => {
+      console.log(
+        `Processing bulk action ${bulkAction} for ${selectedOrderIds.length} orders`
+      );
+
       selectedOrderIds.forEach((orderId) => {
         if (bulkAction === "mark-shipped") {
           updateOrderStatus(orderId, "Shipped");
@@ -218,10 +271,11 @@ const AdminOrders = () => {
         }
       });
 
-      setIsLoading(false);
+      const orderCount = selectedOrderIds.length;
       setSelectedOrderIds([]);
       setBulkAction("");
-      alert(`${selectedOrderIds.length} orders updated successfully`);
+      setIsLoading(false);
+      alert(`${orderCount} orders updated successfully`);
     }, 1000);
   };
 
@@ -374,14 +428,20 @@ const AdminOrders = () => {
             className="bg-purple-600 hover:bg-purple-700 text-white px-4 py-2 rounded-md flex items-center"
             onClick={() => {
               setIsLoading(true);
+              console.log("Manual refresh triggered");
               setTimeout(() => {
+                refreshAllOrders();
+                const freshOrders = getAdminOrdersData();
+                console.log("Fresh orders loaded:", freshOrders.length);
+                setFilteredOrders(freshOrders);
                 setIsLoading(false);
-                alert("Orders synchronized successfully!");
-              }, 1000);
+                alert("Orders refreshed successfully!");
+              }, 300);
             }}
+            disabled={isLoading}
           >
             <FaSync className={`mr-2 ${isLoading ? "animate-spin" : ""}`} />
-            Sync Orders
+            Refresh Orders
           </button>
           <button
             className="bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded-md flex items-center"

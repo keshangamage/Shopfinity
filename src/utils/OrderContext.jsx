@@ -14,6 +14,8 @@ export const OrderProvider = ({ children }) => {
   const [orders, setOrders] = useState([]);
   const [isInitialized, setIsInitialized] = useState(false);
 
+  const [allUserOrders, setAllUserOrders] = useState([]);
+
   useEffect(() => {
     loadOrdersFromStorage();
     setIsInitialized(true);
@@ -89,54 +91,258 @@ export const OrderProvider = ({ children }) => {
   };
 
   const updateOrderStatus = (orderId, newStatus, trackingNumber = null) => {
-    const updatedOrders = orders.map((order) => {
-      if (order.id === orderId) {
-        const updatedOrder = {
-          ...order,
-          status: newStatus,
-          lastUpdated: new Date().toISOString(),
-        };
+    const orderToUpdate = orders.find((order) => order.id === orderId);
 
-        if (trackingNumber) {
-          updatedOrder.trackingNumber = trackingNumber;
+    if (orderToUpdate) {
+      const updatedOrders = orders.map((order) => {
+        if (order.id === orderId) {
+          const updatedOrder = {
+            ...order,
+            status: newStatus,
+            lastUpdated: new Date().toISOString(),
+          };
+
+          if (trackingNumber) {
+            updatedOrder.trackingNumber = trackingNumber;
+          }
+
+          return updatedOrder;
         }
+        return order;
+      });
+
+      setOrders(updatedOrders);
+
+      const updatedOrder = updatedOrders.find((order) => order.id === orderId);
+
+      const event = new CustomEvent("orderUpdated", {
+        detail: {
+          orderId,
+          newStatus,
+          trackingNumber,
+          forceRefresh: true,
+          updatedOrder,
+        },
+      });
+      window.dispatchEvent(event);
+
+      return updatedOrder;
+    } else {
+      let updatedOrder = null;
+
+      for (let i = 0; i < localStorage.length; i++) {
+        const key = localStorage.key(i);
+        if (key.startsWith("shopfinity_orders_") && !key.includes(userId)) {
+          try {
+            const userOrders = JSON.parse(localStorage.getItem(key));
+            if (!Array.isArray(userOrders)) continue;
+
+            const orderIndex = userOrders.findIndex(
+              (order) => order.id === orderId
+            );
+            if (orderIndex === -1) continue;
+
+            updatedOrder = {
+              ...userOrders[orderIndex],
+              status: newStatus,
+              lastUpdated: new Date().toISOString(),
+            };
+
+            if (trackingNumber) {
+              updatedOrder.trackingNumber = trackingNumber;
+            }
+
+            userOrders[orderIndex] = updatedOrder;
+
+            localStorage.setItem(key, JSON.stringify(userOrders));
+
+            const otherUserId = key.replace("shopfinity_orders_", "");
+            updatedOrder.userId = otherUserId;
+
+            break;
+          } catch (error) {
+            console.error("Error updating order status for other user:", error);
+          }
+        }
+      }
+
+      if (updatedOrder) {
+        const event = new CustomEvent("orderUpdated", {
+          detail: {
+            orderId,
+            newStatus,
+            trackingNumber,
+            forceRefresh: true,
+            updatedOrder,
+          },
+        });
+        window.dispatchEvent(event);
 
         return updatedOrder;
       }
-      return order;
-    });
+    }
 
-    setOrders(updatedOrders);
-    return updatedOrders.find((order) => order.id === orderId);
+    return null;
   };
 
   const addTrackingInfo = (orderId, trackingInfo) => {
-    const updatedOrders = orders.map((order) => {
-      if (order.id === orderId) {
-        return {
-          ...order,
-          trackingInfo: {
-            ...trackingInfo,
-            lastUpdated: new Date().toISOString(),
-          },
-        };
-      }
-      return order;
-    });
+    const orderToUpdate = orders.find((order) => order.id === orderId);
 
-    setOrders(updatedOrders);
-    return updatedOrders.find((order) => order.id === orderId);
+    if (orderToUpdate) {
+      const updatedOrders = orders.map((order) => {
+        if (order.id === orderId) {
+          return {
+            ...order,
+            trackingInfo: {
+              ...trackingInfo,
+              lastUpdated: new Date().toISOString(),
+            },
+            trackingNumber: trackingInfo.trackingNumber || order.trackingNumber,
+          };
+        }
+        return order;
+      });
+
+      setOrders(updatedOrders);
+
+      const updatedOrder = updatedOrders.find((order) => order.id === orderId);
+
+      const event = new CustomEvent("orderUpdated", {
+        detail: { orderId, trackingInfo, forceRefresh: true, updatedOrder },
+      });
+      window.dispatchEvent(event);
+
+      return updatedOrder;
+    } else {
+      let updatedOrder = null;
+
+      for (let i = 0; i < localStorage.length; i++) {
+        const key = localStorage.key(i);
+        if (key.startsWith("shopfinity_orders_") && !key.includes(userId)) {
+          try {
+            const userOrders = JSON.parse(localStorage.getItem(key));
+            if (!Array.isArray(userOrders)) continue;
+
+            const orderIndex = userOrders.findIndex(
+              (order) => order.id === orderId
+            );
+            if (orderIndex === -1) continue;
+
+            updatedOrder = {
+              ...userOrders[orderIndex],
+              trackingInfo: {
+                ...trackingInfo,
+                lastUpdated: new Date().toISOString(),
+              },
+              trackingNumber:
+                trackingInfo.trackingNumber ||
+                userOrders[orderIndex].trackingNumber,
+            };
+
+            userOrders[orderIndex] = updatedOrder;
+
+            localStorage.setItem(key, JSON.stringify(userOrders));
+
+            const otherUserId = key.replace("shopfinity_orders_", "");
+            updatedOrder.userId = otherUserId;
+
+            break;
+          } catch (error) {
+            console.error(
+              "Error updating tracking info for other user:",
+              error
+            );
+          }
+        }
+      }
+
+      if (updatedOrder) {
+        const event = new CustomEvent("orderUpdated", {
+          detail: { orderId, trackingInfo, forceRefresh: true, updatedOrder },
+        });
+        window.dispatchEvent(event);
+
+        return updatedOrder;
+      }
+    }
+
+    return null;
   };
 
-  const getAdminOrdersData = () => {
-    return orders.map((order) => ({
-      ...order,
+  const getAllUsersOrders = () => {
+    console.log("Collecting all users' orders from localStorage");
+    const allOrders = [];
 
+    allOrders.push(...orders.map((order) => ({ ...order, userId })));
+    console.log(`Added ${orders.length} orders from current user (${userId})`);
+
+    let totalExternalOrders = 0;
+    for (let i = 0; i < localStorage.length; i++) {
+      const key = localStorage.key(i);
+      if (
+        key.startsWith("shopfinity_orders_") &&
+        key !== `shopfinity_orders_${userId}`
+      ) {
+        try {
+          const userOrdersJson = localStorage.getItem(key);
+          const userOrders = JSON.parse(userOrdersJson);
+
+          if (!Array.isArray(userOrders) || userOrders.length === 0) continue;
+
+          const otherUserId = key.replace("shopfinity_orders_", "");
+
+          const processedOrders = userOrders.map((order) => ({
+            ...order,
+            userId: otherUserId,
+          }));
+
+          console.log(
+            `Added ${processedOrders.length} orders from user ${otherUserId}`
+          );
+          totalExternalOrders += processedOrders.length;
+          allOrders.push(...processedOrders);
+        } catch (error) {
+          console.error(
+            `Error parsing orders from localStorage key ${key}:`,
+            error
+          );
+        }
+      }
+    }
+
+    console.log(
+      `Total orders collected: ${allOrders.length} (${orders.length} current user + ${totalExternalOrders} external)`
+    );
+    return allOrders;
+  };
+
+  const refreshAllOrders = () => {
+    const allOrders = getAllUsersOrders();
+    setAllUserOrders(allOrders);
+    return allOrders;
+  };
+
+  useEffect(() => {
+    refreshAllOrders();
+  }, [orders, userId]);
+
+  const getAdminOrdersData = () => {
+    const latestOrders = getAllUsersOrders();
+
+    setAllUserOrders(latestOrders);
+
+    return latestOrders.map((order) => ({
+      ...order,
       formattedDate: order.date
         ? new Date(order.date).toLocaleDateString()
         : "N/A",
-      customerName: order.userId === userId ? "Current User" : "Other User",
-      hasPriorityFlag: Math.random() > 0.8,
+      customerName:
+        order.userId === userId
+          ? "Current User"
+          : order.userId === "guest"
+          ? "Guest User"
+          : order.customerName || `User (${order.userId.substring(0, 8)})`,
+      hasPriorityFlag: order.hasPriorityFlag || false,
     }));
   };
 
@@ -254,6 +460,8 @@ export const OrderProvider = ({ children }) => {
     updateOrderStatus,
     addTrackingInfo,
     getAdminOrdersData,
+    refreshAllOrders,
+    allUserOrders,
   };
 
   return (
