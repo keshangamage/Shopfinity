@@ -15,7 +15,7 @@ import {
   FaCreditCard,
 } from "react-icons/fa";
 import { useAdmin } from "../../utils/AdminContext.jsx";
-import { products } from "../../components/Products.jsx";
+import { useProducts } from "../../utils/ProductContext.jsx";
 
 const Dashboard = () => {
   const {
@@ -25,6 +25,7 @@ const Dashboard = () => {
     refreshData,
     lastRefreshed,
   } = useAdmin();
+  const { products } = useProducts();
   const [activeTab, setActiveTab] = useState("daily");
   const [reportType, setReportType] = useState("sales");
   const [isGeneratingReport, setIsGeneratingReport] = useState(false);

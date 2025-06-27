@@ -1,12 +1,13 @@
 import React, { useState, useEffect } from "react";
 import { Link } from "react-router-dom";
-import { products } from "../components/Products";
 import webbanner from "../assets/banner.png";
 import { useCart } from "../utils/CartContext";
+import { useProducts } from "../utils/ProductContext";
 
 const Home = () => {
   const [visibleCount, setVisibleCount] = useState(20);
   const { addToCart } = useCart();
+  const { products } = useProducts();
 
   // Trending products array
   const trendingProducts = [

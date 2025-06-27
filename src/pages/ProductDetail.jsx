@@ -1,8 +1,8 @@
 import React, { useState } from "react";
 import { useParams, useNavigate } from "react-router-dom";
-import { products } from "../components/Products";
 import { useCart } from "../utils/CartContext";
 import { useSavedItems } from "../utils/SavedItemsContext";
+import { useProducts } from "../utils/ProductContext";
 import { FiHeart } from "react-icons/fi";
 
 const ProductDetail = () => {
@@ -13,6 +13,7 @@ const ProductDetail = () => {
   const { addToCart } = useCart();
   const { addToSavedItems, removeFromSavedItems, isItemSaved } =
     useSavedItems();
+  const { products } = useProducts();
   const navigate = useNavigate();
   const product = products.find((p) => p.id.toString() === id);
 

@@ -19,12 +19,20 @@ import {
   FaBoxes,
   FaSync,
 } from "react-icons/fa";
-import { products as initialProducts } from "../../components/Products";
-
-const LOCAL_STORAGE_PRODUCTS_KEY = "shopfinity_admin_products";
+import { useProducts } from "../../utils/ProductContext";
 
 const AdminProducts = () => {
-  const [allProducts, setAllProducts] = useState([]);
+  const {
+    products,
+    isLoading: productsLoading,
+    addProduct,
+    updateProduct,
+    deleteProduct,
+    bulkUpdateProducts,
+    bulkDeleteProducts,
+    resetProducts,
+  } = useProducts();
+
   const [filteredProducts, setFilteredProducts] = useState([]);
   const [searchTerm, setSearchTerm] = useState("");
   const [isAddModalOpen, setIsAddModalOpen] = useState(false);
@@ -50,35 +58,9 @@ const AdminProducts = () => {
     tags: [],
   });
 
+  // Filter and sort products whenever they change
   useEffect(() => {
-    const loadProducts = () => {
-      try {
-        const savedProducts = localStorage.getItem(LOCAL_STORAGE_PRODUCTS_KEY);
-        if (savedProducts) {
-          const parsedProducts = JSON.parse(savedProducts);
-          setAllProducts(parsedProducts);
-          setFilteredProducts(parsedProducts);
-        } else {
-          setAllProducts(initialProducts);
-          setFilteredProducts(initialProducts);
-
-          localStorage.setItem(
-            LOCAL_STORAGE_PRODUCTS_KEY,
-            JSON.stringify(initialProducts)
-          );
-        }
-      } catch (error) {
-        console.error("Error loading products from localStorage:", error);
-        setAllProducts(initialProducts);
-        setFilteredProducts(initialProducts);
-      }
-    };
-
-    loadProducts();
-  }, []);
-
-  useEffect(() => {
-    let filtered = [...allProducts];
+    let filtered = [...products];
 
     // category filter
     if (categoryFilter !== "all") {
@@ -132,7 +114,7 @@ const AdminProducts = () => {
     }
 
     setFilteredProducts(filtered);
-  }, [searchTerm, allProducts, categoryFilter, statusFilter, sortConfig]);
+  }, [searchTerm, products, categoryFilter, statusFilter, sortConfig]);
 
   const handleSearchChange = (e) => {
     setSearchTerm(e.target.value);
@@ -251,7 +233,7 @@ const AdminProducts = () => {
     // Create new product with unique ID
     const productToAdd = {
       ...newProduct,
-      id: Math.max(...allProducts.map((p) => p.id || 0), 0) + 1,
+      id: Math.max(...products.map((p) => p.id || 0), 0) + 1,
       price: parseFloat(newProduct.price) || 0,
       stock: parseInt(newProduct.stock) || 0,
       createdAt: new Date().toISOString(),
@@ -262,13 +244,7 @@ const AdminProducts = () => {
       productToAdd.status = "active";
     }
 
-    const updatedProducts = [...allProducts, productToAdd];
-    setAllProducts(updatedProducts);
-
-    localStorage.setItem(
-      LOCAL_STORAGE_PRODUCTS_KEY,
-      JSON.stringify(updatedProducts)
-    );
+    addProduct(productToAdd);
     setIsAddModalOpen(false);
     setImagePreview(null);
 
@@ -292,16 +268,7 @@ const AdminProducts = () => {
       imgURL: selectedProduct.imageUrl || selectedProduct.imgURL,
     };
 
-    const updatedProducts = allProducts.map((product) =>
-      product.id === selectedProduct.id ? updatedProduct : product
-    );
-
-    setAllProducts(updatedProducts);
-
-    localStorage.setItem(
-      LOCAL_STORAGE_PRODUCTS_KEY,
-      JSON.stringify(updatedProducts)
-    );
+    updateProduct(updatedProduct);
     setIsEditModalOpen(false);
     setImagePreview(null);
 
@@ -311,16 +278,7 @@ const AdminProducts = () => {
   // Delete product
   const handleDeleteProduct = (productId) => {
     if (window.confirm("Are you sure you want to delete this product?")) {
-      const updatedProducts = allProducts.filter(
-        (product) => product.id !== productId
-      );
-      setAllProducts(updatedProducts);
-
-      localStorage.setItem(
-        LOCAL_STORAGE_PRODUCTS_KEY,
-        JSON.stringify(updatedProducts)
-      );
-
+      deleteProduct(productId);
       alert("Product deleted successfully!");
     }
   };
@@ -334,39 +292,11 @@ const AdminProducts = () => {
     setIsLoading(true);
 
     setTimeout(() => {
-      const updatedProducts = [...allProducts];
-
-      selectedProductIds.forEach((productId) => {
-        const productIndex = updatedProducts.findIndex(
-          (product) => product.id === productId
-        );
-        if (productIndex !== -1) {
-          if (bulkAction === "activate") {
-            updatedProducts[productIndex].status = "active";
-          } else if (bulkAction === "deactivate") {
-            updatedProducts[productIndex].status = "inactive";
-          } else if (bulkAction === "delete") {
-            updatedProducts[productIndex].markedForDeletion = true;
-          }
-        }
-      });
-
-      let productsToSave;
-
       if (bulkAction === "delete") {
-        productsToSave = updatedProducts.filter(
-          (product) => !product.markedForDeletion
-        );
-        setAllProducts(productsToSave);
+        bulkDeleteProducts(selectedProductIds);
       } else {
-        productsToSave = updatedProducts;
-        setAllProducts(productsToSave);
+        bulkUpdateProducts(selectedProductIds, bulkAction);
       }
-
-      localStorage.setItem(
-        LOCAL_STORAGE_PRODUCTS_KEY,
-        JSON.stringify(productsToSave)
-      );
 
       setIsLoading(false);
       setSelectedProductIds([]);
@@ -422,11 +352,7 @@ const AdminProducts = () => {
         "Are you sure you want to reset to original product data? All your changes will be lost."
       )
     ) {
-      setAllProducts(initialProducts);
-      localStorage.setItem(
-        LOCAL_STORAGE_PRODUCTS_KEY,
-        JSON.stringify(initialProducts)
-      );
+      resetProducts();
       alert("Products have been reset to original data");
     }
   };

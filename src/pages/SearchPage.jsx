@@ -1,11 +1,12 @@
 import React, { useState, useEffect } from "react";
 import { useLocation, Link } from "react-router-dom";
-import { products } from "../components/Products";
 import { useCart } from "../utils/CartContext";
+import { useProducts } from "../utils/ProductContext";
 
 const SearchPage = () => {
   const location = useLocation();
   const { addToCart } = useCart();
+  const { products } = useProducts();
   const [searchResults, setSearchResults] = useState([]);
   const [loading, setLoading] = useState(true);
   const [noResults, setNoResults] = useState(false);

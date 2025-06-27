@@ -1,16 +1,16 @@
 import { useParams } from "react-router-dom";
-import { products } from "../components/Products";
 import React, { useEffect, useState } from "react";
 import { Link } from "react-router-dom";
 import { useCart } from "../utils/CartContext";
 import { useSavedItems } from "../utils/SavedItemsContext";
+import { useProducts } from "../utils/ProductContext";
 import { FiHeart } from "react-icons/fi";
 
 const CategoryPage = () => {
   const { categoryName } = useParams();
   const { addToCart } = useCart();
-  const { addToSavedItems, removeFromSavedItems, isItemSaved } =
-    useSavedItems();
+  const { addToSavedItems, removeFromSavedItems, isItemSaved } = useSavedItems();
+  const { products } = useProducts();
   const [categoryProducts, setCategoryProducts] = useState([]);
   const [saveMessage, setSaveMessage] = useState({ id: null, message: "" });
 

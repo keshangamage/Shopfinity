@@ -14,7 +14,7 @@ import { Link, useNavigate } from "react-router-dom";
 import logo from "../assets/logobgremove.png";
 import { useCart } from "../utils/CartContext.jsx";
 import { useAuth } from "../utils/AuthContext.jsx";
-import { products } from "./Products.jsx";
+import { useProducts } from "../utils/ProductContext.jsx";
 
 const Navbar = () => {
   const [isDropdownOpen, setIsDropdownOpen] = useState(false);
@@ -28,6 +28,7 @@ const Navbar = () => {
   const navigate = useNavigate();
   const { cartItems } = useCart();
   const { currentUser, logout, isAdmin } = useAuth();
+  const { products } = useProducts();
   const userMenuRef = useRef(null);
   const searchRef = useRef(null);
 
