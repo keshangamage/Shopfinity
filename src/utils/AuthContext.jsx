@@ -9,7 +9,8 @@ import {
   GoogleAuthProvider,
   signInWithPopup,
 } from "firebase/auth";
-import { auth } from "./firebase.js";
+import { auth, db } from "./firebase.js";
+import { doc, setDoc, updateDoc, getDoc, Timestamp } from "firebase/firestore";
 
 const AuthContext = createContext();
 
@@ -22,8 +23,11 @@ export const AuthProvider = ({ children }) => {
   const [loading, setLoading] = useState(true);
 
   // Sign up function
-  const signup = (email, password) => {
-    return createUserWithEmailAndPassword(auth, email, password);
+  const signup = async (email, password) => {
+    const result = await createUserWithEmailAndPassword(auth, email, password);
+    // Create user profile in Firestore
+    await createUserProfile(result.user);
+    return result;
   };
 
   // Update user profile (display name, photo)
@@ -32,14 +36,66 @@ export const AuthProvider = ({ children }) => {
   };
 
   // Login function
-  const login = (email, password) => {
-    return signInWithEmailAndPassword(auth, email, password);
+  const login = async (email, password) => {
+    const result = await signInWithEmailAndPassword(auth, email, password);
+    // Update last login
+    await updateLastLogin(result.user.uid);
+    return result;
   };
 
   // Google sign in
-  const signInWithGoogle = () => {
+  const signInWithGoogle = async () => {
     const provider = new GoogleAuthProvider();
-    return signInWithPopup(auth, provider);
+    const result = await signInWithPopup(auth, provider);
+
+    await createUserProfile(result.user);
+    return result;
+  };
+
+  const createUserProfile = async (user) => {
+    try {
+      const userDoc = doc(db, "users", user.uid);
+      const docSnap = await getDoc(userDoc);
+
+      if (!docSnap.exists()) {
+        const userData = {
+          uid: user.uid,
+          email: user.email,
+          displayName: user.displayName || "",
+          photoURL: user.photoURL || "",
+          role: "customer",
+          status: "active",
+          createdAt: Timestamp.now(),
+          lastLoginAt: Timestamp.now(),
+          emailVerified: user.emailVerified,
+        };
+
+        await setDoc(userDoc, userData);
+      } else {
+        // Update existing profile
+        await updateDoc(userDoc, {
+          lastLoginAt: Timestamp.now(),
+          emailVerified: user.emailVerified,
+
+          ...(user.displayName && { displayName: user.displayName }),
+          ...(user.photoURL && { photoURL: user.photoURL }),
+        });
+      }
+    } catch (error) {
+      console.error("Error creating/updating user profile:", error);
+    }
+  };
+
+  // Update last login
+  const updateLastLogin = async (userId) => {
+    try {
+      const userDoc = doc(db, "users", userId);
+      await updateDoc(userDoc, {
+        lastLoginAt: Timestamp.now(),
+      });
+    } catch (error) {
+      console.error("Error updating last login:", error);
+    }
   };
 
   // Logout function
@@ -56,18 +112,6 @@ export const AuthProvider = ({ children }) => {
     let unsubscribe;
 
     try {
-      // Try to retrieve the user from localStorage first
-      const savedUser = localStorage.getItem("shopfinity_auth_user");
-      if (savedUser) {
-        try {
-          const parsedUser = JSON.parse(savedUser);
-          setCurrentUser(parsedUser);
-        } catch (e) {
-          console.error("Error parsing saved user:", e);
-          localStorage.removeItem("shopfinity_auth_user");
-        }
-      }
-
       unsubscribe = onAuthStateChanged(
         auth,
         (user) => {

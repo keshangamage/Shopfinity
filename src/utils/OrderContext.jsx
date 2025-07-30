@@ -462,6 +462,7 @@ export const OrderProvider = ({ children }) => {
     getAdminOrdersData,
     refreshAllOrders,
     allUserOrders,
+    getAllUsersOrders,
   };
 
   return (

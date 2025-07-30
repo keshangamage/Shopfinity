@@ -1,12 +1,7 @@
 import React, { createContext, useContext, useState, useEffect } from "react";
 import { useAuth } from "./AuthContext.jsx";
-import {
-  getFirestore,
-  doc,
-  getDoc,
-  setDoc,
-  updateDoc,
-} from "firebase/firestore";
+import { db } from "./firebase.js";
+import { doc, getDoc, setDoc, updateDoc } from "firebase/firestore";
 
 const SavedItemsContext = createContext();
 
@@ -26,8 +21,6 @@ export const SavedItemsProvider = ({ children }) => {
       return [];
     }
   });
-  const db = getFirestore();
-
   useEffect(() => {
     const fetchSavedItems = async () => {
       if (!currentUser) {
@@ -53,10 +46,7 @@ export const SavedItemsProvider = ({ children }) => {
           const firestoreItems = docSnap.data().savedItems;
           setSavedItems(firestoreItems);
 
-          localStorage.setItem(
-            localStorageKey,
-            JSON.stringify(firestoreItems)
-          );
+          localStorage.setItem(localStorageKey, JSON.stringify(firestoreItems));
         } else {
           // Initialize with empty array if no saved items exist
           await setDoc(

@@ -9,7 +9,8 @@ import { FiHeart } from "react-icons/fi";
 const CategoryPage = () => {
   const { categoryName } = useParams();
   const { addToCart } = useCart();
-  const { addToSavedItems, removeFromSavedItems, isItemSaved } = useSavedItems();
+  const { addToSavedItems, removeFromSavedItems, isItemSaved } =
+    useSavedItems();
   const { products } = useProducts();
   const [categoryProducts, setCategoryProducts] = useState([]);
   const [saveMessage, setSaveMessage] = useState({ id: null, message: "" });

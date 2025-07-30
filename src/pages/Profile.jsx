@@ -7,6 +7,7 @@ import { usePayment } from "../utils/PaymentContext.jsx";
 import { useSavedItems } from "../utils/SavedItemsContext.jsx";
 import { useCart } from "../utils/CartContext.jsx";
 import { useRewards } from "../utils/RewardsContext.jsx";
+import { useUsers } from "../utils/UserContext.jsx";
 import {
   FiUser,
   FiMail,
@@ -57,6 +58,7 @@ const Profile = () => {
   } = usePayment();
   const { savedItems, removeFromSavedItems } = useSavedItems();
   const { addToCart } = useCart();
+  const { loadUserProfile } = useUsers();
   const [displayName, setDisplayName] = useState(
     currentUser?.displayName || ""
   );
@@ -74,6 +76,13 @@ const Profile = () => {
   const [changeUserError, setChangeUserError] = useState("");
 
   const navigate = useNavigate();
+
+  
+  useEffect(() => {
+    if (currentUser?.uid) {
+      loadUserProfile(currentUser.uid);
+    }
+  }, [currentUser]);
 
   useEffect(() => {
     const handleScroll = () => {

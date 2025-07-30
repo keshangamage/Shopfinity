@@ -1,15 +1,22 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { useNavigate, Link } from "react-router-dom";
 import { useAuth } from "../utils/AuthContext.jsx";
 import { FcGoogle } from "react-icons/fc";
 
 const Login = () => {
-  const { login, signInWithGoogle } = useAuth();
+  const { login, signInWithGoogle, currentUser } = useAuth();
   const navigate = useNavigate();
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [error, setError] = useState("");
   const [loading, setLoading] = useState(false);
+
+  // Redirect to home page if user is already authenticated
+  useEffect(() => {
+    if (currentUser) {
+      navigate("/");
+    }
+  }, [currentUser, navigate]);
 
   const handleSubmit = async (e) => {
     e.preventDefault();
@@ -18,10 +25,9 @@ const Login = () => {
       setError("");
       setLoading(true);
       await login(email, password);
-      navigate("/");
     } catch (err) {
       setError("Failed to sign in. Please check your credentials.");
-      console.error(err);
+      console.error("Login error:", err);
     } finally {
       setLoading(false);
     }
@@ -32,7 +38,6 @@ const Login = () => {
       setError("");
       setLoading(true);
       await signInWithGoogle();
-      navigate("/");
     } catch (err) {
       setError("Failed to sign in with Google.");
       console.error(err);
