@@ -13,7 +13,7 @@ import {
 } from "react-icons/fa";
 
 const AdminLayout = ({ children }) => {
-  const [sidebarOpen, setSidebarOpen] = useState(true);
+  const [sidebarOpen, setSidebarOpen] = useState(false);
   const { currentUser, logout, isAdmin } = useAuth();
   const location = useLocation();
 
@@ -52,13 +52,13 @@ const AdminLayout = ({ children }) => {
       {/* Sidebar */}
       <div
         className={`bg-gray-800 text-white fixed inset-y-0 left-0 z-10 transition-all duration-300 ${
-          sidebarOpen ? "w-64" : "w-20"
+          sidebarOpen ? "w-56" : "w-20"
         } lg:relative`}
       >
         {/* Sidebar header */}
         <div className="flex items-center justify-between h-16 px-4 border-b border-gray-700">
           {sidebarOpen && (
-            <h2 className="text-xl font-bold">Shopfinity Admin</h2>
+            <h2 className="text-lg font-bold">Shopfinity Admin</h2>
           )}
           <button
             onClick={toggleSidebar}
@@ -101,7 +101,7 @@ const AdminLayout = ({ children }) => {
       {/* Main content */}
       <div
         className={`flex-1 overflow-auto transition-all duration-300 ${
-          sidebarOpen ? "ml-64" : "ml-20"
+          sidebarOpen ? "ml-56" : "ml-20"
         } lg:ml-0`}
       >
         {/* Topbar */}
