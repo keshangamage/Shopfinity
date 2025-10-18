@@ -226,7 +226,10 @@ export const ProductProvider = ({ children }) => {
     setIsLoading(true);
 
     const productsCollection = collection(db, PRODUCTS_COLLECTION);
-    const productsQuery = query(productsCollection, orderBy("name"));
+    const productsQuery = query(
+      productsCollection,
+      orderBy("createdAt", "desc")
+    );
 
     const unsubscribe = onSnapshot(
       productsQuery,
