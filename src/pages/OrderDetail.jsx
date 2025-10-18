@@ -130,11 +130,7 @@ const OrderDetail = () => {
                   {" "}
                   <div className="h-20 w-20 rounded-lg bg-gray-100 overflow-hidden flex-shrink-0">
                     <img
-                      src={
-                        item.image.startsWith("/")
-                          ? item.image
-                          : `/${item.image}`
-                      }
+                      src={item.image}
                       alt={item.name}
                       className="w-full h-full object-cover"
                       onError={(e) => {

@@ -1,4 +1,6 @@
-export const products = [
+import { resolveProductImage } from "../utils/assetResolver.js";
+
+const rawProducts = [
   {
     id: 1,
     name: "Graphic T-Shirt",
@@ -1281,3 +1283,15 @@ export const products = [
       "Set of 6 durable construction vehicles including dump truck, bulldozer, crane, and more. Made from high-quality materials with realistic details and moving parts. Great for sandbox play and developing motor skills.",
   },
 ];
+
+export const products = rawProducts.map((product) => {
+  const resolvedImage = resolveProductImage(product.image || "");
+  const imageToUse = resolvedImage || product.image || "";
+
+  return {
+    ...product,
+    image: imageToUse,
+    imageUrl: product.imageUrl || imageToUse,
+    imgURL: product.imgURL || imageToUse,
+  };
+});

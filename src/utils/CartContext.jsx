@@ -14,6 +14,7 @@ import {
   Timestamp,
   runTransaction,
 } from "firebase/firestore";
+import { resolveProductImage } from "./assetResolver.js";
 
 const CartContext = createContext();
 
@@ -24,10 +25,27 @@ const emptyCart = [];
 const ensureCartShape = (items) => {
   if (!Array.isArray(items)) return [...emptyCart];
 
-  return items.map((item) => ({
-    ...item,
-    quantity: Number(item.quantity) > 0 ? Number(item.quantity) : 1,
-  }));
+  return items.map((item) => {
+    if (!item || typeof item !== "object") {
+      return {
+        quantity: 1,
+      };
+    }
+
+    const resolvedImage = resolveProductImage(
+      item.image || item.imageUrl || item.imgURL || item.imagePath || ""
+    );
+
+    const imageToUse = resolvedImage || item.image || "";
+
+    return {
+      ...item,
+      image: imageToUse,
+      imageUrl: item.imageUrl || imageToUse,
+      imgURL: item.imgURL || imageToUse,
+      quantity: Number(item.quantity) > 0 ? Number(item.quantity) : 1,
+    };
+  });
 };
 
 export const CartProvider = ({ children }) => {

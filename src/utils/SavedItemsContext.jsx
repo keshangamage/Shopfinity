@@ -8,6 +8,33 @@ import React, {
 import { useAuth } from "./AuthContext.jsx";
 import { db } from "./firebase.js";
 import { doc, onSnapshot, setDoc, Timestamp } from "firebase/firestore";
+import { resolveProductImage } from "./assetResolver.js";
+const normalizeSavedItems = (items) => {
+  if (!Array.isArray(items)) return [];
+
+  return items.map((item) => {
+    if (!item || typeof item !== "object") {
+      return item;
+    }
+
+    const resolvedImage = resolveProductImage(
+      item.image || item.imageUrl || item.imgURL || item.imagePath || ""
+    );
+
+    if (!resolvedImage) {
+      return {
+        ...item,
+      };
+    }
+
+    return {
+      ...item,
+      image: resolvedImage,
+      imageUrl: item.imageUrl || resolvedImage,
+      imgURL: item.imgURL || resolvedImage,
+    };
+  });
+};
 
 const SavedItemsContext = createContext();
 
@@ -49,7 +76,7 @@ export const SavedItemsProvider = ({ children }) => {
           setSavedItems([]);
         } else {
           const data = snapshot.data();
-          setSavedItems(Array.isArray(data.items) ? data.items : []);
+          setSavedItems(normalizeSavedItems(data.items));
         }
         setIsLoading(false);
       },
@@ -88,10 +115,10 @@ export const SavedItemsProvider = ({ children }) => {
     );
 
     if (!isItemSaved) {
-      const updatedItems = [
+      const updatedItems = normalizeSavedItems([
         ...savedItems,
         { ...item, addedOn: new Date().toISOString() },
-      ];
+      ]);
       setSavedItems(updatedItems);
       await persistSavedItems(updatedItems);
       return true;

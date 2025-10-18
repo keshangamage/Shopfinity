@@ -95,7 +95,7 @@ const CategoryPage = () => {
                 <div className="product-image-container">
                   <Link to={`/product/${product.id}`}>
                     <img
-                      src={`/${product.image}`}
+                      src={product.image}
                       alt={product.name}
                       className="product-image"
                       onError={(e) => {

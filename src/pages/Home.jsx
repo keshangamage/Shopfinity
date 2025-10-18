@@ -3,6 +3,40 @@ import { Link } from "react-router-dom";
 import webbanner from "../assets/banner.png";
 import { useCart } from "../utils/CartContext";
 import { useProducts } from "../utils/ProductContext";
+import { resolveProductImage } from "../utils/assetResolver.js";
+
+const featuredCategories = [
+  {
+    name: "Electronics",
+    image: resolveProductImage("electronics.jpg"),
+    link: "/categories/electronics",
+  },
+  {
+    name: "Fashion",
+    image: resolveProductImage("fashion.webp"),
+    link: "/categories/fashion",
+  },
+  {
+    name: "Home",
+    image: resolveProductImage("home appliances.jpg"),
+    link: "/categories/home",
+  },
+  {
+    name: "Fitness",
+    image: resolveProductImage("sports.jpg"),
+    link: "/categories/fitness",
+  },
+  {
+    name: "Toys",
+    image: resolveProductImage("toys.jpg"),
+    link: "/categories/toys",
+  },
+  {
+    name: "Accessories",
+    image: resolveProductImage("accessories.webp"),
+    link: "/categories/accessories",
+  },
+];
 
 const Home = () => {
   const [visibleCount, setVisibleCount] = useState(20);
@@ -76,38 +110,7 @@ const Home = () => {
           Shop by Category
         </h2>
         <div className="flex flex-nowrap justify-start sm:justify-center gap-4 sm:gap-6 overflow-x-auto px-4 py-2 pb-6 scrollbar-hide max-w-full min-h-[220px] sm:min-h-[240px]">
-          {[
-            {
-              name: "Electronics",
-              image: "./src/assets/electronics.jpg",
-              link: "/categories/electronics",
-            },
-            {
-              name: "Fashion",
-              image: "./src/assets/fashion.webp",
-              link: "/categories/fashion",
-            },
-            {
-              name: "Home",
-              image: "./src/assets/home appliances.jpg",
-              link: "/categories/home",
-            },
-            {
-              name: "Fitness",
-              image: "./src/assets/sports.jpg",
-              link: "/categories/fitness",
-            },
-            {
-              name: "Toys",
-              image: "./src/assets/toys.jpg",
-              link: "/categories/toys",
-            },
-            {
-              name: "Accessories",
-              image: "./src/assets/accessories.webp",
-              link: "/categories/accessories",
-            },
-          ].map((category, index) => (
+          {featuredCategories.map((category, index) => (
             <Link
               to={category.link}
               key={index}

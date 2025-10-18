@@ -19,6 +19,7 @@ import {
 } from "firebase/firestore";
 import { products as initialProducts } from "../components/Products.jsx";
 import { db } from "./firebase.js";
+import { resolveProductImage } from "./assetResolver.js";
 
 const ProductContext = createContext();
 
@@ -49,7 +50,17 @@ const extractImage = (product) => {
     product.imagePath,
   ];
 
-  return imageCandidates.find((item) => typeof item === "string" && item) || "";
+  for (const candidate of imageCandidates) {
+    if (typeof candidate === "string" && candidate) {
+      const resolved = resolveProductImage(candidate);
+      if (resolved) {
+        return resolved;
+      }
+      return candidate;
+    }
+  }
+
+  return "";
 };
 
 const normalizeProductDoc = (snapshotDoc) => {

@@ -16,6 +16,7 @@ import {
   Timestamp,
   where,
 } from "firebase/firestore";
+import { resolveProductImages } from "./assetResolver.js";
 
 const OrderContext = createContext();
 
@@ -56,10 +57,12 @@ const normalizeOrderDoc = (snapshotDoc) => {
   const timestampMs = data.timestamp || createdAtDate.getTime();
   const displayDate = data.date || formatDisplayDate(createdAtDate);
 
+  const normalizedItems = resolveProductImages(data.items);
+
   return {
     id: snapshotDoc.id,
     ...data,
-    items: Array.isArray(data.items) ? data.items : [],
+    items: normalizedItems,
     total: Number(data.total) || 0,
     status: data.status || "Processing",
     userId: data.userId || "guest",
@@ -86,11 +89,13 @@ const buildOrderPayload = (order, { docId, userId, user }) => {
 
   const displayDate = order?.date || formatDisplayDate(new Date(timestampMs));
 
+  const normalizedItems = resolveProductImages(order?.items);
+
   const payload = {
     id: docId,
     userId,
     status: order?.status || "Processing",
-    items: Array.isArray(order?.items) ? order.items : [],
+    items: normalizedItems,
     total: Number(order?.total) || 0,
     shippingAddress: order?.shippingAddress || null,
     billingAddress: order?.billingAddress || null,

@@ -83,7 +83,7 @@ const ProductDetail = () => {
         <div className="w-full lg:w-1/2">
           <div className="relative rounded-lg shadow overflow-hidden">
             <img
-              src={`/${product.image}`}
+              src={product.image}
               alt={product.name}
               className="w-full h-auto object-contain cursor-pointer hover:opacity-90 transition-opacity"
               onClick={() => setIsImageModalOpen(true)}
@@ -217,7 +217,7 @@ const ProductDetail = () => {
               >
                 <div className="relative overflow-hidden rounded-t-lg aspect-square">
                   <img
-                    src={`/${relatedProduct.image}`}
+                    src={relatedProduct.image}
                     alt={relatedProduct.name}
                     className="w-full h-full object-contain"
                     onError={(e) => {
@@ -257,7 +257,7 @@ const ProductDetail = () => {
             onClick={(e) => e.stopPropagation()}
           >
             <img
-              src={`/${product.image}`}
+              src={product.image}
               alt={product.name}
               className="w-full h-auto object-contain"
               onError={(e) => {
