@@ -15,6 +15,12 @@ import {
   runTransaction,
 } from "firebase/firestore";
 import { resolveProductImage } from "./assetResolver.js";
+import {
+  getLocalStorageItem,
+  getUserStorageKey,
+  removeLocalStorageItem,
+  setLocalStorageItem,
+} from "./localStorageHelper.js";
 
 const CartContext = createContext();
 
@@ -55,6 +61,11 @@ export const CartProvider = ({ children }) => {
   const [cartItems, setCartItems] = useState(emptyCart);
   const [isLoading, setIsLoading] = useState(false);
 
+  const guestCartStorageKey = useMemo(
+    () => getUserStorageKey("cart", null),
+    []
+  );
+
   const cartDocRef = useMemo(() => {
     if (!userId) return null;
     return doc(db, "carts", userId);
@@ -62,7 +73,11 @@ export const CartProvider = ({ children }) => {
 
   useEffect(() => {
     if (!cartDocRef) {
-      setCartItems(emptyCart);
+      const storedItems = ensureCartShape(
+        getLocalStorageItem(guestCartStorageKey, emptyCart)
+      );
+      setCartItems(storedItems);
+      setIsLoading(false);
       return;
     }
 
@@ -97,10 +112,82 @@ export const CartProvider = ({ children }) => {
     );
 
     return () => unsubscribe();
-  }, [cartDocRef]);
+  }, [cartDocRef, guestCartStorageKey]);
+
+  useEffect(() => {
+    if (cartDocRef) {
+      removeLocalStorageItem(guestCartStorageKey);
+      return;
+    }
+
+    setLocalStorageItem(guestCartStorageKey, cartItems);
+  }, [cartDocRef, cartItems, guestCartStorageKey]);
+
+  useEffect(() => {
+    if (!cartDocRef) return;
+
+    const itemsToMerge = ensureCartShape(
+      getLocalStorageItem(guestCartStorageKey, emptyCart)
+    );
+
+    if (!itemsToMerge.length) return;
+
+    const syncGuestCart = async () => {
+      try {
+        await runTransaction(db, async (transaction) => {
+          const snapshot = await transaction.get(cartDocRef);
+          const existingItems = snapshot.exists()
+            ? ensureCartShape(snapshot.data().items)
+            : emptyCart;
+
+          const mergedItems = itemsToMerge.reduce((acc, guestItem) => {
+            const existing = acc.find((item) => item.id === guestItem.id);
+            if (existing) {
+              return acc.map((item) =>
+                item.id === guestItem.id
+                  ? { ...item, quantity: item.quantity + guestItem.quantity }
+                  : item
+              );
+            }
+
+            return [
+              ...acc,
+              {
+                ...guestItem,
+                quantity:
+                  Number(guestItem.quantity) > 0
+                    ? Number(guestItem.quantity)
+                    : 1,
+              },
+            ];
+          }, existingItems);
+
+          transaction.set(
+            cartDocRef,
+            {
+              items: mergedItems,
+              updatedAt: Timestamp.now(),
+            },
+            { merge: true }
+          );
+
+          setCartItems(mergedItems);
+        });
+
+        removeLocalStorageItem(guestCartStorageKey);
+      } catch (error) {
+        console.error("Error merging guest cart with Firestore cart:", error);
+      }
+    };
+
+    syncGuestCart();
+  }, [cartDocRef, guestCartStorageKey]);
 
   const persistCart = async (items) => {
-    if (!cartDocRef) return;
+    if (!cartDocRef) {
+      setLocalStorageItem(guestCartStorageKey, ensureCartShape(items));
+      return;
+    }
 
     try {
       await setDoc(
