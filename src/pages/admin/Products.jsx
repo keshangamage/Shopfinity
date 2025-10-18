@@ -553,12 +553,12 @@ const AdminProducts = () => {
         </div>
 
         <div className="bg-white rounded-2xl shadow-xl p-6 mb-8 border border-white/20 backdrop-blur-sm">
-          <div className="flex flex-col sm:flex-row items-center gap-4">
-            <div className="flex items-center gap-4 flex-1">
+          <div className="flex flex-col lg:flex-row items-stretch lg:items-center gap-4 sm:gap-5">
+            <div className="flex flex-col sm:flex-row w-full gap-3 sm:gap-4">
               <select
                 value={bulkAction}
                 onChange={(e) => setBulkAction(e.target.value)}
-                className="px-4 py-3 rounded-xl border border-gray-200 bg-gray-50 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all duration-200 font-medium"
+                className="w-full sm:min-w-[220px] sm:w-auto px-4 py-3 rounded-xl border border-gray-200 bg-gray-50 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all duration-200 font-medium"
               >
                 <option value="">Select Bulk Action</option>
                 <option value="activate">✅ Activate Products</option>
@@ -568,7 +568,7 @@ const AdminProducts = () => {
               <button
                 onClick={handleBulkAction}
                 disabled={!bulkAction || selectedProductIds.length === 0}
-                className={`px-6 py-3 rounded-xl font-semibold transition-all duration-300 ${
+                className={`w-full sm:w-auto px-6 py-3 rounded-xl font-semibold transition-all duration-300 ${
                   !bulkAction || selectedProductIds.length === 0
                     ? "bg-gray-200 text-gray-400 cursor-not-allowed"
                     : "bg-gradient-to-r from-blue-600 to-purple-600 hover:from-blue-700 hover:to-purple-700 text-white shadow-lg hover:shadow-xl transform hover:-translate-y-1"
@@ -580,7 +580,7 @@ const AdminProducts = () => {
             </div>
             <button
               onClick={resetToOriginalProducts}
-              className="bg-gradient-to-r from-red-500 to-pink-500 hover:from-red-600 hover:to-pink-600 text-white px-6 py-3 rounded-xl font-semibold shadow-lg hover:shadow-xl transition-all duration-300 transform hover:-translate-y-1"
+              className="w-full sm:w-auto bg-gradient-to-r from-red-500 to-pink-500 hover:from-red-600 hover:to-pink-600 text-white px-6 py-3 rounded-xl font-semibold shadow-lg hover:shadow-xl transition-all duration-300 transform hover:-translate-y-1 text-center"
             >
               🔄 Reset All Products
             </button>
@@ -589,7 +589,7 @@ const AdminProducts = () => {
 
         {/* Products Table */}
         <div className="bg-white rounded-2xl shadow-xl overflow-hidden border border-white/20 backdrop-blur-sm transform transition-all duration-500 hover:shadow-2xl">
-          <div className="overflow-x-auto">
+          <div className="hidden md:block overflow-x-auto">
             <table className="min-w-full">
               <thead className="bg-gradient-to-r from-gray-50 to-gray-100">
                 <tr>
@@ -819,6 +819,166 @@ const AdminProducts = () => {
                 )}
               </tbody>
             </table>
+          </div>
+
+          <div className="md:hidden divide-y divide-gray-100">
+            {isLoading || productsLoading ? (
+              <div className="px-6 py-12 text-center">
+                <div className="flex flex-col items-center gap-4">
+                  <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-600"></div>
+                  <p className="text-gray-600 font-medium">
+                    Loading products...
+                  </p>
+                </div>
+              </div>
+            ) : filteredProducts.length > 0 ? (
+              filteredProducts.map((product) => (
+                <div key={product.id} className="p-5">
+                  <div className="flex items-start gap-4">
+                    <input
+                      type="checkbox"
+                      checked={selectedProductIds.includes(product.id)}
+                      onChange={() => handleProductSelection(product.id)}
+                      className="mt-1 w-4 h-4 rounded text-blue-600 focus:ring-blue-500"
+                    />
+                    <div className="flex flex-1 gap-4">
+                      <div className="h-16 w-16 flex-shrink-0 bg-gradient-to-br from-gray-100 to-gray-200 rounded-xl overflow-hidden shadow">
+                        {product.imgURL || product.imageUrl ? (
+                          <img
+                            src={product.imgURL || product.imageUrl}
+                            alt={product.name}
+                            className="h-full w-full object-cover"
+                            onError={(e) => {
+                              e.target.onerror = null;
+                              e.target.src =
+                                "https://via.placeholder.com/100?text=No+Image";
+                            }}
+                          />
+                        ) : (
+                          <div className="h-full w-full flex items-center justify-center text-gray-500">
+                            <FaImage />
+                          </div>
+                        )}
+                      </div>
+                      <div className="flex-1">
+                        <div className="flex flex-col gap-2">
+                          <div className="flex items-center justify-between gap-3">
+                            <h3 className="text-base font-semibold text-gray-900">
+                              {product.name}
+                            </h3>
+                            <span className="px-2 py-1 text-xs font-semibold rounded-full bg-gray-100 text-gray-600">
+                              #{product.id || "N/A"}
+                            </span>
+                          </div>
+                          {product.featured && (
+                            <span className="inline-flex items-center px-2.5 py-1 rounded-full text-xs font-medium bg-yellow-100 text-yellow-700 self-start">
+                              ⭐ Featured
+                            </span>
+                          )}
+                          <div className="grid grid-cols-2 gap-4 text-sm mt-2">
+                            <div>
+                              <p className="text-gray-500">Price</p>
+                              <p className="font-semibold text-green-600">
+                                ${parseFloat(product.price).toFixed(2)}
+                              </p>
+                              {product.discountPrice && (
+                                <p className="text-xs line-through text-red-500">
+                                  $
+                                  {parseFloat(product.discountPrice).toFixed(2)}
+                                </p>
+                              )}
+                            </div>
+                            <div>
+                              <p className="text-gray-500">Stock</p>
+                              <p
+                                className={`font-semibold ${
+                                  parseInt(product.stock) <= 5
+                                    ? "text-red-600"
+                                    : "text-green-600"
+                                }`}
+                              >
+                                {product.stock ? product.stock : "∞"}
+                              </p>
+                              {parseInt(product.stock) <= 5 &&
+                                parseInt(product.stock) > 0 && (
+                                  <p className="text-xs text-red-500">
+                                    Low Stock
+                                  </p>
+                                )}
+                            </div>
+                            <div>
+                              <p className="text-gray-500">Category</p>
+                              <p className="font-semibold">
+                                {product.category || "Uncategorized"}
+                              </p>
+                            </div>
+                            <div>
+                              <p className="text-gray-500">Status</p>
+                              <span
+                                className={`inline-flex items-center px-2.5 py-1 rounded-full text-xs font-semibold ${
+                                  product.status === "inactive"
+                                    ? "bg-red-100 text-red-700"
+                                    : "bg-green-100 text-green-700"
+                                }`}
+                              >
+                                {product.status === "inactive" ? (
+                                  <>
+                                    <FaTimesCircle className="mr-1" />
+                                    Inactive
+                                  </>
+                                ) : (
+                                  <>
+                                    <FaCheckCircle className="mr-1" />
+                                    Active
+                                  </>
+                                )}
+                              </span>
+                            </div>
+                          </div>
+                        </div>
+
+                        <div className="mt-4 flex flex-wrap gap-2">
+                          <button
+                            onClick={() => openViewModal(product)}
+                            className="flex items-center gap-1 px-3 py-2 text-sm font-medium text-blue-600 bg-blue-50 rounded-lg"
+                          >
+                            <FaEye /> View
+                          </button>
+                          <button
+                            onClick={() => openEditModal(product)}
+                            className="flex items-center gap-1 px-3 py-2 text-sm font-medium text-indigo-600 bg-indigo-50 rounded-lg"
+                          >
+                            <FaEdit /> Edit
+                          </button>
+                          <button
+                            onClick={() => handleDeleteProduct(product.id)}
+                            className="flex items-center gap-1 px-3 py-2 text-sm font-medium text-red-600 bg-red-50 rounded-lg"
+                          >
+                            <FaTrash /> Delete
+                          </button>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              ))
+            ) : (
+              <div className="px-6 py-12 text-center">
+                <div className="flex flex-col items-center gap-4">
+                  <div className="h-16 w-16 bg-gray-100 rounded-full flex items-center justify-center">
+                    <FaBoxes className="text-2xl text-gray-400" />
+                  </div>
+                  <div>
+                    <p className="text-lg font-semibold text-gray-900 mb-1">
+                      No products found
+                    </p>
+                    <p className="text-gray-500">
+                      Try adjusting your search or filter criteria
+                    </p>
+                  </div>
+                </div>
+              </div>
+            )}
           </div>
         </div>
 

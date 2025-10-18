@@ -201,7 +201,7 @@ const AdminUsers = () => {
 
   return (
     <div className="container mx-auto p-6">
-      <div className="flex justify-between items-center mb-6">
+      <div className="flex flex-col lg:flex-row lg:items-center lg:justify-between gap-5 mb-6">
         <div>
           <h1 className="text-3xl font-semibold">User Management</h1>
           <p className="text-sm text-gray-500 mt-1">
@@ -209,16 +209,16 @@ const AdminUsers = () => {
             Integration
           </p>
         </div>
-        <div className="flex items-center gap-4">
+        <div className="flex flex-col sm:flex-row sm:items-center gap-3 sm:gap-4 w-full lg:w-auto">
           <button
             onClick={debugLocalStorage}
-            className="bg-purple-600 hover:bg-purple-700 text-white px-3 py-2 rounded-md flex items-center text-sm"
+            className="w-full sm:w-auto bg-purple-600 hover:bg-purple-700 text-white px-3 py-2 rounded-md flex items-center justify-center text-sm"
           >
             🔍 Debug Data
           </button>
           <button
             onClick={() => loadAllUsers()}
-            className="bg-green-600 hover:bg-green-700 text-white px-4 py-2 rounded-md flex items-center text-sm"
+            className="w-full sm:w-auto bg-green-600 hover:bg-green-700 text-white px-4 py-2 rounded-md flex items-center justify-center text-sm"
             disabled={loading}
           >
             {loading ? (
@@ -233,9 +233,9 @@ const AdminUsers = () => {
               </>
             )}
           </button>
-          <div className="text-right">
-            <div className="text-sm text-gray-500">Connected to Firebase</div>
-            <div className="text-xs text-green-600 font-medium">
+          <div className="text-center sm:text-right text-sm text-gray-500 bg-white rounded-md border border-gray-200 px-3 py-2 w-full sm:w-auto">
+            <div>Connected to Firebase</div>
+            <div className="text-xs text-green-600 font-medium mt-0.5">
               ✅ Live Data
             </div>
           </div>
@@ -332,7 +332,7 @@ const AdminUsers = () => {
             Users ({filteredUsers.length})
           </h2>
         </div>
-        <div className="overflow-x-auto">
+        <div className="hidden md:block overflow-x-auto">
           <table className="min-w-full">
             <thead className="bg-gray-50">
               <tr>
@@ -488,6 +488,140 @@ const AdminUsers = () => {
               )}
             </tbody>
           </table>
+        </div>
+
+        <div className="md:hidden divide-y divide-gray-100">
+          {filteredUsers.length > 0 ? (
+            filteredUsers.map((user) => (
+              <div key={user.uid} className="p-5">
+                <div className="flex items-start gap-4">
+                  <div className="h-12 w-12 flex-shrink-0">
+                    {user.photoURL ? (
+                      <img
+                        src={user.photoURL}
+                        alt={user.name}
+                        className="h-12 w-12 rounded-full object-cover"
+                        onError={(e) => {
+                          e.target.style.display = "none";
+                          e.target.nextSibling.style.display = "flex";
+                        }}
+                      />
+                    ) : null}
+                    <div
+                      className={`h-12 w-12 bg-gray-200 rounded-full flex items-center justify-center ${
+                        user.photoURL ? "hidden" : ""
+                      }`}
+                    >
+                      <span className="text-gray-500 font-medium text-lg">
+                        {user.name.charAt(0).toUpperCase()}
+                      </span>
+                    </div>
+                  </div>
+                  <div className="flex-1">
+                    <div className="flex flex-wrap items-center gap-2">
+                      <h3 className="text-base font-semibold text-gray-900">
+                        {user.name}
+                      </h3>
+                      {user.uid === currentUser?.uid && (
+                        <span className="px-2 py-0.5 rounded-full text-xs font-medium bg-blue-100 text-blue-700">
+                          You
+                        </span>
+                      )}
+                    </div>
+                    <p className="text-sm text-gray-500">{user.email}</p>
+
+                    <div className="mt-4 flex flex-wrap gap-2">
+                      <button
+                        onClick={() =>
+                          handleQuickRoleChange(
+                            user.uid,
+                            user.role === "admin" ? "customer" : "admin"
+                          )
+                        }
+                        className={`px-3 py-1.5 text-xs font-semibold rounded-full ${
+                          user.role === "admin"
+                            ? "bg-purple-100 text-purple-700"
+                            : "bg-blue-100 text-blue-700"
+                        }`}
+                        disabled={user.uid === currentUser?.uid}
+                      >
+                        Role: {user.role}
+                      </button>
+                      <button
+                        onClick={() =>
+                          handleQuickStatusChange(
+                            user.uid,
+                            user.status === "active" ? "inactive" : "active"
+                          )
+                        }
+                        className={`px-3 py-1.5 text-xs font-semibold rounded-full ${
+                          user.status === "active"
+                            ? "bg-green-100 text-green-700"
+                            : "bg-red-100 text-red-700"
+                        }`}
+                        disabled={user.uid === currentUser?.uid}
+                      >
+                        Status: {user.status}
+                      </button>
+                    </div>
+
+                    <div className="mt-4 grid grid-cols-2 gap-3 text-sm text-gray-600">
+                      <div>
+                        <p className="text-gray-500 text-xs uppercase">
+                          Join Date
+                        </p>
+                        <p className="font-medium">
+                          {formatDate(user.joinDate)}
+                        </p>
+                      </div>
+                      <div>
+                        <p className="text-gray-500 text-xs uppercase">
+                          Last Login
+                        </p>
+                        <p className="font-medium">
+                          {formatDate(user.lastLogin)}
+                        </p>
+                      </div>
+                      <div>
+                        <p className="text-gray-500 text-xs uppercase">
+                          Orders
+                        </p>
+                        <p className="font-medium">{user.orders}</p>
+                      </div>
+                    </div>
+
+                    <div className="mt-4 flex flex-wrap gap-2">
+                      <button
+                        onClick={() => openEditModal(user)}
+                        className="flex items-center gap-1 px-3 py-2 text-sm font-semibold text-indigo-600 bg-indigo-50 rounded-lg"
+                      >
+                        <FaUserEdit /> Edit
+                      </button>
+                      <button
+                        onClick={() => setDeleteConfirm(user.uid)}
+                        className="flex items-center gap-1 px-3 py-2 text-sm font-semibold text-red-600 bg-red-50 rounded-lg"
+                        disabled={user.uid === currentUser?.uid}
+                      >
+                        <FaTrash /> Delete
+                      </button>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            ))
+          ) : (
+            <div className="px-6 py-8 text-center text-gray-500">
+              <div className="flex flex-col items-center">
+                <FaUsers className="text-4xl text-gray-300 mb-2" />
+                <p className="text-lg font-medium">No users found</p>
+                <p className="text-sm">
+                  {searchTerm || statusFilter !== "all" || roleFilter !== "all"
+                    ? "No users match your search criteria."
+                    : "Register new users or sign in with Google to see them here."}
+                </p>
+              </div>
+            </div>
+          )}
         </div>
       </div>
 

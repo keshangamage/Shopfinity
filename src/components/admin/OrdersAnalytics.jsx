@@ -144,7 +144,9 @@ const OrdersAnalytics = ({ orders }) => {
 
   return (
     <div className="mb-8">
-      <h2 className="text-xl font-semibold mb-4">Order Analytics Overview</h2>
+      <h2 className="ml-7 mt-5 text-xl font-semibold mb-4">
+        Order Analytics Overview
+      </h2>
 
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4 mb-6">
         <div className="bg-white rounded-lg shadow p-4">

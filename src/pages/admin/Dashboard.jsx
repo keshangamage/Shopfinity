@@ -386,51 +386,53 @@ const Dashboard = () => {
           </div>
 
           <div className="bg-gradient-to-br from-blue-50/30 to-white/60 backdrop-blur-sm rounded-2xl p-5 border border-white/60 shadow-inner">
-            <div className="h-64 flex items-end justify-between gap-1.5 mt-4">
-              {getChartData().map((value, index) => {
-                const maxValue = Math.max(
-                  ...getChartData().filter((v) => v > 0),
-                  1
-                );
-                const height = value ? (value / maxValue) * 100 : 0;
-                return (
-                  <motion.div
-                    key={index}
-                    className="flex flex-col items-center flex-1 group"
-                    initial={{ height: 0 }}
-                    animate={{ height: "auto" }}
-                    transition={{ duration: 0.5, delay: 0.05 * index }}
-                  >
-                    <div className="relative w-full">
-                      <motion.div
-                        className="w-full bg-gradient-to-t from-blue-600 via-blue-500 to-indigo-400 rounded-t-lg transition-all duration-300 group-hover:from-blue-700 group-hover:to-indigo-500 shadow-lg"
-                        style={{ height: `${Math.max(height, 1)}%` }}
-                        initial={{ height: 0 }}
-                        animate={{ height: `${Math.max(height, 1)}%` }}
-                        transition={{
-                          duration: 0.7,
-                          delay: 0.1 * index,
-                          ease: "easeOut",
-                        }}
-                      >
+            <div className="-mx-2 overflow-x-auto pb-2">
+              <div className="h-64 min-w-[640px] sm:min-w-full flex items-end justify-between gap-1.5 mt-4 px-2">
+                {getChartData().map((value, index) => {
+                  const maxValue = Math.max(
+                    ...getChartData().filter((v) => v > 0),
+                    1
+                  );
+                  const height = value ? (value / maxValue) * 100 : 0;
+                  return (
+                    <motion.div
+                      key={index}
+                      className="flex flex-col items-center flex-1 group"
+                      initial={{ height: 0 }}
+                      animate={{ height: "auto" }}
+                      transition={{ duration: 0.5, delay: 0.05 * index }}
+                    >
+                      <div className="relative w-full">
                         <motion.div
-                          className="absolute bottom-full mb-2 left-1/2 transform -translate-x-1/2 bg-white/90 backdrop-blur-md text-blue-700 text-xs font-medium rounded-lg py-1.5 px-3 opacity-0 group-hover:opacity-100 shadow-lg whitespace-nowrap z-10 transition-all duration-200 border border-blue-100/50"
-                          whileHover={{ y: -2, scale: 1.05 }}
+                          className="w-full bg-gradient-to-t from-blue-600 via-blue-500 to-indigo-400 rounded-t-lg transition-all duration-300 group-hover:from-blue-700 group-hover:to-indigo-500 shadow-lg"
+                          style={{ height: `${Math.max(height, 1)}%` }}
+                          initial={{ height: 0 }}
+                          animate={{ height: `${Math.max(height, 1)}%` }}
+                          transition={{
+                            duration: 0.7,
+                            delay: 0.1 * index,
+                            ease: "easeOut",
+                          }}
                         >
-                          {formatCurrency(value)}
+                          <motion.div
+                            className="absolute bottom-full mb-2 left-1/2 transform -translate-x-1/2 bg-white/90 backdrop-blur-md text-blue-700 text-xs font-medium rounded-lg py-1.5 px-3 opacity-0 group-hover:opacity-100 shadow-lg whitespace-nowrap z-10 transition-all duration-200 border border-blue-100/50"
+                            whileHover={{ y: -2, scale: 1.05 }}
+                          >
+                            {formatCurrency(value)}
+                          </motion.div>
                         </motion.div>
-                      </motion.div>
-                    </div>
-                    <div className="text-xs font-medium mt-2.5 text-gray-600">
-                      {getChartLabels()[index]}
-                    </div>
-                  </motion.div>
-                );
-              })}
+                      </div>
+                      <div className="text-xs font-medium mt-2.5 text-gray-600">
+                        {getChartLabels()[index]}
+                      </div>
+                    </motion.div>
+                  );
+                })}
+              </div>
             </div>
           </div>
 
-          <div className="grid grid-cols-3 gap-4 mt-7">
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 mt-7">
             <motion.div
               className="bg-white/80 backdrop-blur-sm p-4 rounded-2xl shadow-md border border-white/80"
               whileHover={{ y: -3, scale: 1.01 }}

@@ -619,7 +619,7 @@ const AdminOrders = () => {
             </p>
           </div>
 
-          <div className="overflow-x-auto">
+          <div className="hidden md:block overflow-x-auto">
             <table className="min-w-full">
               <thead className="bg-gradient-to-r from-gray-50 to-gray-100">
                 <tr>
@@ -839,6 +839,141 @@ const AdminOrders = () => {
                 )}
               </tbody>
             </table>
+          </div>
+
+          <div className="md:hidden divide-y divide-gray-100">
+            {isLoading ? (
+              <div className="px-6 py-12 text-center">
+                <div className="flex flex-col items-center justify-center space-y-3">
+                  <div className="w-12 h-12 border-4 border-indigo-200 border-t-indigo-600 rounded-full animate-spin"></div>
+                  <p className="text-gray-500 font-medium">Loading orders...</p>
+                </div>
+              </div>
+            ) : filteredOrders.length > 0 ? (
+              filteredOrders.map((order, index) => (
+                <div key={order.id || index} className="p-5">
+                  <div className="flex items-start gap-4">
+                    <input
+                      type="checkbox"
+                      checked={selectedOrderIds.includes(order.id)}
+                      onChange={() => handleOrderSelection(order.id)}
+                      className="mt-1 w-4 h-4 rounded border-2 border-gray-300 text-indigo-600 focus:ring-indigo-500"
+                    />
+                    <div className="flex-1">
+                      <div className="flex flex-wrap items-center justify-between gap-2">
+                        <div>
+                          <h3 className="text-base font-semibold text-gray-900">
+                            #{order.id || `ORD-${1000 + index}`}
+                          </h3>
+                          <p className="text-sm text-gray-500 flex items-center gap-2">
+                            <FaCalendarAlt className="text-gray-400" />
+                            {formatDate(order.date)}
+                          </p>
+                        </div>
+                        {order.trackingNumber && (
+                          <span className="px-2 py-1 rounded-full text-xs font-semibold bg-blue-100 text-blue-700">
+                            <FaTruck className="inline mr-1" />
+                            {order.trackingNumber}
+                          </span>
+                        )}
+                      </div>
+
+                      <div className="mt-4 flex gap-3">
+                        <div className="w-12 h-12 bg-gradient-to-r from-indigo-500 to-purple-600 rounded-full flex items-center justify-center text-white font-bold">
+                          {(order.customerName || `Customer ${index + 1}`)
+                            .charAt(0)
+                            .toUpperCase()}
+                        </div>
+                        <div>
+                          <p className="text-sm font-semibold text-gray-900">
+                            {order.customerName || `Customer ${index + 1}`}
+                          </p>
+                          {order.customerEmail && (
+                            <p className="text-sm text-gray-500">
+                              {order.customerEmail}
+                            </p>
+                          )}
+                        </div>
+                      </div>
+
+                      <div className="mt-4 grid grid-cols-1 gap-3 text-sm text-gray-700">
+                        <div>
+                          <p className="text-gray-500 text-xs uppercase">
+                            Items
+                          </p>
+                          <p className="font-medium">
+                            {formatOrderItems(order.items)}
+                          </p>
+                        </div>
+                        <div className="flex items-center justify-between">
+                          <div>
+                            <p className="text-gray-500 text-xs uppercase">
+                              Total
+                            </p>
+                            <p className="text-base font-semibold text-gray-900">
+                              {formatCurrency(order.total || 0)}
+                            </p>
+                          </div>
+                          <span
+                            className={`inline-flex items-center px-3 py-1.5 rounded-full text-xs font-semibold ${getStatusColorClass(
+                              order.status
+                            )}`}
+                          >
+                            <span className="mr-1.5">
+                              {getStatusIcon(order.status)}
+                            </span>
+                            {order.status || "Processing"}
+                          </span>
+                        </div>
+                      </div>
+
+                      <div className="mt-4 flex flex-wrap gap-2">
+                        <button
+                          onClick={() => openOrderDetails(order)}
+                          className="flex items-center gap-1 px-3 py-2 text-sm font-semibold text-blue-600 bg-blue-50 rounded-lg"
+                        >
+                          <FaEye /> View
+                        </button>
+                        <button
+                          onClick={() => {
+                            setSelectedOrder(order);
+                            setIsEditTrackingOpen(true);
+                            setTrackingNumber(order.trackingNumber || "");
+                          }}
+                          className="flex items-center gap-1 px-3 py-2 text-sm font-semibold text-purple-600 bg-purple-50 rounded-lg"
+                        >
+                          <FaTruck /> Tracking
+                        </button>
+                        <button
+                          onClick={() =>
+                            alert("Order print functionality would go here")
+                          }
+                          className="flex items-center gap-1 px-3 py-2 text-sm font-semibold text-gray-600 bg-gray-100 rounded-lg"
+                        >
+                          <FaPrint /> Print
+                        </button>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              ))
+            ) : (
+              <div className="px-6 py-12 text-center">
+                <div className="flex flex-col items-center justify-center space-y-4">
+                  <div className="w-16 h-16 bg-gray-100 rounded-full flex items-center justify-center">
+                    <FaSearch className="text-2xl text-gray-400" />
+                  </div>
+                  <div>
+                    <h3 className="text-lg font-semibold text-gray-900 mb-1">
+                      No orders found
+                    </h3>
+                    <p className="text-gray-500">
+                      Try adjusting your search criteria or filters
+                    </p>
+                  </div>
+                </div>
+              </div>
+            )}
           </div>
         </div>
 
