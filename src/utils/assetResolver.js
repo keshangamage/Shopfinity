@@ -35,6 +35,20 @@ Object.entries(assetEntries).forEach(([key, url]) => {
 
 const httpPattern = /^(?:https?:)?\/\//i;
 const legacyAssetPattern = /(?:^|\/)src\/assets\//i;
+const hashSuffixPattern = /[-_][a-z0-9]{6,}$/i;
+
+const stripQueryAndFragment = (value) => {
+  if (typeof value !== "string") return "";
+  const [withoutQuery] = value.split(/[?#]/, 1);
+  return withoutQuery || "";
+};
+
+const uniquePush = (array, value) => {
+  if (!value) return;
+  if (!array.includes(value)) {
+    array.push(value);
+  }
+};
 
 const shouldAttemptResolve = (value) => {
   if (typeof value !== "string") {
@@ -93,6 +107,56 @@ export const resolveProductImage = (value) => {
   const resolvedDecoded = resolveAsset(decoded);
   if (resolvedDecoded) {
     return resolvedDecoded;
+  }
+
+  const candidateSegmentRaw = cleaned.split("/").pop() || "";
+  const candidateSegment = stripQueryAndFragment(candidateSegmentRaw);
+  const decodedSegment = stripQueryAndFragment(
+    decodeURIComponent(candidateSegment)
+  );
+
+  if (decodedSegment) {
+    const extensionMatch = decodedSegment.match(/\.[^.]+$/);
+    const originalExtension = extensionMatch
+      ? extensionMatch[0].toLowerCase()
+      : "";
+
+    const baseWithoutExtension = originalExtension
+      ? decodedSegment.slice(0, -originalExtension.length)
+      : decodedSegment;
+
+    const baseWithoutHash = hashSuffixPattern.test(baseWithoutExtension)
+      ? baseWithoutExtension.replace(hashSuffixPattern, "")
+      : baseWithoutExtension;
+
+    const baseCandidates = [];
+    uniquePush(baseCandidates, baseWithoutExtension.trim());
+    uniquePush(baseCandidates, baseWithoutHash.trim());
+
+    const extensionCandidates = [];
+    uniquePush(extensionCandidates, ".webp");
+    uniquePush(extensionCandidates, originalExtension);
+    uniquePush(extensionCandidates, ".jpg");
+    uniquePush(extensionCandidates, ".jpeg");
+    uniquePush(extensionCandidates, ".png");
+    uniquePush(extensionCandidates, ".avif");
+
+    for (const base of baseCandidates) {
+      if (!base) continue;
+      for (const extension of extensionCandidates) {
+        if (!extension) continue;
+        const candidateName = `${base}${extension}`;
+        const resolvedCandidate = resolveAsset(candidateName);
+        if (resolvedCandidate) {
+          return resolvedCandidate;
+        }
+        const candidateWithPrefix = `assets/${candidateName}`;
+        const resolvedWithPrefix = resolveAsset(candidateWithPrefix);
+        if (resolvedWithPrefix) {
+          return resolvedWithPrefix;
+        }
+      }
+    }
   }
 
   const lastSegment = cleaned.split("/").pop();

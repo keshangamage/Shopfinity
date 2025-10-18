@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from "react";
 import { Link } from "react-router-dom";
-import webbanner from "../assets/banner.png";
+import webbanner from "../assets/banner.webp";
 import { useCart } from "../utils/CartContext";
 import { useProducts } from "../utils/ProductContext";
 import { resolveProductImage } from "../utils/assetResolver.js";
@@ -8,7 +8,7 @@ import { resolveProductImage } from "../utils/assetResolver.js";
 const featuredCategories = [
   {
     name: "Electronics",
-    image: resolveProductImage("electronics.jpg"),
+    image: resolveProductImage("electronics.webp"),
     link: "/categories/electronics",
   },
   {
@@ -18,17 +18,17 @@ const featuredCategories = [
   },
   {
     name: "Home",
-    image: resolveProductImage("home appliances.jpg"),
+    image: resolveProductImage("home appliances.webp"),
     link: "/categories/home",
   },
   {
     name: "Fitness",
-    image: resolveProductImage("sports.jpg"),
+    image: resolveProductImage("sports.webp"),
     link: "/categories/fitness",
   },
   {
     name: "Toys",
-    image: resolveProductImage("toys.jpg"),
+    image: resolveProductImage("toys.webp"),
     link: "/categories/toys",
   },
   {
@@ -413,9 +413,9 @@ const Home = () => {
           <div>
             <h3 className="text-lg font-semibold mb-3 sm:mb-4">Contact</h3>
             <ul className="space-y-2 text-gray-300 text-sm sm:text-base">
-              <li>123 Shopping St, City</li>
+              <li>123 Colombo, Sri Lanka</li>
               <li>Email: info@shopfinity.com</li>
-              <li>Phone: +1 234 567 8901</li>
+              <li>Phone: +94123456789</li>
             </ul>
             <div className="mt-4 flex space-x-4">
               <a href="#" className="hover:text-teal-300">

@@ -54,20 +54,16 @@ export const UserProvider = ({ children }) => {
   const loadAllUsers = async () => {
     const now = Date.now();
     if (now - lastLoadTime < LOAD_DEBOUNCE_MS) {
-      console.log("⏱️ Debouncing user load request");
       return;
     }
     setLastLoadTime(now);
 
     if (loading) {
-      console.log("⏱️ User loading already in progress");
       return;
     }
 
     setLoading(true);
     try {
-      console.log("🔍 Loading all users...");
-
       const usersRef = collection(db, "users");
       const q = query(usersRef, orderBy("createdAt", "desc"));
 
@@ -85,10 +81,7 @@ export const UserProvider = ({ children }) => {
         firestoreUserIds.add(doc.id);
       });
 
-      console.log(`📁 Found ${firestoreUsers.length} users in Firestore`);
-
       const allOrders = getAllUsersOrders ? getAllUsersOrders() : [];
-      console.log(`📦 Found ${allOrders.length} total orders`);
 
       const userOrderCounts = {};
       const usersFromOrders = new Map();
@@ -119,10 +112,6 @@ export const UserProvider = ({ children }) => {
         }
       });
 
-      console.log(
-        `👥 Found ${usersFromOrders.size} additional users from orders`
-      );
-
       const localStorageUsers = new Map();
       const currentUserData = localStorage.getItem("shopfinity_auth_user");
 
@@ -148,17 +137,11 @@ export const UserProvider = ({ children }) => {
         }
       }
 
-      console.log(
-        `💾 Found ${localStorageUsers.size} additional users from localStorage`
-      );
-
       const allUsers = [
         ...firestoreUsers,
         ...Array.from(usersFromOrders.values()),
         ...Array.from(localStorageUsers.values()),
       ];
-
-      console.log(`🎯 Total combined users: ${allUsers.length}`);
 
       const enrichedUsers = allUsers.map((user) => ({
         ...user,
@@ -184,17 +167,12 @@ export const UserProvider = ({ children }) => {
       }));
 
       setUsers(enrichedUsers);
-      console.log(`✅ Set ${enrichedUsers.length} users in state`);
 
       const usersToCreateInFirestore = allUsers.filter(
         (user) => (user.isFromOrders || user.isFromLocalStorage) && user.uid
       );
 
       if (usersToCreateInFirestore.length > 0) {
-        console.log(
-          `📝 Creating Firestore profiles for ${usersToCreateInFirestore.length} existing users...`
-        );
-
         createFirestoreProfiles(usersToCreateInFirestore);
       }
     } catch (error) {
@@ -225,7 +203,6 @@ export const UserProvider = ({ children }) => {
             };
 
             await setDoc(userDoc, userData, { merge: true });
-            console.log(`✅ Created Firestore profile for user: ${user.email}`);
           } catch (error) {
             console.error(
               `❌ Error creating Firestore profile for user ${user.uid}:`,

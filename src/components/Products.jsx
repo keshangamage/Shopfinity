@@ -15,7 +15,7 @@ const rawProducts = [
     id: 2,
     name: "Silicone Kitchen Utensils",
     category: "Home",
-    image: "src/assets/Silicone Kitchen Utensils'.jpg",
+    image: "src/assets/Silicone Kitchen Utensils'.webp",
     price: 25.99,
     description:
       "Heat-resistant and non-stick safe tools. Includes spatulas, tongs, and spoons. Durable, dishwasher-safe, and gentle on cookware. A must-have set for modern kitchens.",
@@ -24,7 +24,7 @@ const rawProducts = [
     id: 3,
     name: "Silicone Watch Band",
     category: "Accessories",
-    image: "src/assets/Silicone Watch Band.jpg",
+    image: "src/assets/Silicone Watch Band.webp",
     price: 12.99,
     description:
       "Comfortable silicone replacement watch band. Compatible with popular smartwatch models. Waterproof and sweat-resistant for active lifestyles.",
@@ -33,7 +33,7 @@ const rawProducts = [
     id: 4,
     name: "Yoga Mat",
     category: "Fitness",
-    image: "src/assets/yoga mat.jpeg",
+    image: "src/assets/yoga mat.webp",
     price: 29.99,
     discountPrice: 26.19,
     description:
@@ -43,7 +43,7 @@ const rawProducts = [
     id: 5,
     name: "Winter Coat",
     category: "Fashion",
-    image: "src/assets/Winter Coat.avif",
+    image: "src/assets/Winter Coat.webp",
     price: 129.99,
     discountPrice: 119.99,
     description: "Warm and stylish for cold weather.",
@@ -71,7 +71,7 @@ const rawProducts = [
     id: 8,
     name: "Building Blocks Set",
     category: "Toys",
-    image: "src/assets/Building Blocks Set.jpg",
+    image: "src/assets/Building Blocks Set.webp",
     price: 29.99,
     discountPrice: 20.99,
     description:
@@ -81,7 +81,7 @@ const rawProducts = [
     id: 9,
     name: "Weighted Blanket",
     category: "Home",
-    image: "src/assets/Weighted Blanket.jpeg",
+    image: "src/assets/Weighted Blanket.webp",
     price: 79.99,
     description:
       "Promote restful sleep with calming pressure. Evenly distributed weight helps reduce anxiety and improve sleep quality. Soft, breathable cover for year-round comfort.",
@@ -90,7 +90,7 @@ const rawProducts = [
     id: 10,
     name: "Mini Fridge",
     category: "Home",
-    image: "src/assets/Mini Fridge.avif",
+    image: "src/assets/Mini Fridge.webp",
     price: 109.99,
     description:
       "Compact cooling for bedrooms or dorm rooms. Energy-efficient with adjustable temperature settings, removable shelves, and quiet operation. Great for drinks, snacks, and skincare products.",
@@ -119,7 +119,7 @@ const rawProducts = [
     id: 13,
     name: "Core Sliders",
     category: "Fitness",
-    image: "src/assets/Core Sliders.jpg",
+    image: "src/assets/Core Sliders.webp",
     price: 14.99,
     description:
       "Improve core strength and balance training. Dual-sided for use on carpet or hardwood. Great for low-impact, high-intensity workouts targeting abs, legs, and glutes.",
@@ -136,7 +136,7 @@ const rawProducts = [
     id: 15,
     name: "Compact Power Strip",
     category: "Electronics",
-    image: "src/assets/Compact Power Strip.jpg",
+    image: "src/assets/Compact Power Strip.webp",
     price: 21.99,
     description:
       "Multiple outlets and USB ports in one device. Surge protection included. Compact design fits on desks or travel bags for powering devices conveniently.",
@@ -155,7 +155,7 @@ const rawProducts = [
     id: 17,
     name: "Smart Light Bulb",
     category: "Home",
-    image: "src/assets/Smart Light Bulb.jpg",
+    image: "src/assets/Smart Light Bulb.webp",
     price: 19.99,
     description: "Control brightness and color via app or voice.",
   },
@@ -163,7 +163,7 @@ const rawProducts = [
     id: 18,
     name: "Windbreaker Jacket",
     category: "Fashion",
-    image: "src/assets/Windbreaker Jacket.jpg",
+    image: "src/assets/Windbreaker Jacket.webp",
     price: 54.99,
     description:
       "Lightweight protection from wind and rain. Stylish design with breathable lining and zippered pockets. Great for outdoor activities or casual wear.",
@@ -172,7 +172,7 @@ const rawProducts = [
     id: 19,
     name: "Resistance Bands",
     category: "Fitness",
-    image: "src/assets/Resistance Bands.jpg",
+    image: "src/assets/Resistance Bands.webp",
     price: 15.99,
     discountPrice: 9.99,
     description:
@@ -182,7 +182,7 @@ const rawProducts = [
     id: 20,
     name: "Digital Alarm Clock",
     category: "Home",
-    image: "src/assets/Digital Alarm Clock.jpg",
+    image: "src/assets/Digital Alarm Clock.webp",
     price: 19.99,
     discountPrice: 17.25,
     description:
@@ -192,7 +192,7 @@ const rawProducts = [
     id: 21,
     name: "Jogger Pants",
     category: "Fashion",
-    image: "src/assets/Jogger Pants.jpeg",
+    image: "src/assets/Jogger Pants.webp",
     price: 34.99,
     description:
       "Stylish comfort for workouts or casual wear. Soft, stretchy fabric and elastic cuffs offer flexibility and mobility. Great for lounging, errands, or light exercise.",
@@ -201,7 +201,7 @@ const rawProducts = [
     id: 22,
     name: "Designer Crossbody Bag",
     category: "Fashion",
-    image: "src/assets/Designer Crossbody Bag.avif",
+    image: "src/assets/Designer Crossbody Bag.webp",
     price: 47.99,
     description:
       "Elegant and versatile crossbody bag for everyday use. Features premium vegan leather, adjustable strap, and multiple compartments for organization. Perfect blend of style and functionality for any occasion.",
@@ -210,7 +210,7 @@ const rawProducts = [
     id: 23,
     name: "Educational Science Kit",
     category: "Toys",
-    image: "src/assets/Educational Science Kit.jpg",
+    image: "src/assets/Educational Science Kit.webp",
     price: 24.99,
     discountPrice: 20.0,
     description:
@@ -220,7 +220,7 @@ const rawProducts = [
     id: 24,
     name: "Hair Accessory Set",
     category: "Accessories",
-    image: "src/assets/Hair Accessory Set.jpg",
+    image: "src/assets/Hair Accessory Set.webp",
     price: 14.99,
     description:
       "Complete hair styling set with clips, bands, and pins. Variety of colors and styles for different looks. High-quality materials for durability.",
@@ -229,7 +229,7 @@ const rawProducts = [
     id: 25,
     name: "Laptop Stand",
     category: "Electronics",
-    image: "src/assets/Laptop Stand.jpg",
+    image: "src/assets/Laptop Stand.webp",
     price: 29.99,
     description:
       "Improve your posture and work comfortably with this adjustable laptop stand, suitable for all devices. Lightweight and foldable for easy transport.",
@@ -248,7 +248,7 @@ const rawProducts = [
     id: 27,
     name: "Magic Trick Set",
     category: "Toys",
-    image: "src/assets/Magic Trick Set.jpg",
+    image: "src/assets/Magic Trick Set.webp",
     price: 23.99,
     description:
       "Learn amazing magic tricks with this complete beginner set. Includes magic wand, cards, and props for 25 different tricks. Illustrated instruction booklet included.",
@@ -257,7 +257,7 @@ const rawProducts = [
     id: 28,
     name: "Travel Jewelry Case",
     category: "Accessories",
-    image: "src/assets/Travel Jewelry Case.jpg",
+    image: "src/assets/Travel Jewelry Case.webp",
     price: 18.99,
     description:
       "Compact travel case for jewelry organization. Multiple compartments and soft lining protect your valuables. Zippered closure for secure storage during travel.",
@@ -284,7 +284,7 @@ const rawProducts = [
     id: 31,
     name: "Foam Roller",
     category: "Fitness",
-    image: "src/assets/Foam Roller.jpg",
+    image: "src/assets/Foam Roller.webp",
     price: 22.99,
     description:
       "Ideal for muscle recovery and massage. This foam roller helps relieve tension and improve flexibility, making it a must-have for fitness enthusiasts.",
@@ -313,7 +313,7 @@ const rawProducts = [
     id: 34,
     name: "Fashion Sunglasses",
     category: "Accessories",
-    image: "src/assets/Sunglasses.avif",
+    image: "src/assets/Sunglasses.webp",
     price: 29.99,
     description:
       "Trendy sunglasses with UV400 protection. Lightweight frame with polarized lenses. Reduces glare while adding a stylish touch to your look.",
@@ -322,7 +322,7 @@ const rawProducts = [
     id: 35,
     name: "Water Play Table",
     category: "Toys",
-    image: "src/assets/Water Play Table.jpg",
+    image: "src/assets/Water Play Table.webp",
     price: 44.99,
     description:
       "Interactive water table for outdoor summer fun. Features water wheel, funnels, and floating toys. Develops sensory skills and scientific concepts.",
@@ -331,7 +331,7 @@ const rawProducts = [
     id: 36,
     name: "Wooden Puzzle Set",
     category: "Toys",
-    image: "src/assets/Wooden Puzzle Set.jpg",
+    image: "src/assets/Wooden Puzzle Set.webp",
     price: 15.99,
     description:
       "Educational wooden puzzles with vibrant colors. Develops problem-solving skills and hand-eye coordination. Set of 5 different patterns.",
@@ -340,7 +340,7 @@ const rawProducts = [
     id: 37,
     name: "Statement Earrings",
     category: "Accessories",
-    image: "src/assets/Statement Earrings.jpg",
+    image: "src/assets/Statement Earrings.webp",
     price: 22.99,
     description:
       "Bold and eye-catching statement earrings. Lightweight design despite their size. Perfect for adding a dramatic touch to any outfit.",
@@ -349,7 +349,7 @@ const rawProducts = [
     id: 38,
     name: "LED Monitor Light Bar",
     category: "Electronics",
-    image: "src/assets/LED Monitor Light Bar.jpg",
+    image: "src/assets/LED Monitor Light Bar.webp",
     price: 33.99,
     description:
       "Enhance your workspace with eye-friendly lighting. Reduces screen glare and eye strain. USB-powered with adjustable brightness and color temperature for better focus.",
@@ -358,7 +358,7 @@ const rawProducts = [
     id: 39,
     name: "Cookbook",
     category: "Books",
-    image: "src/assets/Cookbook.jpg",
+    image: "src/assets/Cookbook.webp",
     price: 14.99,
     description:
       "Explore a world of flavors with this comprehensive cookbook, filled with delicious recipes for every occasion. Includes step-by-step instructions and vibrant photographs.",
@@ -376,7 +376,7 @@ const rawProducts = [
     id: 41,
     name: "Kids Play Kitchen",
     category: "Toys",
-    image: "src/assets/Kids Play Kitchen.jpg",
+    image: "src/assets/Kids Play Kitchen.webp",
     price: 59.99,
     discountPrice: 52.19,
     description:
@@ -395,7 +395,7 @@ const rawProducts = [
     id: 43,
     name: "Wireless Keyboard",
     category: "Electronics",
-    image: "src/assets/Wireless Keyboard.jpg",
+    image: "src/assets/Wireless Keyboard.webp",
     price: 39.99,
     description:
       "Compact, cable-free typing experience. Sleek design with responsive keys, long battery life, and multi-device compatibility for productivity at home, in the office, or on the go.",
@@ -412,7 +412,7 @@ const rawProducts = [
     id: 45,
     name: "Portable Projector",
     category: "Electronics",
-    image: "src/assets/Portable Projector.jpg",
+    image: "src/assets/Portable Projector.webp",
     price: 129.99,
     discountPrice: 119.99,
     description:
@@ -422,7 +422,7 @@ const rawProducts = [
     id: 46,
     name: "Designer Watch",
     category: "Accessories",
-    image: "src/assets/Designer Watch.jpg",
+    image: "src/assets/Designer Watch.webp",
     price: 89.99,
     discountPrice: 85.79,
     description:
@@ -432,7 +432,7 @@ const rawProducts = [
     id: 47,
     name: "Leather Belt",
     category: "Accessories",
-    image: "src/assets/Leather Belt.jpg",
+    image: "src/assets/Leather Belt.webp",
     price: 34.99,
     description:
       "Genuine leather belt with classic buckle. Durable construction for everyday wear. Available in black and brown to match any style.",
@@ -441,7 +441,7 @@ const rawProducts = [
     id: 48,
     name: "Wall Clock",
     category: "Home",
-    image: "src/assets/Wall Clock.jpg",
+    image: "src/assets/Wall Clock.webp",
     price: 22.99,
     description:
       "Modern design that suits any room. Silent sweep mechanism, easy-to-read numbers, and durable frame. Functional decor piece for kitchens, offices, or bedrooms.",
@@ -477,7 +477,7 @@ const rawProducts = [
     id: 52,
     name: "Tabletop Tripod",
     category: "Electronics",
-    image: "src/assets/Tabletop Tripod.jpg",
+    image: "src/assets/Tabletop Tripod.webp",
     price: 17.99,
     description:
       "Perfect for selfies, video calls, and vlogging. Compact, foldable, and compatible with phones and cameras. Offers stability and flexible angles for content creation.",
@@ -486,7 +486,7 @@ const rawProducts = [
     id: 53,
     name: "Sports Ball Set",
     category: "Toys",
-    image: "src/assets/Sports Ball Set.jpg",
+    image: "src/assets/Sports Ball Set.webp",
     price: 21.99,
     description:
       "Set of 4 sports balls for active play. Includes soccer ball, basketball, football, and playground ball. Promotes active lifestyle and coordination skills.",
@@ -495,7 +495,7 @@ const rawProducts = [
     id: 54,
     name: "Musical Toy Piano",
     category: "Toys",
-    image: "src/assets/Musical Toy Piano.jpg",
+    image: "src/assets/Musical Toy Piano.webp",
     price: 27.99,
     description:
       "Colorful piano with multiple instrument sounds and demo songs. Helps develop musical skills and auditory recognition. Durable construction for years of play.",
@@ -504,7 +504,7 @@ const rawProducts = [
     id: 55,
     name: "Compression Sleeves",
     category: "Fitness",
-    image: "src/assets/Compression Sleeves.jpg",
+    image: "src/assets/Compression Sleeves.webp",
     price: 17.99,
     description: "Support your joints during workouts.",
   },
@@ -512,7 +512,7 @@ const rawProducts = [
     id: 56,
     name: "Wrist Weights",
     category: "Fitness",
-    image: "src/assets/Wrist Weights.jpg",
+    image: "src/assets/Wrist Weights.webp",
     price: 16.99,
     description:
       "Add intensity to your walking or workouts. Comfortable, adjustable straps. Ideal for cardio, running, or light resistance training to enhance calorie burn.",
@@ -521,7 +521,7 @@ const rawProducts = [
     id: 57,
     name: "Phone Case Collection",
     category: "Accessories",
-    image: "src/assets/Phone Case Collection.jpg",
+    image: "src/assets/Phone Case Collection.webp",
     price: 17.99,
     discountPrice: 16.99,
     description:
@@ -531,7 +531,7 @@ const rawProducts = [
     id: 58,
     name: "Espresso Machine",
     category: "Home",
-    image: "src/assets/Espresso Machine.jpeg",
+    image: "src/assets/Espresso Machine.webp",
     price: 179.99,
     discountPrice: 111.99,
     description: "Barista-quality espresso at home.",
@@ -549,7 +549,7 @@ const rawProducts = [
     id: 60,
     name: "STEM Robotics Kit",
     category: "Toys",
-    image: "src/assets/STEM Robotics Kit.jpg",
+    image: "src/assets/STEM Robotics Kit.webp",
     price: 49.99,
     description:
       "Build-your-own robot kit with programmable features. Introduces coding concepts through play. Includes detailed instructions for multiple projects.",
@@ -558,7 +558,7 @@ const rawProducts = [
     id: 61,
     name: "Digital Drawing Tablet",
     category: "Electronics",
-    image: "src/assets/Digital Drawing Tablet.jpg",
+    image: "src/assets/Digital Drawing Tablet.webp",
     price: 99.99,
     description:
       "Express your creativity with precision. Pressure-sensitive pen, customizable buttons, and large drawing area for digital artists, designers, and hobbyists alike.",
@@ -567,7 +567,7 @@ const rawProducts = [
     id: 62,
     name: "Wireless Mouse",
     category: "Electronics",
-    image: "src/assets/Wireless Mouse.jpeg",
+    image: "src/assets/Wireless Mouse.webp",
     price: 19.99,
     description:
       "Work efficiently with this ergonomic wireless mouse, designed for comfort and long battery life. Smooth tracking and responsive clicks for seamless navigation.",
@@ -576,7 +576,7 @@ const rawProducts = [
     id: 63,
     name: "Leather Jacket",
     category: "Fashion",
-    image: "src/assets/Leather Jacket.jpeg",
+    image: "src/assets/Leather Jacket.webp",
     price: 129.99,
     discountPrice: 120.0,
     description:
@@ -623,7 +623,7 @@ const rawProducts = [
     id: 68,
     name: "Scented Candles",
     category: "Home",
-    image: "src/assets/Scented Candles.png",
+    image: "src/assets/Scented Candles.webp",
     price: 24.99,
     description:
       "Relaxing aromas for a cozy atmosphere. Made with natural soy wax and essential oils, ideal for meditation, sleep, or adding charm to any room.",
@@ -632,7 +632,7 @@ const rawProducts = [
     id: 69,
     name: "Cycling Gloves",
     category: "Accessories",
-    image: "src/assets/Cycling Gloves.jpg",
+    image: "src/assets/Cycling Gloves.webp",
     price: 15.99,
     description:
       "Padded gloves for cycling comfort. Breathable material with adjustable wrist closure. Reduces hand fatigue and improves grip during long rides.",
@@ -641,7 +641,7 @@ const rawProducts = [
     id: 70,
     name: "Standing Desk",
     category: "Home",
-    image: "src/assets/Standing Desk.jpg",
+    image: "src/assets/Standing Desk.webp",
     price: 199.99,
     discountPrice: 179.25,
     description: "Adjustable height for healthy posture.",
@@ -650,7 +650,7 @@ const rawProducts = [
     id: 71,
     name: "Home Workout Poster",
     category: "Fitness",
-    image: "src/assets/Home Workout Poster.jpg",
+    image: "src/assets/Home Workout Poster.webp",
     price: 9.99,
     description:
       "Visual guide to popular exercises. Colorful and easy-to-follow illustrations of bodyweight workouts. Perfect for home gyms, dorms, or fitness studios to stay motivated.",
@@ -659,7 +659,7 @@ const rawProducts = [
     id: 72,
     name: "Board Game Collection",
     category: "Toys",
-    image: "src/assets/Board Game Collection.jpg",
+    image: "src/assets/Board Game Collection.webp",
     price: 32.99,
     description:
       "Family-friendly board game set with 4 classic games. Perfect for game nights and developing strategic thinking. Suitable for ages 6 and up.",
@@ -676,7 +676,7 @@ const rawProducts = [
     id: 74,
     name: "Air Fryer",
     category: "Home",
-    image: "src/assets/Air Fryer.png",
+    image: "src/assets/Air Fryer.webp",
     price: 99.99,
     description: "Healthier cooking with less oil.",
   },
@@ -694,7 +694,7 @@ const rawProducts = [
     id: 76,
     name: "Denim Jeans",
     category: "Fashion",
-    image: "src/assets/Denim Jeans.jpg",
+    image: "src/assets/Denim Jeans.webp",
     price: 49.99,
     description: "Classic fit with modern style.",
   },
@@ -711,7 +711,7 @@ const rawProducts = [
     id: 78,
     name: "Bean Bag Chair",
     category: "Home",
-    image: "src/assets/Bean Bag Chair.avif",
+    image: "src/assets/Bean Bag Chair.webp",
     price: 84.99,
     description:
       "Ultimate comfort for lounging and relaxation. Filled with soft memory foam, conforms to your body shape. Stylish addition to bedrooms, dorms, or gaming rooms.",
@@ -728,7 +728,7 @@ const rawProducts = [
     id: 80,
     name: "Balance Ball",
     category: "Fitness",
-    image: "src/assets/Balance Ball.jpg",
+    image: "src/assets/Balance Ball.webp",
     price: 29.99,
     description:
       "Improve core strength and stability exercises. Ideal for yoga, pilates, and rehabilitation. Anti-burst material ensures safety while enhancing posture, balance, and muscle engagement effectively.",
@@ -737,7 +737,7 @@ const rawProducts = [
     id: 81,
     name: "Dumbbell Set",
     category: "Fitness",
-    image: "src/assets/dumbbel set.jpg",
+    image: "src/assets/dumbbel set.webp",
     price: 59.99,
     discountPrice: 49.99,
     description:
@@ -755,7 +755,7 @@ const rawProducts = [
     id: 83,
     name: "Mystery Novel",
     category: "Books",
-    image: "src/assets/Mystery Novel.avif",
+    image: "src/assets/Mystery Novel.webp",
     price: 9.99,
     description:
       "Dive into a thrilling story full of suspense and unexpected twists with this captivating mystery novel. Perfect for fans of crime and detective fiction.",
@@ -764,7 +764,7 @@ const rawProducts = [
     id: 84,
     name: "Silicone Baking Mats",
     category: "Home",
-    image: "src/assets/Silicone Baking Mats.jpg",
+    image: "src/assets/Silicone Baking Mats.webp",
     price: 18.99,
     description:
       "Reusable and easy-to-clean baking surface. Non-stick, oven-safe, and eco-friendly. Ideal for baking cookies, pastries, or roasting vegetables without oils or sprays.",
@@ -773,7 +773,7 @@ const rawProducts = [
     id: 85,
     name: "Yoga Block",
     category: "Fashion",
-    image: "src/assets/Yoga Block.jpg",
+    image: "src/assets/Yoga Block.webp",
     price: 15.0,
     description: "Sturdy foam block for yoga poses.",
   },
@@ -790,7 +790,7 @@ const rawProducts = [
     id: 87,
     name: "Laptop Sleeve",
     category: "Electronics",
-    image: "src/assets/Laptop Sleeve.jpg",
+    image: "src/assets/Laptop Sleeve.webp",
     price: 19.99,
     discountPrice: 17.99,
     description:
@@ -800,7 +800,7 @@ const rawProducts = [
     id: 88,
     name: "Push-Up Bars",
     category: "Fitness",
-    image: "src/assets/Push-Up Bars.png",
+    image: "src/assets/Push-Up Bars.webp",
     price: 18.99,
     description: "Enhance your home push-up routine.",
   },
@@ -817,7 +817,7 @@ const rawProducts = [
     id: 90,
     name: "Sunglasses",
     category: "Fashion",
-    image: "src/assets/Sunglasses.avif",
+    image: "src/assets/Sunglasses.webp",
     price: 39.99,
     discountPrice: 32.99,
     description:
@@ -844,7 +844,7 @@ const rawProducts = [
     id: 93,
     name: "Adjustable Ankle Weights",
     category: "Fitness",
-    image: "src/assets/Adjustable Ankle Weights.jpg",
+    image: "src/assets/Adjustable Ankle Weights.webp",
     price: 23.99,
     description:
       "Increase resistance and improve workouts. Fully adjustable straps ensure a snug fit. Perfect for walking, jogging, or strength training to enhance muscle tone and endurance.",
@@ -853,7 +853,7 @@ const rawProducts = [
     id: 94,
     name: "Indoor Plant Set",
     category: "Home",
-    image: "src/assets/Indoor Plant Set.jpg",
+    image: "src/assets/Indoor Plant Set.webp",
     price: 29.99,
     description:
       "Liven up your space with easy-care greenery. Includes pots and low-maintenance plants that purify air. Great for desks, shelves, or gifting to plant lovers.",
@@ -872,7 +872,7 @@ const rawProducts = [
     id: 96,
     name: "Pet Bed",
     category: "Home",
-    image: "src/assets/Pet Bed.jpg",
+    image: "src/assets/Pet Bed.webp",
     price: 39.99,
     description:
       "Cozy sleeping spot for your furry friend. Soft, washable cover and orthopedic foam base provide comfort and support for cats and dogs alike.",
@@ -890,7 +890,7 @@ const rawProducts = [
     id: 98,
     name: "Wireless Presenter",
     category: "Electronics",
-    image: "src/assets/Wireless Presenter.jpg",
+    image: "src/assets/Wireless Presenter.webp",
     price: 24.99,
     description:
       "Seamless presentations with laser pointer control. Includes USB receiver, intuitive buttons, and reliable wireless range. Perfect for business, teaching, or public speaking.",
@@ -899,7 +899,7 @@ const rawProducts = [
     id: 99,
     name: "Fashion Beanie",
     category: "Fashion",
-    image: "src/assets/Fashion Beanie.jpg",
+    image: "src/assets/Fashion Beanie.webp",
     price: 14.99,
     description:
       "Stay warm with this stylish knit beanie. Stretchy, soft material fits all head sizes. Pairs well with casual or outdoor winter outfits.",
@@ -918,7 +918,7 @@ const rawProducts = [
     id: 101,
     name: "Smartphone Stand",
     category: "Electronics",
-    image: "src/assets/Smartphone Stand.jpg",
+    image: "src/assets/Smartphone Stand.webp",
     price: 10.0,
     discountPrice: 9.0,
     description: "Convenient and adjustable for desk use.",
@@ -945,7 +945,7 @@ const rawProducts = [
     id: 104,
     name: "Pull-Up Bar",
     category: "Fitness",
-    image: "src/assets/Pull-Up Bar.jpg",
+    image: "src/assets/Pull-Up Bar.webp",
     price: 45.99,
     description: "Sturdy doorframe bar for upper body workouts.",
   },
@@ -963,7 +963,7 @@ const rawProducts = [
     id: 106,
     name: "Fitness Ball Chair",
     category: "Fitness",
-    image: "src/assets/Fitness Ball Chair.jpg",
+    image: "src/assets/Fitness Ball Chair.webp",
     price: 54.99,
     description:
       "Ergonomic chair alternative that supports posture. Encourages active sitting to engage core muscles, reduce back pain, and promote better alignment during work or relaxation hours.",
@@ -972,7 +972,7 @@ const rawProducts = [
     id: 107,
     name: "Noise-Canceling Headphones",
     category: "Electronics",
-    image: "src/assets/Noise-Canceling Headphones.avif",
+    image: "src/assets/Noise-Canceling Headphones.webp",
     price: 149.99,
     discountPrice: 126.19,
     description: "Immerse yourself in uninterrupted sound.",
@@ -981,7 +981,7 @@ const rawProducts = [
     id: 108,
     name: "Essential Oil Diffuser",
     category: "Home",
-    image: "src/assets/Essential Oil Diffuser.jpg",
+    image: "src/assets/Essential Oil Diffuser.webp",
     price: 25.99,
     description: "Add fragrance and calm to your space.",
   },
@@ -989,7 +989,7 @@ const rawProducts = [
     id: 109,
     name: "Resistance Tube Set",
     category: "Fitness",
-    image: "src/assets/Resistance Tube Set.jpg",
+    image: "src/assets/Resistance Tube Set.webp",
     price: 26.99,
     discountPrice: 24.99,
     description:
@@ -1009,7 +1009,7 @@ const rawProducts = [
     id: 111,
     name: "Fitness Gloves",
     category: "Fitness",
-    image: "src/assets/Fitness Gloves.jpg",
+    image: "src/assets/Fitness Gloves.webp",
     price: 12.99,
     description:
       "Improve grip and protect hands during workouts. Breathable, anti-slip palms reduce friction and calluses. Great for lifting, cycling, and functional training sessions.",
@@ -1018,7 +1018,7 @@ const rawProducts = [
     id: 112,
     name: "Fitness Tracker Pro",
     category: "Fitness",
-    image: "src/assets/Fitness Tracker Pro.jpg",
+    image: "src/assets/Fitness Tracker Pro.webp",
     price: 89.99,
     discountPrice: 81.5,
     description:
@@ -1028,7 +1028,7 @@ const rawProducts = [
     id: 113,
     name: "Kindle Case",
     category: "Electronics",
-    image: "src/assets/Kindle Case.jpg",
+    image: "src/assets/Kindle Case.webp",
     price: 15.99,
     description:
       "Protect your e-reader with style. Slim, durable, and lightweight with magnetic closure. Prevents scratches, dents, and dust while keeping your Kindle safe and secure.",
@@ -1037,7 +1037,7 @@ const rawProducts = [
     id: 114,
     name: "Rain Jacket",
     category: "Fashion",
-    image: "src/assets/Rain Jacket.jpeg",
+    image: "src/assets/Rain Jacket.webp",
     price: 69.99,
     description:
       "Water-resistant and windproof for rainy days. Lightweight and breathable design with adjustable hood and pockets. Keeps you dry and stylish during unpredictable weather.",
@@ -1055,7 +1055,7 @@ const rawProducts = [
     id: 116,
     name: "LED Strip Lights",
     category: "Fashion",
-    image: "src/assets/LED Strip Lights.jpg",
+    image: "src/assets/LED Strip Lights.webp",
     price: 27.5,
     description: "Colorful lighting for ambiance and mood.",
   },
@@ -1073,7 +1073,7 @@ const rawProducts = [
     id: 118,
     name: "Men's T-Shirt",
     category: "Fashion",
-    image: "src/assets/mens tshirt.jpg",
+    image: "src/assets/mens tshirt.webp",
     price: 19.99,
     description:
       "Upgrade your wardrobe with this soft cotton t-shirt, available in a variety of colors to suit any style. Perfect for casual outings or lounging at home.",
@@ -1082,7 +1082,7 @@ const rawProducts = [
     id: 119,
     name: "Plush Teddy Bear",
     category: "Toys",
-    image: "src/assets/Plush Teddy Bear.jpg",
+    image: "src/assets/Plush Teddy Bear.webp",
     price: 19.99,
     description:
       "Soft and huggable teddy bear made from premium materials. Hypoallergenic stuffing and child-safe eyes. Perfect bedtime companion.",
@@ -1091,7 +1091,7 @@ const rawProducts = [
     id: 120,
     name: "Women's Handbag",
     category: "Fashion",
-    image: "src/assets/Women's Handbag.avif",
+    image: "src/assets/Women's Handbag.webp",
     price: 49.99,
     description:
       "Carry your essentials in style with this elegant and spacious handbag, perfect for everyday use. Features multiple compartments for better organization and convenience.",
@@ -1100,7 +1100,7 @@ const rawProducts = [
     id: 121,
     name: "Running Armband",
     category: "Fitness",
-    image: "src/assets/Running Armband.jpg",
+    image: "src/assets/Running Armband.webp",
     price: 11.99,
     description:
       "Secure your phone while jogging or at the gym. Adjustable strap, sweat-resistant material, and clear screen window for full device access on the go.",
@@ -1109,7 +1109,7 @@ const rawProducts = [
     id: 122,
     name: "Water Bottle",
     category: "Home",
-    image: "src/assets/Water Bottle.jpg",
+    image: "src/assets/Water Bottle.webp",
     price: 30.0,
     description: "Insulated bottle to keep drinks cold or hot.",
   },
@@ -1125,7 +1125,7 @@ const rawProducts = [
     id: 124,
     name: "Fitness Tracker",
     category: "Fitness",
-    image: "src/assets/Fitness Tracker.jpg",
+    image: "src/assets/Fitness Tracker.webp",
     price: 59.99,
     discountPrice: 57.99,
     description: "Monitor steps, heart rate, and sleep.",
@@ -1143,7 +1143,7 @@ const rawProducts = [
     id: 126,
     name: "Notebook Set",
     category: "Books",
-    image: "src/assets/Notebook Set.jpg",
+    image: "src/assets/Notebook Set.webp",
     price: 14.99,
     description:
       "Stylish notebooks for journaling or notes. Includes various page types, sturdy covers, and smooth paper ideal for writing, sketching, planning, or organizing your daily thoughts.",
@@ -1152,7 +1152,7 @@ const rawProducts = [
     id: 127,
     name: "Dinosaur Action Figures",
     category: "Toys",
-    image: "src/assets/Dinosaur Action Figures.jpg",
+    image: "src/assets/Dinosaur Action Figures.webp",
     price: 18.99,
     discountPrice: 11.99,
     description:
@@ -1162,7 +1162,7 @@ const rawProducts = [
     id: 128,
     name: "Wireless Game Controller",
     category: "Electronics",
-    image: "src/assets/Wireless Game Controller.avif",
+    image: "src/assets/Wireless Game Controller.webp",
     price: 49.99,
     discountPrice: 45.5,
     description:
@@ -1180,7 +1180,7 @@ const rawProducts = [
     id: 130,
     name: "Action Camera",
     category: "Electronics",
-    image: "src/assets/Action Camera.avif",
+    image: "src/assets/Action Camera.webp",
     price: 99.99,
     discountPrice: 92.99,
     description: "Capture adventures in high-definition.",
@@ -1190,7 +1190,7 @@ const rawProducts = [
     id: 131,
     name: "Cycling Handlebar Grips",
     category: "Accessories",
-    image: "src/assets/1Pair Silicone Cycling Bicycle Grips.jpg",
+    image: "src/assets/1Pair Silicone Cycling Bicycle Grips.webp",
     price: 14.99,
     discountPrice: 12.99,
     description:
@@ -1219,7 +1219,7 @@ const rawProducts = [
     id: 134,
     name: "Winter Fashion Set",
     category: "Accessories",
-    image: "src/assets/Winter Fashion Set.avif",
+    image: "src/assets/Winter Fashion Set.webp",
     price: 49.99,
     description:
       "Complete winter accessories set including matching scarf, beanie, and gloves. Made from premium knit material that's both warm and soft. Available in multiple color combinations to match any outfit.",
@@ -1228,7 +1228,7 @@ const rawProducts = [
     id: 135,
     name: "Premium Accessories Collection",
     category: "Accessories",
-    image: "src/assets/Premium Accessories Collection.jpg",
+    image: "src/assets/Premium Accessories Collection.webp",
     price: 89.99,
     discountPrice: 79.99,
     description:
@@ -1238,7 +1238,7 @@ const rawProducts = [
     id: 136,
     name: "Interactive Learning Tablet",
     category: "Toys",
-    image: "src/assets/Interactive Learning Tablet.jpg",
+    image: "src/assets/Interactive Learning Tablet.webp",
     price: 45.99,
     discountPrice: 39.99,
     description:
@@ -1257,7 +1257,7 @@ const rawProducts = [
     id: 138,
     name: "Wooden Train Set",
     category: "Toys",
-    image: "src/assets/Wooden Train Set.png",
+    image: "src/assets/Wooden Train Set.webp",
     price: 29.99,
     discountPrice: 24.99,
     description:
@@ -1267,7 +1267,7 @@ const rawProducts = [
     id: 139,
     name: "Space Explorer Kit",
     category: "Toys",
-    image: "src/assets/Space Explorer Kit.jpg",
+    image: "src/assets/Space Explorer Kit.webp",
     price: 32.99,
     description:
       "Astronomy kit for budding space enthusiasts. Includes telescope, star charts, planet models, and space-themed activities. Educational gift that inspires curiosity about the universe and science.",
