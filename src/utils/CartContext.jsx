@@ -1,105 +1,185 @@
-import React, { createContext, useContext, useState, useEffect } from "react";
+import React, { createContext, useContext, useEffect, useMemo, useState } from "react";
 import { useAuth } from "./AuthContext.jsx";
+import { db } from "./firebase.js";
+import { doc, onSnapshot, setDoc, Timestamp, runTransaction } from "firebase/firestore";
 
-// Create a context for the cart
 const CartContext = createContext();
 
-// Custom hook to use the cart context
 export const useCart = () => useContext(CartContext);
+
+const emptyCart = [];
+
+const ensureCartShape = (items) => {
+  if (!Array.isArray(items)) return [...emptyCart];
+
+  return items.map((item) => ({
+    ...item,
+    quantity: Number(item.quantity) > 0 ? Number(item.quantity) : 1,
+  }));
+};
 
 export const CartProvider = ({ children }) => {
   const { currentUser } = useAuth();
-  const userId = currentUser?.uid || "guest";
+  const userId = currentUser?.uid || null;
 
-  // Get cart items from local storage or start with empty array
-  const [cartItems, setCartItems] = useState([]);
-  const [isInitialized, setIsInitialized] = useState(false);
+  const [cartItems, setCartItems] = useState(emptyCart);
+  const [isLoading, setIsLoading] = useState(false);
 
-  useEffect(() => {
-    loadCartFromStorage();
-    setIsInitialized(true);
+  const cartDocRef = useMemo(() => {
+    if (!userId) return null;
+    return doc(db, "carts", userId);
   }, [userId]);
 
-  // Save cart items to localStorage whenever they change
   useEffect(() => {
-    if (!isInitialized) return;
+    if (!cartDocRef) {
+      setCartItems(emptyCart);
+      return;
+    }
+
+    setIsLoading(true);
+
+    const unsubscribe = onSnapshot(
+      cartDocRef,
+      async (snapshot) => {
+        if (!snapshot.exists()) {
+          try {
+            await setDoc(cartDocRef, {
+              items: emptyCart,
+              updatedAt: Timestamp.now(),
+            });
+          } catch (error) {
+            console.error("Error initializing user cart:", error);
+          }
+
+          setCartItems(emptyCart);
+        } else {
+          const data = snapshot.data();
+          setCartItems(ensureCartShape(data.items));
+        }
+
+        setIsLoading(false);
+      },
+      (error) => {
+        console.error("Error subscribing to cart updates:", error);
+        setCartItems(emptyCart);
+        setIsLoading(false);
+      }
+    );
+
+    return () => unsubscribe();
+  }, [cartDocRef]);
+
+  const persistCart = async (items) => {
+    if (!cartDocRef) return;
 
     try {
-      localStorage.setItem(
-        `shopfinity_cart_${userId}`,
-        JSON.stringify(cartItems)
+      await setDoc(
+        cartDocRef,
+        {
+          items: ensureCartShape(items),
+          updatedAt: Timestamp.now(),
+        },
+        { merge: true }
       );
     } catch (error) {
-      console.error("Error saving cart to localStorage:", error);
+      console.error("Error saving cart to Firestore:", error);
     }
-  }, [cartItems, userId, isInitialized]);
+  };
 
-  // Function to load cart from localStorage
-  const loadCartFromStorage = () => {
+  const addToCart = async (product, quantity = 1) => {
+    const qty = Number.isFinite(quantity) ? Math.max(1, quantity) : 1;
+
+    const updatedItems = (() => {
+      const existingItem = cartItems.find((item) => item.id === product.id);
+
+      if (existingItem) {
+        return cartItems.map((item) =>
+          item.id === product.id
+            ? { ...item, quantity: item.quantity + qty }
+            : item
+        );
+      }
+
+      return [
+        ...cartItems,
+        {
+          ...product,
+          quantity: qty,
+        },
+      ];
+    })();
+
+    setCartItems(updatedItems);
+
+    if (!cartDocRef) return;
+
     try {
-      const savedCart = localStorage.getItem(`shopfinity_cart_${userId}`);
-      console.log(
-        `Loading cart for user: ${userId}`,
-        savedCart ? JSON.parse(savedCart) : []
-      );
-      if (savedCart) {
-        setCartItems(JSON.parse(savedCart));
-      } else {
-        setCartItems([]);
-      }
+      await runTransaction(db, async (transaction) => {
+        const snapshot = await transaction.get(cartDocRef);
+        const existingItems = snapshot.exists()
+          ? ensureCartShape(snapshot.data().items)
+          : emptyCart;
+
+        const mergedItems = (() => {
+          const existing = existingItems.find((item) => item.id === product.id);
+
+          if (existing) {
+            return existingItems.map((item) =>
+              item.id === product.id
+                ? { ...item, quantity: item.quantity + qty }
+                : item
+            );
+          }
+
+          return [
+            ...existingItems,
+            {
+              ...product,
+              quantity: qty,
+            },
+          ];
+        })();
+
+        transaction.set(
+          cartDocRef,
+          {
+            items: mergedItems,
+            updatedAt: Timestamp.now(),
+          },
+          { merge: true }
+        );
+      });
     } catch (error) {
-      console.error("Error loading cart from localStorage:", error);
-      setCartItems([]);
+      console.error("Error adding item to cart in Firestore:", error);
+      await persistCart(updatedItems);
     }
   };
 
-  // Add item to cart
-  const addToCart = (product, quantity = 1) => {
-    setCartItems((prevItems) => {
-      // Check if the item is already in the cart
-      const existingItemIndex = prevItems.findIndex(
-        (item) => item.id === product.id
-      );
+  const removeFromCart = async (productId) => {
+    const updatedItems = cartItems.filter((item) => item.id !== productId);
+    setCartItems(updatedItems);
 
-      if (existingItemIndex > -1) {
-        // If item exists, update the quantity
-        const updatedItems = [...prevItems];
-        updatedItems[existingItemIndex].quantity += quantity;
-        return updatedItems;
-      } else {
-        // If item doesn't exist, add it to the cart
-        return [...prevItems, { ...product, quantity }];
-      }
-    });
+    await persistCart(updatedItems);
   };
 
-  // Remove item from cart
-  const removeFromCart = (productId) => {
-    setCartItems((prevItems) =>
-      prevItems.filter((item) => item.id !== productId)
+  const updateQuantity = async (productId, newQuantity) => {
+    const qty = Number.isFinite(newQuantity) ? Math.max(1, newQuantity) : 1;
+
+    const updatedItems = cartItems.map((item) =>
+      item.id === productId ? { ...item, quantity: qty } : item
     );
+
+    setCartItems(updatedItems);
+    await persistCart(updatedItems);
   };
 
-  // Update item quantity in cart
-  const updateQuantity = (productId, newQuantity) => {
-    if (newQuantity < 1) return;
-
-    setCartItems((prevItems) =>
-      prevItems.map((item) =>
-        item.id === productId ? { ...item, quantity: newQuantity } : item
-      )
-    );
+  const clearCart = async () => {
+    setCartItems(emptyCart);
+    await persistCart(emptyCart);
   };
 
-  // Clear the entire cart
-  const clearCart = () => {
-    setCartItems([]);
-  };
-
-  // Calculate cart totals
   const getCartTotal = () => {
     return cartItems.reduce((total, item) => {
-      // Use discount price if available, otherwise use regular price
       const priceToUse =
         item.discountPrice !== undefined ? item.discountPrice : item.price;
       return total + priceToUse * item.quantity;
@@ -108,12 +188,12 @@ export const CartProvider = ({ children }) => {
 
   const cartContextValue = {
     cartItems,
+    isLoading,
     addToCart,
     removeFromCart,
     updateQuantity,
     clearCart,
     getCartTotal,
-    loadCartFromStorage,
   };
 
   return (

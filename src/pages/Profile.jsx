@@ -74,6 +74,25 @@ const Profile = () => {
   const [showChangeUserModal, setShowChangeUserModal] = useState(false);
   const [newUserEmail, setNewUserEmail] = useState("");
   const [changeUserError, setChangeUserError] = useState("");
+  const [addressFormData, setAddressFormData] = useState({
+    name: "",
+    addressLine1: "",
+    addressLine2: "",
+    city: "",
+    state: "",
+    postalCode: "",
+    country: "United States",
+    addressType: "Home",
+  });
+  const [paymentFormData, setPaymentFormData] = useState({
+    cardholderName: "",
+    cardNumber: "",
+    cardType: "Visa",
+    expiryMonth: "",
+    expiryYear: "",
+    cvv: "",
+    isDefault: false,
+  });
 
   const navigate = useNavigate();
 
@@ -154,21 +173,21 @@ const Profile = () => {
   };
 
   // Handle address form submission
-  const handleAddressSubmit = (e) => {
+  const handleAddressSubmit = async (e) => {
     e.preventDefault();
     setLoading(true);
 
     try {
       if (editingAddress) {
         // Update existing address
-        updateAddress(editingAddress.id, addressFormData);
+        await updateAddress(editingAddress.id, addressFormData);
         setMessage({
           text: "Address updated successfully!",
           type: "success",
         });
       } else {
         // Add new address
-        addAddress(addressFormData);
+        await addAddress(addressFormData);
         setMessage({
           text: "New address added successfully!",
           type: "success",
@@ -232,7 +251,7 @@ const Profile = () => {
   };
 
   // Handle payment form submission
-  const handlePaymentSubmit = (e) => {
+  const handlePaymentSubmit = async (e) => {
     e.preventDefault();
     setLoading(true);
 
@@ -250,17 +269,17 @@ const Profile = () => {
 
       if (editingPayment) {
         // Update existing payment method
-        updatePaymentMethod(editingPayment.id, formattedPayment);
+        await updatePaymentMethod(editingPayment.id, formattedPayment);
         setMessage({
           text: "Payment method updated successfully!",
           type: "success",
         });
       } else {
         // Add new payment method
-        const newPayment = addPaymentMethod(formattedPayment);
+        const newPayment = await addPaymentMethod(formattedPayment);
 
         if (paymentFormData.isDefault || paymentMethods.length === 0) {
-          setDefaultPaymentMethod(newPayment.id);
+          await setDefaultPaymentMethod(newPayment.id);
         }
 
         setMessage({

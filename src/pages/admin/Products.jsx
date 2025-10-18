@@ -52,6 +52,7 @@ const AdminProducts = () => {
     price: "",
     category: "",
     imageUrl: "",
+    discountPrice: "",
     stock: "",
     status: "active",
     featured: false,
@@ -101,6 +102,13 @@ const AdminProducts = () => {
         if (sortConfig.key === "price" || sortConfig.key === "stock") {
           aValue = parseFloat(a[sortConfig.key] || 0);
           bValue = parseFloat(b[sortConfig.key] || 0);
+        } else if (sortConfig.key === "id") {
+          const normalizeId = (value) => {
+            const numeric = Number(value);
+            return Number.isFinite(numeric) ? numeric : String(value || "");
+          };
+          aValue = normalizeId(aValue);
+          bValue = normalizeId(bValue);
         }
 
         if (aValue < bValue) {
@@ -143,6 +151,7 @@ const AdminProducts = () => {
       price: "",
       category: "",
       imageUrl: "",
+      discountPrice: "",
       stock: "",
       status: "active",
       featured: false,
@@ -153,8 +162,16 @@ const AdminProducts = () => {
   };
 
   const openEditModal = (product) => {
-    setSelectedProduct(product);
-    setImagePreview(product.imageUrl || product.imgURL);
+    const resolvedImage =
+      product.imageUrl || product.imgURL || product.image || "";
+
+    setSelectedProduct({
+      ...product,
+      imageUrl: product.imageUrl || resolvedImage,
+      imgURL: product.imgURL || resolvedImage,
+      image: product.image || resolvedImage,
+    });
+    setImagePreview(resolvedImage);
     setIsEditModalOpen(true);
   };
 
@@ -222,7 +239,7 @@ const AdminProducts = () => {
   };
 
   // Add new product
-  const handleAddProduct = (e) => {
+  const handleAddProduct = async (e) => {
     e.preventDefault();
 
     if (!newProduct.name || !newProduct.price) {
@@ -230,29 +247,52 @@ const AdminProducts = () => {
       return;
     }
 
-    // Create new product with unique ID
-    const productToAdd = {
-      ...newProduct,
-      id: Math.max(...products.map((p) => p.id || 0), 0) + 1,
-      price: parseFloat(newProduct.price) || 0,
-      stock: parseInt(newProduct.stock) || 0,
-      createdAt: new Date().toISOString(),
-      imgURL: newProduct.imageUrl,
-    };
+    setIsLoading(true);
 
-    if (!productToAdd.status) {
-      productToAdd.status = "active";
+    try {
+      const productToAdd = {
+        ...newProduct,
+        price: parseFloat(newProduct.price) || 0,
+        discountPrice:
+          newProduct.discountPrice !== undefined &&
+          newProduct.discountPrice !== ""
+            ? parseFloat(newProduct.discountPrice)
+            : undefined,
+        stock: parseInt(newProduct.stock, 10) || 0,
+        status: newProduct.status || "active",
+        image: newProduct.imageUrl || newProduct.imgURL || newProduct.image || "",
+        imageUrl: newProduct.imageUrl || newProduct.imgURL || newProduct.image || "",
+        imgURL: newProduct.imageUrl || newProduct.imgURL || newProduct.image || "",
+      };
+
+      await addProduct(productToAdd);
+
+      setIsAddModalOpen(false);
+      setImagePreview(null);
+      setNewProduct({
+        name: "",
+        description: "",
+        price: "",
+        category: "",
+        imageUrl: "",
+        discountPrice: "",
+        stock: "",
+        status: "active",
+        featured: false,
+        tags: [],
+      });
+
+      alert("Product added successfully!");
+    } catch (error) {
+      console.error("Failed to add product:", error);
+      alert("Failed to add product. Please try again.");
+    } finally {
+      setIsLoading(false);
     }
-
-    addProduct(productToAdd);
-    setIsAddModalOpen(false);
-    setImagePreview(null);
-
-    alert("Product added successfully!");
   };
 
   // Update existing product
-  const handleUpdateProduct = (e) => {
+  const handleUpdateProduct = async (e) => {
     e.preventDefault();
 
     if (!selectedProduct.name || !selectedProduct.price) {
@@ -260,30 +300,70 @@ const AdminProducts = () => {
       return;
     }
 
-    const updatedProduct = {
-      ...selectedProduct,
-      price: parseFloat(selectedProduct.price) || 0,
-      stock: parseInt(selectedProduct.stock) || 0,
-      updatedAt: new Date().toISOString(),
-      imgURL: selectedProduct.imageUrl || selectedProduct.imgURL,
-    };
+    setIsLoading(true);
 
-    updateProduct(updatedProduct);
-    setIsEditModalOpen(false);
-    setImagePreview(null);
+    try {
+      const updatedProduct = {
+        ...selectedProduct,
+        price: parseFloat(selectedProduct.price) || 0,
+        discountPrice:
+          selectedProduct.discountPrice !== undefined &&
+          selectedProduct.discountPrice !== ""
+            ? parseFloat(selectedProduct.discountPrice)
+            : undefined,
+        stock: parseInt(selectedProduct.stock, 10) || 0,
+        status: selectedProduct.status || "active",
+        image:
+          selectedProduct.imageUrl ||
+          selectedProduct.imgURL ||
+          selectedProduct.image ||
+          "",
+        imageUrl:
+          selectedProduct.imageUrl ||
+          selectedProduct.imgURL ||
+          selectedProduct.image ||
+          "",
+        imgURL:
+          selectedProduct.imageUrl ||
+          selectedProduct.imgURL ||
+          selectedProduct.image ||
+          "",
+      };
 
-    alert("Product updated successfully!");
-  };
+      await updateProduct(updatedProduct);
 
-  // Delete product
-  const handleDeleteProduct = (productId) => {
-    if (window.confirm("Are you sure you want to delete this product?")) {
-      deleteProduct(productId);
-      alert("Product deleted successfully!");
+      setIsEditModalOpen(false);
+      setImagePreview(null);
+
+      alert("Product updated successfully!");
+    } catch (error) {
+      console.error("Failed to update product:", error);
+      alert("Failed to update product. Please try again.");
+    } finally {
+      setIsLoading(false);
     }
   };
 
-  const handleBulkAction = () => {
+  // Delete product
+  const handleDeleteProduct = async (productId) => {
+    if (!window.confirm("Are you sure you want to delete this product?")) {
+      return;
+    }
+
+    setIsLoading(true);
+
+    try {
+      await deleteProduct(productId);
+      alert("Product deleted successfully!");
+    } catch (error) {
+      console.error("Failed to delete product:", error);
+      alert("Failed to delete product. Please try again.");
+    } finally {
+      setIsLoading(false);
+    }
+  };
+
+  const handleBulkAction = async () => {
     if (!bulkAction || selectedProductIds.length === 0) {
       alert("Please select an action and at least one product");
       return;
@@ -291,18 +371,22 @@ const AdminProducts = () => {
 
     setIsLoading(true);
 
-    setTimeout(() => {
+    try {
       if (bulkAction === "delete") {
-        bulkDeleteProducts(selectedProductIds);
+        await bulkDeleteProducts(selectedProductIds);
       } else {
-        bulkUpdateProducts(selectedProductIds, bulkAction);
+        await bulkUpdateProducts(selectedProductIds, bulkAction);
       }
 
+      alert(`${selectedProductIds.length} products updated successfully`);
+    } catch (error) {
+      console.error("Failed to apply bulk action:", error);
+      alert("Bulk action failed. Please try again.");
+    } finally {
       setIsLoading(false);
       setSelectedProductIds([]);
       setBulkAction("");
-      alert(`${selectedProductIds.length} products updated successfully`);
-    }, 800);
+    }
   };
 
   const handleImagePreview = (url) => {
@@ -346,14 +430,25 @@ const AdminProducts = () => {
     document.body.removeChild(link);
   };
 
-  const resetToOriginalProducts = () => {
-    if (
-      window.confirm(
-        "Are you sure you want to reset to original product data? All your changes will be lost."
-      )
-    ) {
-      resetProducts();
+  const resetToOriginalProducts = async () => {
+    const shouldReset = window.confirm(
+      "Are you sure you want to reset to original product data? All your changes will be lost."
+    );
+
+    if (!shouldReset) {
+      return;
+    }
+
+    setIsLoading(true);
+
+    try {
+      await resetProducts();
       alert("Products have been reset to original data");
+    } catch (error) {
+      console.error("Failed to reset products:", error);
+      alert("Failed to reset products. Please try again.");
+    } finally {
+      setIsLoading(false);
     }
   };
 
@@ -563,7 +658,7 @@ const AdminProducts = () => {
                 </tr>
               </thead>
               <tbody className="divide-y divide-gray-100">
-                {isLoading ? (
+                {isLoading || productsLoading ? (
                   <tr>
                     <td colSpan="7" className="px-6 py-12 text-center">
                       <div className="flex flex-col items-center gap-4">
@@ -575,7 +670,7 @@ const AdminProducts = () => {
                     </td>
                   </tr>
                 ) : filteredProducts.length > 0 ? (
-                  filteredProducts.map((product, index) => (
+                  filteredProducts.map((product) => (
                     <tr
                       key={product.id}
                       className="hover:bg-gradient-to-r hover:from-blue-50 hover:to-indigo-50 transition-all duration-200 group"

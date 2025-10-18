@@ -1,5 +1,7 @@
-import React, { createContext, useContext, useState, useEffect } from "react";
+import React, { createContext, useContext, useEffect, useMemo, useState } from "react";
 import { useAuth } from "./AuthContext.jsx";
+import { db } from "./firebase.js";
+import { doc, onSnapshot, setDoc, Timestamp } from "firebase/firestore";
 
 const PaymentContext = createContext();
 
@@ -8,121 +10,140 @@ export const usePayment = () => useContext(PaymentContext);
 
 export const PaymentProvider = ({ children }) => {
   const { currentUser } = useAuth();
-  const userId = currentUser?.uid || "guest";
+  const userId = currentUser?.uid || null;
 
-  // Get payment methods from local storage or start with empty array
-  const [paymentMethods, setPaymentMethods] = useState(() => {
-    try {
-      const savedPaymentMethods = localStorage.getItem(
-        `shopfinity_payment_methods_${userId}`
-      );
-      return savedPaymentMethods ? JSON.parse(savedPaymentMethods) : [];
-    } catch (error) {
-      console.error("Error loading payment methods from localStorage:", error);
-      return [];
-    }
-  });
+  const [paymentMethods, setPaymentMethods] = useState([]);
+  const [defaultPaymentMethodId, setDefaultPaymentMethodId] = useState(null);
+  const [isLoading, setIsLoading] = useState(false);
 
-  // Default payment method state
-  const [defaultPaymentMethodId, setDefaultPaymentMethodId] = useState(() => {
-    try {
-      const savedDefaultId = localStorage.getItem(
-        `shopfinity_default_payment_${userId}`
-      );
-      return (
-        savedDefaultId ||
-        (paymentMethods.length > 0 ? paymentMethods[0].id : null)
-      );
-    } catch (error) {
-      console.error(
-        "Error loading default payment method from localStorage:",
-        error
-      );
-      return null;
-    }
-  });
+  const paymentDocRef = useMemo(() => {
+    if (!userId) return null;
+    return doc(db, "userPaymentMethods", userId);
+  }, [userId]);
 
   useEffect(() => {
-    try {
-      if (userId) {
-        localStorage.setItem(
-          `shopfinity_payment_methods_${userId}`,
-          JSON.stringify(paymentMethods)
-        );
-      }
-    } catch (error) {
-      console.error("Error saving payment methods to localStorage:", error);
+    if (!paymentDocRef) {
+      setPaymentMethods([]);
+      setDefaultPaymentMethodId(null);
+      return;
     }
-  }, [paymentMethods, userId]);
 
-  // Save default payment method ID to local storage
-  useEffect(() => {
-    try {
-      if (userId && defaultPaymentMethodId) {
-        localStorage.setItem(
-          `shopfinity_default_payment_${userId}`,
-          defaultPaymentMethodId
-        );
+    setIsLoading(true);
+
+    const unsubscribe = onSnapshot(
+      paymentDocRef,
+      async (snapshot) => {
+        if (!snapshot.exists()) {
+          try {
+            await setDoc(
+              paymentDocRef,
+              {
+                paymentMethods: [],
+                defaultPaymentMethodId: null,
+                updatedAt: Timestamp.now(),
+              },
+              { merge: true }
+            );
+          } catch (error) {
+            console.error("Error initializing payment methods doc:", error);
+          }
+
+          setPaymentMethods([]);
+          setDefaultPaymentMethodId(null);
+        } else {
+          const data = snapshot.data();
+          setPaymentMethods(
+            Array.isArray(data.paymentMethods) ? data.paymentMethods : []
+          );
+          setDefaultPaymentMethodId(data.defaultPaymentMethodId || null);
+        }
+
+        setIsLoading(false);
+      },
+      (error) => {
+        console.error("Error subscribing to payment methods:", error);
+        setPaymentMethods([]);
+        setDefaultPaymentMethodId(null);
+        setIsLoading(false);
       }
-    } catch (error) {
-      console.error(
-        "Error saving default payment method to localStorage:",
-        error
+    );
+
+    return () => unsubscribe();
+  }, [paymentDocRef]);
+
+  const persistPayments = async (methods, defaultId) => {
+    if (!paymentDocRef) return;
+
+    try {
+      await setDoc(
+        paymentDocRef,
+        {
+          paymentMethods: methods,
+          defaultPaymentMethodId: defaultId || null,
+          updatedAt: Timestamp.now(),
+        },
+        { merge: true }
       );
+    } catch (error) {
+      console.error("Error saving payment methods to Firestore:", error);
     }
-  }, [defaultPaymentMethodId, userId]);
+  };
 
   // Add a new payment method
-  const addPaymentMethod = (paymentMethod) => {
+  const addPaymentMethod = async (paymentMethod) => {
     const newPaymentMethod = {
       ...paymentMethod,
       id: `payment_${Date.now()}`,
       createdAt: new Date().toISOString(),
     };
 
-    setPaymentMethods((prevPaymentMethods) => [
-      newPaymentMethod,
-      ...prevPaymentMethods,
-    ]);
+    const updatedMethods = [newPaymentMethod, ...paymentMethods];
+    const nextDefaultId =
+      paymentMethods.length === 0 ? newPaymentMethod.id : defaultPaymentMethodId;
 
-    if (paymentMethods.length === 0) {
-      setDefaultPaymentMethodId(newPaymentMethod.id);
-    }
+    setPaymentMethods(updatedMethods);
+    setDefaultPaymentMethodId(nextDefaultId);
+
+    await persistPayments(updatedMethods, nextDefaultId);
 
     return newPaymentMethod;
   };
 
   // Edit an existing payment method
-  const updatePaymentMethod = (id, updatedPaymentMethod) => {
+  const updatePaymentMethod = async (id, updatedPaymentMethod) => {
     const updatedPaymentMethods = paymentMethods.map((method) =>
       method.id === id ? { ...method, ...updatedPaymentMethod } : method
     );
     setPaymentMethods(updatedPaymentMethods);
+    await persistPayments(updatedPaymentMethods, defaultPaymentMethodId);
     return updatedPaymentMethods.find((method) => method.id === id);
   };
 
   // Remove a payment method
-  const removePaymentMethod = (id) => {
-    setPaymentMethods((prevPaymentMethods) =>
-      prevPaymentMethods.filter((method) => method.id !== id)
+  const removePaymentMethod = async (id) => {
+    const remainingMethods = paymentMethods.filter(
+      (method) => method.id !== id
     );
 
+    let nextDefaultId = defaultPaymentMethodId;
+
     if (defaultPaymentMethodId === id) {
-      const remainingMethods = paymentMethods.filter(
-        (method) => method.id !== id
-      );
-      if (remainingMethods.length > 0) {
-        setDefaultPaymentMethodId(remainingMethods[0].id);
-      } else {
-        setDefaultPaymentMethodId(null);
-      }
+      nextDefaultId = remainingMethods.length
+        ? remainingMethods[0].id
+        : null;
     }
+
+    setPaymentMethods(remainingMethods);
+    setDefaultPaymentMethodId(nextDefaultId);
+
+    await persistPayments(remainingMethods, nextDefaultId);
   };
 
   // Set a payment method as the default
-  const setDefaultPaymentMethod = (id) => {
+  const setDefaultPaymentMethod = async (id) => {
     if (paymentMethods.some((method) => method.id === id)) {
       setDefaultPaymentMethodId(id);
+      await persistPayments(paymentMethods, id);
       return true;
     }
     return false;
@@ -145,6 +166,7 @@ export const PaymentProvider = ({ children }) => {
   const paymentContextValue = {
     paymentMethods,
     defaultPaymentMethodId,
+    isLoading,
     addPaymentMethod,
     updatePaymentMethod,
     removePaymentMethod,

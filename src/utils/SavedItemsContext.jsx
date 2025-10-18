@@ -1,7 +1,7 @@
-import React, { createContext, useContext, useState, useEffect } from "react";
+import React, { createContext, useContext, useEffect, useMemo, useState } from "react";
 import { useAuth } from "./AuthContext.jsx";
 import { db } from "./firebase.js";
-import { doc, getDoc, setDoc, updateDoc } from "firebase/firestore";
+import { doc, onSnapshot, setDoc, Timestamp } from "firebase/firestore";
 
 const SavedItemsContext = createContext();
 
@@ -9,88 +9,68 @@ export const useSavedItems = () => useContext(SavedItemsContext);
 
 export const SavedItemsProvider = ({ children }) => {
   const { currentUser } = useAuth();
-  const userId = currentUser?.uid || "guest";
-  const localStorageKey = `shopfinity_saved_items_${userId}`;
+  const userId = currentUser?.uid || null;
 
-  const [savedItems, setSavedItems] = useState(() => {
-    try {
-      const localSavedItems = localStorage.getItem(localStorageKey);
-      return localSavedItems ? JSON.parse(localSavedItems) : [];
-    } catch (error) {
-      console.error("Error loading saved items from localStorage:", error);
-      return [];
-    }
-  });
+  const [savedItems, setSavedItems] = useState([]);
+  const [isLoading, setIsLoading] = useState(false);
+
+  const savedItemsDocRef = useMemo(() => {
+    if (!userId) return null;
+    return doc(db, "savedItems", userId);
+  }, [userId]);
+
   useEffect(() => {
-    const fetchSavedItems = async () => {
-      if (!currentUser) {
-        try {
-          const localSavedItems = localStorage.getItem(localStorageKey);
-          if (localSavedItems) {
-            setSavedItems(JSON.parse(localSavedItems));
-          } else {
-            setSavedItems([]);
-          }
-        } catch (error) {
-          console.error("Error loading saved items from localStorage:", error);
-          setSavedItems([]);
-        }
-        return;
-      }
-
-      try {
-        const userDoc = doc(db, "users", currentUser.uid);
-        const docSnap = await getDoc(userDoc);
-
-        if (docSnap.exists() && docSnap.data().savedItems) {
-          const firestoreItems = docSnap.data().savedItems;
-          setSavedItems(firestoreItems);
-
-          localStorage.setItem(localStorageKey, JSON.stringify(firestoreItems));
-        } else {
-          // Initialize with empty array if no saved items exist
-          await setDoc(
-            doc(db, "users", currentUser.uid),
-            { savedItems: [] },
-            { merge: true }
-          );
-          setSavedItems([]);
-          localStorage.setItem(localStorageKey, JSON.stringify([]));
-        }
-      } catch (error) {
-        console.error("Error fetching saved items:", error);
-
-        try {
-          const localSavedItems = localStorage.getItem(localStorageKey);
-          if (localSavedItems) {
-            setSavedItems(JSON.parse(localSavedItems));
-          } else {
-            setSavedItems([]);
-          }
-        } catch (error) {
-          setSavedItems([]);
-        }
-      }
-    };
-
-    fetchSavedItems();
-  }, [currentUser, db, localStorageKey, userId]);
-
-  const saveItemsToFirestore = async (items) => {
-    try {
-      localStorage.setItem(localStorageKey, JSON.stringify(items));
-    } catch (error) {
-      console.error("Error saving to localStorage:", error);
+    if (!savedItemsDocRef) {
+      setSavedItems([]);
+      return;
     }
 
-    if (!currentUser) return;
+    setIsLoading(true);
+
+    const unsubscribe = onSnapshot(
+      savedItemsDocRef,
+      async (snapshot) => {
+        if (!snapshot.exists()) {
+          try {
+            await setDoc(savedItemsDocRef, {
+              items: [],
+              updatedAt: Timestamp.now(),
+            });
+          } catch (error) {
+            console.error("Error initializing saved items doc:", error);
+          }
+
+          setSavedItems([]);
+        } else {
+          const data = snapshot.data();
+          setSavedItems(Array.isArray(data.items) ? data.items : []);
+        }
+        setIsLoading(false);
+      },
+      (error) => {
+        console.error("Error listening for saved items updates:", error);
+        setSavedItems([]);
+        setIsLoading(false);
+      }
+    );
+
+    return () => unsubscribe();
+  }, [savedItemsDocRef]);
+
+  const persistSavedItems = async (items) => {
+    if (!savedItemsDocRef) return;
 
     try {
-      await updateDoc(doc(db, "users", currentUser.uid), {
-        savedItems: items,
-      });
+      await setDoc(
+        savedItemsDocRef,
+        {
+          items,
+          updatedAt: Timestamp.now(),
+        },
+        { merge: true }
+      );
     } catch (error) {
-      console.error("Error updating saved items in Firestore:", error);
+      console.error("Error saving saved items to Firestore:", error);
     }
   };
 
@@ -107,7 +87,7 @@ export const SavedItemsProvider = ({ children }) => {
         { ...item, addedOn: new Date().toISOString() },
       ];
       setSavedItems(updatedItems);
-      await saveItemsToFirestore(updatedItems);
+      await persistSavedItems(updatedItems);
       return true;
     }
     return false;
@@ -117,7 +97,7 @@ export const SavedItemsProvider = ({ children }) => {
   const removeFromSavedItems = async (itemId) => {
     const updatedItems = savedItems.filter((item) => item.id !== itemId);
     setSavedItems(updatedItems);
-    await saveItemsToFirestore(updatedItems);
+    await persistSavedItems(updatedItems);
   };
 
   // Check if an item is saved
@@ -128,11 +108,12 @@ export const SavedItemsProvider = ({ children }) => {
   // Clear all saved items
   const clearSavedItems = async () => {
     setSavedItems([]);
-    await saveItemsToFirestore([]);
+    await persistSavedItems([]);
   };
 
   const value = {
     savedItems,
+    isLoading,
     addToSavedItems,
     removeFromSavedItems,
     isItemSaved,

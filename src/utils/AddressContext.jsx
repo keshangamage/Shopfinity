@@ -1,5 +1,7 @@
-import React, { createContext, useContext, useState, useEffect } from "react";
+import React, { createContext, useContext, useEffect, useMemo, useState } from "react";
 import { useAuth } from "./AuthContext.jsx";
+import { db } from "./firebase.js";
+import { doc, onSnapshot, setDoc, Timestamp } from "firebase/firestore";
 
 const AddressContext = createContext();
 
@@ -8,61 +10,82 @@ export const useAddress = () => useContext(AddressContext);
 
 export const AddressProvider = ({ children }) => {
   const { currentUser } = useAuth();
-  const userId = currentUser?.uid || "guest";
+  const userId = currentUser?.uid || null;
 
-  // Get addresses from local storage or start with empty array
-  const [addresses, setAddresses] = useState(() => {
-    try {
-      const savedAddresses = localStorage.getItem(
-        `shopfinity_addresses_${userId}`
-      );
-      return savedAddresses ? JSON.parse(savedAddresses) : [];
-    } catch (error) {
-      console.error("Error loading addresses from localStorage:", error);
-      return [];
-    }
-  });
+  const [addresses, setAddresses] = useState([]);
+  const [defaultAddressId, setDefaultAddressId] = useState(null);
+  const [isLoading, setIsLoading] = useState(false);
 
-  // Default address state
-  const [defaultAddressId, setDefaultAddressId] = useState(() => {
-    try {
-      const savedDefaultId = localStorage.getItem(
-        `shopfinity_default_address_${userId}`
-      );
-      return savedDefaultId || (addresses.length > 0 ? addresses[0].id : null);
-    } catch (error) {
-      console.error("Error loading default address from localStorage:", error);
-      return null;
-    }
-  });
+  const addressesDocRef = useMemo(() => {
+    if (!userId) return null;
+    return doc(db, "userAddresses", userId);
+  }, [userId]);
 
-  // Save addresses to local storage whenever they change or user changes
   useEffect(() => {
-    try {
-      if (userId) {
-        localStorage.setItem(
-          `shopfinity_addresses_${userId}`,
-          JSON.stringify(addresses)
-        );
-      }
-    } catch (error) {
-      console.error("Error saving addresses to localStorage:", error);
+    if (!addressesDocRef) {
+      setAddresses([]);
+      setDefaultAddressId(null);
+      return;
     }
-  }, [addresses, userId]);
 
-  // Save default address ID to local storage
-  useEffect(() => {
-    try {
-      if (userId && defaultAddressId) {
-        localStorage.setItem(
-          `shopfinity_default_address_${userId}`,
-          defaultAddressId
-        );
+    setIsLoading(true);
+
+    const unsubscribe = onSnapshot(
+      addressesDocRef,
+      async (snapshot) => {
+        if (!snapshot.exists()) {
+          try {
+            await setDoc(
+              addressesDocRef,
+              {
+                addresses: [],
+                defaultAddressId: null,
+                updatedAt: Timestamp.now(),
+              },
+              { merge: true }
+            );
+          } catch (error) {
+            console.error("Error initializing addresses doc:", error);
+          }
+
+          setAddresses([]);
+          setDefaultAddressId(null);
+        } else {
+          const data = snapshot.data();
+          setAddresses(Array.isArray(data.addresses) ? data.addresses : []);
+          setDefaultAddressId(data.defaultAddressId || null);
+        }
+
+        setIsLoading(false);
+      },
+      (error) => {
+        console.error("Error subscribing to addresses:", error);
+        setAddresses([]);
+        setDefaultAddressId(null);
+        setIsLoading(false);
       }
+    );
+
+    return () => unsubscribe();
+  }, [addressesDocRef]);
+
+  const persistAddresses = async (nextAddresses, nextDefaultId) => {
+    if (!addressesDocRef) return;
+
+    try {
+      await setDoc(
+        addressesDocRef,
+        {
+          addresses: nextAddresses,
+          defaultAddressId: nextDefaultId || null,
+          updatedAt: Timestamp.now(),
+        },
+        { merge: true }
+      );
     } catch (error) {
-      console.error("Error saving default address to localStorage:", error);
+      console.error("Error saving addresses to Firestore:", error);
     }
-  }, [defaultAddressId, userId]);
+  };
   //Countries
   const countries = [
     "Australia",
@@ -100,53 +123,60 @@ export const AddressProvider = ({ children }) => {
   ];
 
   // Add a new address
-  const addAddress = (address) => {
+  const addAddress = async (address) => {
     const newAddress = {
       ...address,
       id: `address_${Date.now()}`,
       createdAt: new Date().toISOString(),
     };
 
-    setAddresses((prevAddresses) => [newAddress, ...prevAddresses]);
+    const updatedAddresses = [newAddress, ...addresses];
+    const nextDefaultId =
+      addresses.length === 0 ? newAddress.id : defaultAddressId;
 
-    if (addresses.length === 0) {
-      setDefaultAddressId(newAddress.id);
-    }
+    setAddresses(updatedAddresses);
+    setDefaultAddressId(nextDefaultId);
+
+    await persistAddresses(updatedAddresses, nextDefaultId);
 
     return newAddress;
   };
 
   // Edit an existing address
-  const updateAddress = (id, updatedAddress) => {
+  const updateAddress = async (id, updatedAddress) => {
     const updatedAddresses = addresses.map((address) =>
       address.id === id ? { ...address, ...updatedAddress } : address
     );
     setAddresses(updatedAddresses);
+    await persistAddresses(updatedAddresses, defaultAddressId);
     return updatedAddresses.find((address) => address.id === id);
   };
 
   // Remove an address
-  const removeAddress = (id) => {
-    setAddresses((prevAddresses) =>
-      prevAddresses.filter((address) => address.id !== id)
+  const removeAddress = async (id) => {
+    const remainingAddresses = addresses.filter(
+      (address) => address.id !== id
     );
 
+    let nextDefaultId = defaultAddressId;
+
     if (defaultAddressId === id) {
-      const remainingAddresses = addresses.filter(
-        (address) => address.id !== id
-      );
-      if (remainingAddresses.length > 0) {
-        setDefaultAddressId(remainingAddresses[0].id);
-      } else {
-        setDefaultAddressId(null);
-      }
+      nextDefaultId = remainingAddresses.length
+        ? remainingAddresses[0].id
+        : null;
     }
+
+    setAddresses(remainingAddresses);
+    setDefaultAddressId(nextDefaultId);
+
+    await persistAddresses(remainingAddresses, nextDefaultId);
   };
 
   // Set an address as the default
-  const setDefaultAddress = (id) => {
+  const setDefaultAddress = async (id) => {
     if (addresses.some((address) => address.id === id)) {
       setDefaultAddressId(id);
+      await persistAddresses(addresses, id);
       return true;
     }
     return false;
@@ -164,6 +194,7 @@ export const AddressProvider = ({ children }) => {
   const addressContextValue = {
     addresses,
     defaultAddressId,
+    isLoading,
     addAddress,
     updateAddress,
     removeAddress,
