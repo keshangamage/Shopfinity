@@ -11,7 +11,7 @@ import {
   FaTimes,
 } from "react-icons/fa";
 import { Link, useNavigate } from "react-router-dom";
-import logo from "../assets/logobgremove.webp";
+import logo from "../assets/logowhitebg.webp";
 import { useCart } from "../utils/CartContext.jsx";
 import { useAuth } from "../utils/AuthContext.jsx";
 import { useProducts } from "../utils/ProductContext.jsx";
