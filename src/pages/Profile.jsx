@@ -255,27 +255,30 @@ const Profile = () => {
     setLoading(true);
 
     try {
-      // Format expiry date for display
-      const formattedPayment = {
-        ...paymentFormData,
-
-        maskedCardNumber: maskCardNumber(paymentFormData.cardNumber),
-        // Format expiry date as MM/YY
-        expiryDate: `${
-          paymentFormData.expiryMonth
-        }/${paymentFormData.expiryYear.substring(2)}`,
+      const paymentPayload = {
+        cardholderName: paymentFormData.cardholderName,
+        cardNumber: paymentFormData.cardNumber,
+        cardType: paymentFormData.cardType,
+        expiryMonth: paymentFormData.expiryMonth,
+        expiryYear: paymentFormData.expiryYear,
       };
 
       if (editingPayment) {
         // Update existing payment method
-        await updatePaymentMethod(editingPayment.id, formattedPayment);
+        await updatePaymentMethod(editingPayment.id, paymentPayload);
+        if (
+          paymentFormData.isDefault &&
+          defaultPaymentMethodId !== editingPayment.id
+        ) {
+          await setDefaultPaymentMethod(editingPayment.id);
+        }
         setMessage({
           text: "Payment method updated successfully!",
           type: "success",
         });
       } else {
         // Add new payment method
-        const newPayment = await addPaymentMethod(formattedPayment);
+        const newPayment = await addPaymentMethod(paymentPayload);
 
         if (paymentFormData.isDefault || paymentMethods.length === 0) {
           await setDefaultPaymentMethod(newPayment.id);
@@ -312,16 +315,21 @@ const Profile = () => {
   // Handle editing a payment method
   const handleEditPayment = (payment) => {
     setEditingPayment(payment);
-
-    const [month, shortYear] = payment.expiryDate.split("/");
-    const year = `20${shortYear}`;
+    const month = payment.expiryMonth
+      ? payment.expiryMonth.toString().padStart(2, "0")
+      : payment.expiryDate?.split("/")?.[0] || "";
+    const year = payment.expiryYear
+      ? payment.expiryYear.toString()
+      : payment.expiryDate
+      ? `20${payment.expiryDate.split("/")?.[1] || ""}`
+      : "";
 
     setPaymentFormData({
       cardholderName: payment.cardholderName || "",
-      cardNumber: payment.cardNumber || "",
-      cardType: payment.cardType || "Visa",
-      expiryMonth: month || "",
-      expiryYear: year || "",
+      cardNumber: "",
+      cardType: payment.cardType || payment.cardBrand || "Visa",
+      expiryMonth: month,
+      expiryYear: year,
       cvv: "", //
       isDefault: payment.id === defaultPaymentMethodId,
     });
@@ -368,12 +376,6 @@ const Profile = () => {
     } finally {
       setLoading(false);
     }
-  };
-
-  const maskCardNumber = (number) => {
-    if (!number) return "";
-    const lastFour = number.slice(-4);
-    return `**** **** **** ${lastFour}`;
   };
 
   // Generate current year and next 10 years for expiry dropdown
