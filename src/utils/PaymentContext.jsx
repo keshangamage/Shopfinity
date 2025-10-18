@@ -1,4 +1,10 @@
-import React, { createContext, useContext, useEffect, useMemo, useState } from "react";
+import React, {
+  createContext,
+  useContext,
+  useEffect,
+  useMemo,
+  useState,
+} from "react";
 import { useAuth } from "./AuthContext.jsx";
 import { db } from "./firebase.js";
 import { doc, onSnapshot, setDoc, Timestamp } from "firebase/firestore";
@@ -99,7 +105,9 @@ export const PaymentProvider = ({ children }) => {
 
     const updatedMethods = [newPaymentMethod, ...paymentMethods];
     const nextDefaultId =
-      paymentMethods.length === 0 ? newPaymentMethod.id : defaultPaymentMethodId;
+      paymentMethods.length === 0
+        ? newPaymentMethod.id
+        : defaultPaymentMethodId;
 
     setPaymentMethods(updatedMethods);
     setDefaultPaymentMethodId(nextDefaultId);
@@ -128,9 +136,7 @@ export const PaymentProvider = ({ children }) => {
     let nextDefaultId = defaultPaymentMethodId;
 
     if (defaultPaymentMethodId === id) {
-      nextDefaultId = remainingMethods.length
-        ? remainingMethods[0].id
-        : null;
+      nextDefaultId = remainingMethods.length ? remainingMethods[0].id : null;
     }
 
     setPaymentMethods(remainingMethods);

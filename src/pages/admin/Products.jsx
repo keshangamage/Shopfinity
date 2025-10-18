@@ -260,9 +260,12 @@ const AdminProducts = () => {
             : undefined,
         stock: parseInt(newProduct.stock, 10) || 0,
         status: newProduct.status || "active",
-        image: newProduct.imageUrl || newProduct.imgURL || newProduct.image || "",
-        imageUrl: newProduct.imageUrl || newProduct.imgURL || newProduct.image || "",
-        imgURL: newProduct.imageUrl || newProduct.imgURL || newProduct.image || "",
+        image:
+          newProduct.imageUrl || newProduct.imgURL || newProduct.image || "",
+        imageUrl:
+          newProduct.imageUrl || newProduct.imgURL || newProduct.image || "",
+        imgURL:
+          newProduct.imageUrl || newProduct.imgURL || newProduct.image || "",
       };
 
       await addProduct(productToAdd);

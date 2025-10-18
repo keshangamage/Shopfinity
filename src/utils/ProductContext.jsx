@@ -49,9 +49,7 @@ const extractImage = (product) => {
     product.imagePath,
   ];
 
-  return (
-    imageCandidates.find((item) => typeof item === "string" && item) || ""
-  );
+  return imageCandidates.find((item) => typeof item === "string" && item) || "";
 };
 
 const normalizeProductDoc = (snapshotDoc) => {
@@ -361,11 +359,7 @@ export const ProductProvider = ({ children }) => {
       for (const chunk of idChunks) {
         const batch = writeBatch(db);
         chunk.forEach((productId) => {
-          const productRef = doc(
-            db,
-            PRODUCTS_COLLECTION,
-            String(productId)
-          );
+          const productRef = doc(db, PRODUCTS_COLLECTION, String(productId));
           batch.update(productRef, { status, updatedAt: now });
         });
         await batch.commit();
@@ -387,11 +381,7 @@ export const ProductProvider = ({ children }) => {
       for (const chunk of idChunks) {
         const batch = writeBatch(db);
         chunk.forEach((productId) => {
-          const productRef = doc(
-            db,
-            PRODUCTS_COLLECTION,
-            String(productId)
-          );
+          const productRef = doc(db, PRODUCTS_COLLECTION, String(productId));
           batch.delete(productRef);
         });
         await batch.commit();

@@ -1,4 +1,10 @@
-import React, { createContext, useContext, useEffect, useMemo, useState } from "react";
+import React, {
+  createContext,
+  useContext,
+  useEffect,
+  useMemo,
+  useState,
+} from "react";
 import { useAuth } from "./AuthContext.jsx";
 import { db } from "./firebase.js";
 import { doc, onSnapshot, setDoc, Timestamp } from "firebase/firestore";
@@ -154,9 +160,7 @@ export const AddressProvider = ({ children }) => {
 
   // Remove an address
   const removeAddress = async (id) => {
-    const remainingAddresses = addresses.filter(
-      (address) => address.id !== id
-    );
+    const remainingAddresses = addresses.filter((address) => address.id !== id);
 
     let nextDefaultId = defaultAddressId;
 

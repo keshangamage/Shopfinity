@@ -96,7 +96,6 @@ const Profile = () => {
 
   const navigate = useNavigate();
 
-  
   useEffect(() => {
     if (currentUser?.uid) {
       loadUserProfile(currentUser.uid);

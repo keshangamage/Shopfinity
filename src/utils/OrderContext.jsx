@@ -1,4 +1,10 @@
-import React, { createContext, useContext, useEffect, useMemo, useState } from "react";
+import React, {
+  createContext,
+  useContext,
+  useEffect,
+  useMemo,
+  useState,
+} from "react";
 import { useAuth } from "./AuthContext.jsx";
 import { db } from "./firebase.js";
 import {
@@ -43,7 +49,9 @@ const timestampToDate = (value) => {
 const normalizeOrderDoc = (snapshotDoc) => {
   const data = snapshotDoc.data() || {};
   const createdAtDate =
-    timestampToDate(data.createdAt) || timestampToDate(data.timestamp) || new Date();
+    timestampToDate(data.createdAt) ||
+    timestampToDate(data.timestamp) ||
+    new Date();
   const updatedAtDate = timestampToDate(data.updatedAt);
   const timestampMs = data.timestamp || createdAtDate.getTime();
   const displayDate = data.date || formatDisplayDate(createdAtDate);
@@ -98,7 +106,10 @@ const buildOrderPayload = (order, { docId, userId, user }) => {
     lastUpdated: now,
     userEmail: order?.userEmail || user?.email || "",
     userName:
-      order?.userName || order?.shippingAddress?.name || user?.displayName || "",
+      order?.userName ||
+      order?.shippingAddress?.name ||
+      user?.displayName ||
+      "",
   };
 
   if (order?.metadata) {
@@ -134,7 +145,9 @@ const buildTrackingTimeline = (order) => {
   if (order.status !== "Cancelled") {
     timeline.push({
       status: "Processing",
-      date: formatDisplayDate(new Date(orderDate.getTime() + 1000 * 60 * 60 * 24)),
+      date: formatDisplayDate(
+        new Date(orderDate.getTime() + 1000 * 60 * 60 * 24)
+      ),
       completed:
         daysSinceOrder >= 1 ||
         ["Shipped", "Out for Delivery", "Delivered"].includes(order.status),
@@ -168,7 +181,8 @@ const buildTrackingTimeline = (order) => {
         new Date(orderDate.getTime() + 1000 * 60 * 60 * 24 * 7)
       ),
       completed: order.status === "Delivered",
-      description: "Your order has been delivered. Thank you for shopping with us!",
+      description:
+        "Your order has been delivered. Thank you for shopping with us!",
     });
   } else {
     timeline.push({
@@ -177,13 +191,15 @@ const buildTrackingTimeline = (order) => {
         ? formatDisplayDate(timestampToDate(order.lastUpdated))
         : formatDisplayDate(currentDate),
       completed: true,
-      description: "This order has been cancelled and will not be processed further.",
+      description:
+        "This order has been cancelled and will not be processed further.",
     });
   }
 
   return {
     trackingId:
-      order.trackingNumber || `SF-${Math.floor(Math.random() * 900000) + 100000}`,
+      order.trackingNumber ||
+      `SF-${Math.floor(Math.random() * 900000) + 100000}`,
     status: order.status,
     timeline,
   };
@@ -312,7 +328,11 @@ export const OrderProvider = ({ children }) => {
     }
   };
 
-  const updateOrderStatus = async (orderId, newStatus, trackingNumber = null) => {
+  const updateOrderStatus = async (
+    orderId,
+    newStatus,
+    trackingNumber = null
+  ) => {
     try {
       const orderRef = doc(db, ORDERS_COLLECTION, String(orderId));
       const now = Timestamp.now();
@@ -406,7 +426,9 @@ export const OrderProvider = ({ children }) => {
       customerName:
         order.userId === "guest"
           ? "Guest User"
-          : order.userName || order.userEmail || `User (${order.userId.slice(0, 8)})`,
+          : order.userName ||
+            order.userEmail ||
+            `User (${order.userId.slice(0, 8)})`,
       hasPriorityFlag: Boolean(order.hasPriorityFlag),
     }));
   };
