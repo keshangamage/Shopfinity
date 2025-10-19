@@ -23,6 +23,8 @@ import {
 } from "firebase/firestore";
 import { useOrder } from "./OrderContext.jsx";
 
+const PROTECTED_EMAIL = "admin@shopfinity.com";
+
 const UserContext = createContext();
 
 export const useUsers = () => useContext(UserContext);
@@ -283,6 +285,16 @@ export const UserProvider = ({ children }) => {
   const updateUserRole = async (userId, newRole) => {
     try {
       const userDoc = doc(db, "users", userId);
+      const userSnapshot = await getDoc(userDoc);
+
+      if (userSnapshot.exists()) {
+        const userData = userSnapshot.data();
+        if (userData.email === PROTECTED_EMAIL) {
+          console.warn("Blocked attempt to change protected admin role.");
+          return false;
+        }
+      }
+
       const updatedAt = Timestamp.now();
       await updateDoc(userDoc, {
         role: newRole,
@@ -321,6 +333,16 @@ export const UserProvider = ({ children }) => {
   const updateUserStatus = async (userId, newStatus) => {
     try {
       const userDoc = doc(db, "users", userId);
+      const userSnapshot = await getDoc(userDoc);
+
+      if (userSnapshot.exists()) {
+        const userData = userSnapshot.data();
+        if (userData.email === PROTECTED_EMAIL) {
+          console.warn("Blocked attempt to change protected admin status.");
+          return false;
+        }
+      }
+
       const updatedAt = Timestamp.now();
       await updateDoc(userDoc, {
         status: newStatus,
@@ -359,6 +381,16 @@ export const UserProvider = ({ children }) => {
   const deleteUser = async (userId) => {
     try {
       const userDoc = doc(db, "users", userId);
+
+      const userSnapshot = await getDoc(userDoc);
+      if (userSnapshot.exists()) {
+        const userData = userSnapshot.data();
+        if (userData.email === PROTECTED_EMAIL) {
+          console.warn("Blocked attempt to delete protected admin account.");
+          return false;
+        }
+      }
+
       await deleteDoc(userDoc);
 
       setUsers((prev) => prev.filter((user) => user.uid !== userId));

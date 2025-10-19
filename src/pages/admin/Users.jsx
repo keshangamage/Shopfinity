@@ -24,6 +24,7 @@ const AdminUsers = () => {
     searchUsers,
   } = useUsers();
   const { currentUser } = useAuth();
+  const PROTECTED_EMAIL = "admin@shopfinity.com";
   const [filteredUsers, setFilteredUsers] = useState([]);
   const [searchTerm, setSearchTerm] = useState("");
   const [isEditModalOpen, setIsEditModalOpen] = useState(false);
@@ -77,6 +78,11 @@ const AdminUsers = () => {
   const handleUpdateUser = async (e) => {
     e.preventDefault();
 
+    if (selectedUser?.email === PROTECTED_EMAIL) {
+      alert("This admin account is locked and cannot be modified.");
+      return;
+    }
+
     try {
       const success = await updateUserRole(selectedUser.uid, selectedUser.role);
       if (success) {
@@ -95,6 +101,13 @@ const AdminUsers = () => {
 
   // Delete user
   const handleDeleteUser = async (userId) => {
+    const userToDelete = users.find((user) => user.uid === userId);
+    if (userToDelete?.email === PROTECTED_EMAIL) {
+      alert("This admin account cannot be deleted.");
+      setDeleteConfirm(null);
+      return;
+    }
+
     if (userId === currentUser?.uid) {
       alert("You cannot delete your own account!");
       return;
@@ -115,6 +128,12 @@ const AdminUsers = () => {
   };
 
   const handleQuickRoleChange = async (userId, newRole) => {
+    const targetUser = users.find((user) => user.uid === userId);
+    if (targetUser?.email === PROTECTED_EMAIL) {
+      alert("This admin account is locked and cannot be modified.");
+      return;
+    }
+
     if (userId === currentUser?.uid && newRole !== "admin") {
       alert("You cannot change your own admin role!");
       return;
@@ -134,6 +153,12 @@ const AdminUsers = () => {
   };
 
   const handleQuickStatusChange = async (userId, newStatus) => {
+    const targetUser = users.find((user) => user.uid === userId);
+    if (targetUser?.email === PROTECTED_EMAIL) {
+      alert("This admin account is locked and cannot be modified.");
+      return;
+    }
+
     if (userId === currentUser?.uid && newStatus === "inactive") {
       alert("You cannot deactivate your own account!");
       return;
@@ -415,7 +440,10 @@ const AdminUsers = () => {
                             ? "bg-purple-100 text-purple-800 hover:bg-purple-200"
                             : "bg-blue-100 text-blue-800 hover:bg-blue-200"
                         }`}
-                        disabled={user.uid === currentUser?.uid}
+                        disabled={
+                          user.uid === currentUser?.uid ||
+                          user.email === PROTECTED_EMAIL
+                        }
                       >
                         {user.role}
                       </button>
@@ -433,7 +461,10 @@ const AdminUsers = () => {
                             ? "bg-green-100 text-green-800 hover:bg-green-200"
                             : "bg-red-100 text-red-800 hover:bg-red-200"
                         }`}
-                        disabled={user.uid === currentUser?.uid}
+                        disabled={
+                          user.uid === currentUser?.uid ||
+                          user.email === PROTECTED_EMAIL
+                        }
                       >
                         {user.status}
                       </button>
@@ -459,7 +490,10 @@ const AdminUsers = () => {
                         onClick={() => setDeleteConfirm(user.uid)}
                         className="text-red-600 hover:text-red-900"
                         title="Delete user"
-                        disabled={user.uid === currentUser?.uid}
+                        disabled={
+                          user.uid === currentUser?.uid ||
+                          user.email === PROTECTED_EMAIL
+                        }
                       >
                         <FaTrash />
                       </button>
@@ -543,7 +577,10 @@ const AdminUsers = () => {
                             ? "bg-purple-100 text-purple-700"
                             : "bg-blue-100 text-blue-700"
                         }`}
-                        disabled={user.uid === currentUser?.uid}
+                        disabled={
+                          user.uid === currentUser?.uid ||
+                          user.email === PROTECTED_EMAIL
+                        }
                       >
                         Role: {user.role}
                       </button>
@@ -559,7 +596,10 @@ const AdminUsers = () => {
                             ? "bg-green-100 text-green-700"
                             : "bg-red-100 text-red-700"
                         }`}
-                        disabled={user.uid === currentUser?.uid}
+                        disabled={
+                          user.uid === currentUser?.uid ||
+                          user.email === PROTECTED_EMAIL
+                        }
                       >
                         Status: {user.status}
                       </button>
@@ -600,7 +640,10 @@ const AdminUsers = () => {
                       <button
                         onClick={() => setDeleteConfirm(user.uid)}
                         className="flex items-center gap-1 px-3 py-2 text-sm font-semibold text-red-600 bg-red-50 rounded-lg"
-                        disabled={user.uid === currentUser?.uid}
+                        disabled={
+                          user.uid === currentUser?.uid ||
+                          user.email === PROTECTED_EMAIL
+                        }
                       >
                         <FaTrash /> Delete
                       </button>
@@ -693,7 +736,10 @@ const AdminUsers = () => {
                     value={selectedUser.role}
                     onChange={handleEditUserChange}
                     className="w-full px-3 py-2 border rounded-md"
-                    disabled={selectedUser.uid === currentUser?.uid}
+                    disabled={
+                      selectedUser.uid === currentUser?.uid ||
+                      selectedUser.email === PROTECTED_EMAIL
+                    }
                   >
                     <option value="customer">Customer</option>
                     <option value="admin">Admin</option>
@@ -701,6 +747,11 @@ const AdminUsers = () => {
                   {selectedUser.uid === currentUser?.uid && (
                     <p className="text-xs text-red-500 mt-1">
                       You cannot change your own role
+                    </p>
+                  )}
+                  {selectedUser.email === PROTECTED_EMAIL && (
+                    <p className="text-xs text-red-500 mt-1">
+                      This admin account is locked and cannot be changed
                     </p>
                   )}
                 </div>
@@ -711,7 +762,10 @@ const AdminUsers = () => {
                     value={selectedUser.status}
                     onChange={handleEditUserChange}
                     className="w-full px-3 py-2 border rounded-md"
-                    disabled={selectedUser.uid === currentUser?.uid}
+                    disabled={
+                      selectedUser.uid === currentUser?.uid ||
+                      selectedUser.email === PROTECTED_EMAIL
+                    }
                   >
                     <option value="active">Active</option>
                     <option value="inactive">Inactive</option>
@@ -719,6 +773,11 @@ const AdminUsers = () => {
                   {selectedUser.uid === currentUser?.uid && (
                     <p className="text-xs text-red-500 mt-1">
                       You cannot change your own status
+                    </p>
+                  )}
+                  {selectedUser.email === PROTECTED_EMAIL && (
+                    <p className="text-xs text-red-500 mt-1">
+                      This admin account is locked and cannot be changed
                     </p>
                   )}
                 </div>
