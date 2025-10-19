@@ -1,10 +1,11 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import { useNavigate, Link } from "react-router-dom";
 import { useAuth } from "../utils/AuthContext.jsx";
 import { FcGoogle } from "react-icons/fc";
 
 const Register = () => {
-  const { signup, updateUserProfile, signInWithGoogle } = useAuth();
+  const { signup, updateUserProfile, signInWithGoogle, currentUser } =
+    useAuth();
   const navigate = useNavigate();
   const [name, setName] = useState("");
   const [email, setEmail] = useState("");
@@ -12,6 +13,12 @@ const Register = () => {
   const [confirmPassword, setConfirmPassword] = useState("");
   const [error, setError] = useState("");
   const [loading, setLoading] = useState(false);
+
+  useEffect(() => {
+    if (currentUser) {
+      navigate("/", { replace: true });
+    }
+  }, [currentUser, navigate]);
 
   const handleSubmit = async (e) => {
     e.preventDefault();
@@ -32,7 +39,7 @@ const Register = () => {
         });
       }
 
-      navigate("/login");
+      navigate("/", { replace: true });
     } catch (err) {
       setError("Failed to create an account");
       console.error(err);
@@ -46,7 +53,7 @@ const Register = () => {
       setError("");
       setLoading(true);
       await signInWithGoogle();
-      navigate("/");
+      navigate("/", { replace: true });
     } catch (err) {
       setError("Failed to sign in with Google.");
       console.error(err);
