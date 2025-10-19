@@ -1,17 +1,9 @@
-import React from "react";
+import React, { Suspense, lazy } from "react";
 import { BrowserRouter as Router, Route, Routes } from "react-router-dom";
 import Navbar from "./components/Navbar";
-import Login from "./pages/Login";
-import Register from "./pages/Register";
-import Home from "./pages/Home";
-import Cart from "./pages/Cart";
-import Checkout from "./pages/Checkout";
-import ProductDetail from "./pages/ProductDetail";
-import CategoryPage from "./pages/CategoryPage";
-import Profile from "./pages/Profile";
-import Orders from "./pages/Orders";
-import OrderDetail from "./pages/OrderDetail";
-import SearchPage from "./pages/SearchPage";
+import PersistenceDebugger from "./components/PersistenceDebugger";
+import ProtectedRoute from "./components/ProtectedRoute";
+import AdminRoute from "./components/AdminRoute";
 import { CartProvider } from "./utils/CartContext.jsx";
 import { AuthProvider } from "./utils/AuthContext.jsx";
 import { OrderProvider } from "./utils/OrderContext.jsx";
@@ -22,14 +14,23 @@ import { RewardsProvider } from "./utils/RewardsContext.jsx";
 import { ProductProvider } from "./utils/ProductContext.jsx";
 import { AdminProvider } from "./utils/AdminContext.jsx";
 import { UserProvider } from "./utils/UserContext.jsx";
-import PersistenceDebugger from "./components/PersistenceDebugger";
-import ProtectedRoute from "./components/ProtectedRoute";
-import AdminRoute from "./components/AdminRoute";
-import AdminLayout from "./components/AdminLayout";
-import AdminDashboard from "./pages/admin/Dashboard";
-import AdminProducts from "./pages/admin/Products";
-import AdminOrders from "./pages/admin/Orders";
-import AdminUsers from "./pages/admin/Users";
+
+const Home = lazy(() => import("./pages/Home"));
+const Login = lazy(() => import("./pages/Login"));
+const Register = lazy(() => import("./pages/Register"));
+const Cart = lazy(() => import("./pages/Cart"));
+const Checkout = lazy(() => import("./pages/Checkout"));
+const ProductDetail = lazy(() => import("./pages/ProductDetail"));
+const CategoryPage = lazy(() => import("./pages/CategoryPage"));
+const Profile = lazy(() => import("./pages/Profile"));
+const Orders = lazy(() => import("./pages/Orders"));
+const OrderDetail = lazy(() => import("./pages/OrderDetail"));
+const SearchPage = lazy(() => import("./pages/SearchPage"));
+const AdminLayout = lazy(() => import("./components/AdminLayout"));
+const AdminDashboard = lazy(() => import("./pages/admin/Dashboard"));
+const AdminProducts = lazy(() => import("./pages/admin/Products"));
+const AdminOrders = lazy(() => import("./pages/admin/Orders"));
+const AdminUsers = lazy(() => import("./pages/admin/Users"));
 
 function App() {
   const [error, setError] = React.useState(null);
@@ -94,22 +95,26 @@ function App() {
     );
   }
 
+  const suspenseFallback = (
+    <div className="p-6 text-center text-gray-600">Loading...</div>
+  );
+
   return (
-    <React.StrictMode>
-      <ErrorBoundary>
-        <AuthProvider>
-          <UserProvider>
-            <CartProvider>
-              <OrderProvider>
-                <AddressProvider>
-                  <SavedItemsProvider>
-                    <PaymentProvider>
-                      <RewardsProvider>
-                        <ProductProvider>
-                          <AdminProvider>
-                            <Router>
-                              <PersistenceDebugger />
-                              <Navbar />
+    <ErrorBoundary>
+      <AuthProvider>
+        <UserProvider>
+          <CartProvider>
+            <OrderProvider>
+              <AddressProvider>
+                <SavedItemsProvider>
+                  <PaymentProvider>
+                    <RewardsProvider>
+                      <ProductProvider>
+                        <AdminProvider>
+                          <Router>
+                            {import.meta.env.DEV && <PersistenceDebugger />}
+                            <Navbar />
+                            <Suspense fallback={suspenseFallback}>
                               <Routes>
                                 <Route path="/" element={<Home />} />
                                 <Route path="/login" element={<Login />} />
@@ -162,7 +167,6 @@ function App() {
                                     </ProtectedRoute>
                                   }
                                 />
-                                {/* Admin Routes */}
                                 <Route
                                   path="/admin"
                                   element={
@@ -204,20 +208,19 @@ function App() {
                                   }
                                 />
                               </Routes>
-                              <PersistenceDebugger />
-                            </Router>
-                          </AdminProvider>
-                        </ProductProvider>
-                      </RewardsProvider>
-                    </PaymentProvider>
-                  </SavedItemsProvider>
-                </AddressProvider>
-              </OrderProvider>
-            </CartProvider>
-          </UserProvider>
-        </AuthProvider>
-      </ErrorBoundary>
-    </React.StrictMode>
+                            </Suspense>
+                          </Router>
+                        </AdminProvider>
+                      </ProductProvider>
+                    </RewardsProvider>
+                  </PaymentProvider>
+                </SavedItemsProvider>
+              </AddressProvider>
+            </OrderProvider>
+          </CartProvider>
+        </UserProvider>
+      </AuthProvider>
+    </ErrorBoundary>
   );
 }
 

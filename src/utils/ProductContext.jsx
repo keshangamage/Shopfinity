@@ -17,7 +17,6 @@ import {
   Timestamp,
   writeBatch,
 } from "firebase/firestore";
-import { products as initialProducts } from "../components/Products.jsx";
 import { db } from "./firebase.js";
 import { resolveProductImage } from "./assetResolver.js";
 
@@ -169,7 +168,35 @@ const buildProductPayload = (product, { isNew } = { isNew: false }) => {
   return payload;
 };
 
+let cachedSeedProducts = null;
+
+const loadSeedProducts = async () => {
+  if (cachedSeedProducts) {
+    return cachedSeedProducts;
+  }
+
+  try {
+    const module = await import("../components/Products.jsx");
+    const loadedProducts = Array.isArray(module.products)
+      ? module.products
+      : [];
+    cachedSeedProducts = loadedProducts;
+    return cachedSeedProducts;
+  } catch (error) {
+    console.error("Failed to load seed products:", error);
+    cachedSeedProducts = [];
+    return cachedSeedProducts;
+  }
+};
+
 const seedInitialProducts = async () => {
+  const initialProducts = await loadSeedProducts();
+
+  if (!initialProducts.length) {
+    console.warn("No seed products available to populate Firestore.");
+    return;
+  }
+
   const productChunks = chunkItems(initialProducts, MAX_BATCH_SIZE);
 
   for (const productChunk of productChunks) {

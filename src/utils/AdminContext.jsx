@@ -4,18 +4,39 @@ import React, {
   useState,
   useEffect,
   useCallback,
+  useMemo,
 } from "react";
 import { useAuth } from "./AuthContext.jsx";
 import { useOrder } from "./OrderContext.jsx";
-import { products } from "../components/Products.jsx";
 
 const AdminContext = createContext();
 
 export const useAdmin = () => useContext(AdminContext);
 
+let adminProductsCache = null;
+
+const loadAdminProducts = async () => {
+  if (adminProductsCache) {
+    return adminProductsCache;
+  }
+
+  try {
+    const module = await import("../components/Products.jsx");
+    const catalog = Array.isArray(module.products) ? module.products : [];
+    adminProductsCache = catalog;
+    return adminProductsCache;
+  } catch (error) {
+    console.error("Failed to load product catalog for admin analytics:", error);
+    adminProductsCache = [];
+    return adminProductsCache;
+  }
+};
+
 export const AdminProvider = ({ children }) => {
   const { isAdmin } = useAuth();
   const { orders } = useOrder();
+  const [productCatalog, setProductCatalog] = useState([]);
+  const hasCatalog = productCatalog.length > 0;
   const [analytics, setAnalytics] = useState({
     totalSales: 0,
     totalOrders: 0,
@@ -73,6 +94,42 @@ export const AdminProvider = ({ children }) => {
 
   const [refreshInterval, setRefreshInterval] = useState(60000);
   const [lastRefreshed, setLastRefreshed] = useState(new Date());
+
+  useEffect(() => {
+    let isMounted = true;
+
+    if (!isAdmin || !isAdmin()) {
+      if (hasCatalog) {
+        setProductCatalog([]);
+      }
+      return;
+    }
+
+    if (hasCatalog) {
+      return;
+    }
+
+    (async () => {
+      const catalog = await loadAdminProducts();
+      if (isMounted) {
+        setProductCatalog(catalog);
+      }
+    })();
+
+    return () => {
+      isMounted = false;
+    };
+  }, [isAdmin, hasCatalog]);
+
+  const productMap = useMemo(() => {
+    if (!productCatalog || !productCatalog.length) {
+      return new Map();
+    }
+
+    return new Map(
+      productCatalog.map((product) => [product.id, product])
+    );
+  }, [productCatalog]);
 
   const calculateAnalytics = useCallback(() => {
     if (!isAdmin || !isAdmin()) return;
@@ -157,17 +214,19 @@ export const AdminProvider = ({ children }) => {
         allOrderItems = [...allOrderItems, ...order.items];
 
         order.items.forEach((item) => {
-          const product = products.find((p) => p.id === item.id);
-          if (product && product.category) {
-            if (!categorySales[product.category]) {
-              categorySales[product.category] = 0;
-            }
-            categorySales[product.category] += item.price * item.quantity;
+          const product = productMap.get(item.id);
+          const categoryKey = product?.category || item.category;
 
-            if (!categoryDistribution[product.category]) {
-              categoryDistribution[product.category] = 0;
+          if (categoryKey) {
+            if (!categorySales[categoryKey]) {
+              categorySales[categoryKey] = 0;
             }
-            categoryDistribution[product.category] += item.quantity;
+            categorySales[categoryKey] += item.price * item.quantity;
+
+            if (!categoryDistribution[categoryKey]) {
+              categoryDistribution[categoryKey] = 0;
+            }
+            categoryDistribution[categoryKey] += item.quantity;
           }
         });
       }
@@ -212,7 +271,7 @@ export const AdminProvider = ({ children }) => {
       .sort((a, b) => b.quantity - a.quantity)
       .slice(0, 5);
 
-    const inventoryStatus = products.map((product) => {
+    const inventoryStatus = productCatalog.map((product) => {
       const soldQuantity = productSalesMap[product.id]?.quantity || 0;
       const initialStock = product.initialStock || 100;
       const currentStock = initialStock - soldQuantity;
@@ -335,7 +394,7 @@ export const AdminProvider = ({ children }) => {
     });
 
     setLastRefreshed(new Date());
-  }, [orders, isAdmin]);
+  }, [orders, isAdmin, productMap, productCatalog]);
 
   useEffect(() => {
     calculateAnalytics();
