@@ -81,13 +81,14 @@ const Home = () => {
     <div className="min-h-screen bg-gray-100 font-sans">
       {/* Hero */}
       <section>
-        <div
-          className="relative w-full h-64 sm:h-80 md:h-96 bg-cover bg-center"
-          style={{
-            backgroundImage: `url(${webbanner})`,
-          }}
-        >
-          <div className="absolute inset-0 bg-opacity-50 flex flex-col items-center justify-center text-center text-white px-4">
+        <div className="relative w-full overflow-hidden">
+          <img
+            src={webbanner}
+            alt="Seasonal sale banner"
+            className="w-full h-auto max-h-[560px]"
+          />
+          <div className="absolute inset-0 bg-black/10" />
+          <div className="absolute inset-0 flex flex-col items-center justify-center text-center text-white px-4">
             <h2 className="text-2xl sm:text-3xl md:text-4xl font-bold">
               Biggest Sale of the Year
             </h2>
