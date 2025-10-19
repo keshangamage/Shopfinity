@@ -126,9 +126,7 @@ export const AdminProvider = ({ children }) => {
       return new Map();
     }
 
-    return new Map(
-      productCatalog.map((product) => [product.id, product])
-    );
+    return new Map(productCatalog.map((product) => [product.id, product]));
   }, [productCatalog]);
 
   const calculateAnalytics = useCallback(() => {
