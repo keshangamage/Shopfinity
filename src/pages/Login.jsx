@@ -10,6 +10,7 @@ const Login = () => {
   const [password, setPassword] = useState("");
   const [error, setError] = useState("");
   const [loading, setLoading] = useState(false);
+  const [suggestSignup, setSuggestSignup] = useState(false);
 
   // Redirect to home page if user is already authenticated
   useEffect(() => {
@@ -23,10 +24,25 @@ const Login = () => {
 
     try {
       setError("");
+      setSuggestSignup(false);
       setLoading(true);
       await login(email, password);
     } catch (err) {
-      setError("Failed to sign in. Please check your credentials.");
+      if (err?.code === "auth/user-not-found") {
+        setError(
+          "No account found for this email. Please sign up to continue."
+        );
+        setSuggestSignup(true);
+      } else if (err?.code === "auth/wrong-password") {
+        setError("Incorrect password. Please try again.");
+        setSuggestSignup(false);
+      } else if (err?.code === "auth/invalid-email") {
+        setError("The email address appears to be invalid.");
+        setSuggestSignup(false);
+      } else {
+        setError("Failed to sign in. Please check your credentials.");
+        setSuggestSignup(false);
+      }
       console.error("Login error:", err);
     } finally {
       setLoading(false);
@@ -36,6 +52,7 @@ const Login = () => {
   const handleGoogleSignIn = async () => {
     try {
       setError("");
+      setSuggestSignup(false);
       setLoading(true);
       await signInWithGoogle();
     } catch (err) {
@@ -57,7 +74,19 @@ const Login = () => {
           {" "}
           {error && (
             <div className="bg-red-50 border border-red-200 text-red-700 px-4 py-2 rounded-lg mb-4">
-              {error}
+              <p>{error}</p>
+              {suggestSignup && (
+                <p className="mt-2">
+                  Don't have an account?{" "}
+                  <Link
+                    to="/register"
+                    className="text-blue-600 hover:underline"
+                  >
+                    Sign up now
+                  </Link>
+                  .
+                </p>
+              )}
             </div>
           )}
           {/* Email */}
