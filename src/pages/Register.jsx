@@ -140,9 +140,7 @@ const Register = () => {
               />
               <button
                 type="button"
-                onClick={() =>
-                  setShowConfirmPassword((prev) => !prev)
-                }
+                onClick={() => setShowConfirmPassword((prev) => !prev)}
                 className="absolute inset-y-0 right-3 flex items-center text-sm font-medium text-gray-500 hover:text-gray-700"
               >
                 {showConfirmPassword ? "Hide" : "Show"}
