@@ -115,10 +115,7 @@ export const CartProvider = ({ children }) => {
   }, [cartDocRef, guestCartStorageKey]);
 
   useEffect(() => {
-    if (cartDocRef) {
-      removeLocalStorageItem(guestCartStorageKey);
-      return;
-    }
+    if (cartDocRef) return;
 
     setLocalStorageItem(guestCartStorageKey, cartItems);
   }, [cartDocRef, cartItems, guestCartStorageKey]);
@@ -130,7 +127,10 @@ export const CartProvider = ({ children }) => {
       getLocalStorageItem(guestCartStorageKey, emptyCart)
     );
 
-    if (!itemsToMerge.length) return;
+    if (!itemsToMerge.length) {
+      removeLocalStorageItem(guestCartStorageKey);
+      return;
+    }
 
     const syncGuestCart = async () => {
       try {
