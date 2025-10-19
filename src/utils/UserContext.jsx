@@ -283,9 +283,28 @@ export const UserProvider = ({ children }) => {
   const updateUserRole = async (userId, newRole) => {
     try {
       const userDoc = doc(db, "users", userId);
+      const updatedAt = Timestamp.now();
       await updateDoc(userDoc, {
         role: newRole,
-        updatedAt: Timestamp.now(),
+        updatedAt,
+      });
+
+      setUsers((prev) =>
+        prev.map((user) =>
+          user.uid === userId ? { ...user, role: newRole } : user
+        )
+      );
+
+      setUserProfiles((prev) => {
+        if (!prev[userId]) return prev;
+        return {
+          ...prev,
+          [userId]: {
+            ...prev[userId],
+            role: newRole,
+            updatedAt,
+          },
+        };
       });
 
       if (isAdmin && isAdmin()) {
@@ -302,9 +321,28 @@ export const UserProvider = ({ children }) => {
   const updateUserStatus = async (userId, newStatus) => {
     try {
       const userDoc = doc(db, "users", userId);
+      const updatedAt = Timestamp.now();
       await updateDoc(userDoc, {
         status: newStatus,
-        updatedAt: Timestamp.now(),
+        updatedAt,
+      });
+
+      setUsers((prev) =>
+        prev.map((user) =>
+          user.uid === userId ? { ...user, status: newStatus } : user
+        )
+      );
+
+      setUserProfiles((prev) => {
+        if (!prev[userId]) return prev;
+        return {
+          ...prev,
+          [userId]: {
+            ...prev[userId],
+            status: newStatus,
+            updatedAt,
+          },
+        };
       });
 
       if (isAdmin && isAdmin()) {

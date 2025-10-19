@@ -10,7 +10,14 @@ import {
   signInWithPopup,
 } from "firebase/auth";
 import { auth, db } from "./firebase.js";
-import { doc, setDoc, updateDoc, getDoc, Timestamp } from "firebase/firestore";
+import {
+  doc,
+  setDoc,
+  updateDoc,
+  getDoc,
+  Timestamp,
+  onSnapshot,
+} from "firebase/firestore";
 
 const AuthContext = createContext();
 
@@ -21,6 +28,8 @@ export const useAuth = () => {
 export const AuthProvider = ({ children }) => {
   const [currentUser, setCurrentUser] = useState(null);
   const [loading, setLoading] = useState(true);
+  const [userProfile, setUserProfile] = useState(null);
+  const [profileLoading, setProfileLoading] = useState(false);
 
   // Sign up function
   const signup = async (email, password) => {
@@ -151,19 +160,77 @@ export const AuthProvider = ({ children }) => {
     };
   }, []);
 
+  useEffect(() => {
+    let unsubscribe;
+
+    if (currentUser) {
+      setProfileLoading(true);
+      const userDocRef = doc(db, "users", currentUser.uid);
+
+      // Listen for role/status changes in real time so auth gating stays accurate
+      unsubscribe = onSnapshot(
+        userDocRef,
+        (snapshot) => {
+          if (snapshot.exists()) {
+            const profileData = snapshot.data();
+            setUserProfile(profileData);
+            localStorage.setItem(
+              "shopfinity_auth_profile",
+              JSON.stringify(profileData)
+            );
+          } else {
+            setUserProfile(null);
+            localStorage.removeItem("shopfinity_auth_profile");
+          }
+          setProfileLoading(false);
+        },
+        (error) => {
+          console.error("Error subscribing to user profile:", error);
+          setUserProfile(null);
+          setProfileLoading(false);
+        }
+      );
+    } else {
+      setUserProfile(null);
+      localStorage.removeItem("shopfinity_auth_profile");
+      setProfileLoading(false);
+    }
+
+    return () => {
+      if (unsubscribe) unsubscribe();
+    };
+  }, [currentUser]);
+
   const isAdmin = () => {
     if (!currentUser) return false;
+
+    if (userProfile?.role) {
+      return userProfile.role === "admin";
+    }
+
+    try {
+      const storedProfile = localStorage.getItem("shopfinity_auth_profile");
+      if (storedProfile) {
+        const parsedProfile = JSON.parse(storedProfile);
+        if (parsedProfile?.role) {
+          return parsedProfile.role === "admin";
+        }
+      }
+    } catch (error) {
+      console.warn("Failed to parse stored auth profile:", error);
+    }
 
     const adminEmails = [
       "admin@shopfinity.com",
       "keshan.gimhana.gamage@gmail.com",
-    ]; // admin emails
+    ];
 
     return adminEmails.includes(currentUser.email);
   };
 
   const value = {
     currentUser,
+    userProfile,
     signup,
     login,
     logout,
@@ -175,7 +242,7 @@ export const AuthProvider = ({ children }) => {
 
   return (
     <AuthContext.Provider value={value}>
-      {!loading && children}
+      {!loading && !profileLoading && children}
     </AuthContext.Provider>
   );
 };
