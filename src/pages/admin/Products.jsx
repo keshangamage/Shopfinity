@@ -171,7 +171,7 @@ const AdminProducts = () => {
       imgURL: product.imgURL || resolvedImage,
       image: product.image || resolvedImage,
     });
-    setImagePreview(resolvedImage);
+    setImagePreview(null);
     setIsEditModalOpen(true);
   };
 
@@ -194,10 +194,6 @@ const AdminProducts = () => {
     } else {
       setNewProduct((prev) => ({ ...prev, [name]: value }));
     }
-
-    if (name === "imageUrl" && value) {
-      setImagePreview(value);
-    }
   };
 
   const handleEditProductChange = (e) => {
@@ -213,10 +209,6 @@ const AdminProducts = () => {
       setSelectedProduct((prev) => ({ ...prev, [name]: tagsArray }));
     } else {
       setSelectedProduct((prev) => ({ ...prev, [name]: value }));
-    }
-
-    if (name === "imageUrl" && value) {
-      setImagePreview(value);
     }
   };
 
@@ -1063,14 +1055,40 @@ const AdminProducts = () => {
                       <label className="block text-gray-700 font-semibold mb-3">
                         Image URL
                       </label>
-                      <input
-                        type="text"
-                        name="imageUrl"
-                        value={newProduct.imageUrl}
-                        onChange={handleNewProductChange}
-                        className="w-full px-4 py-3 border border-gray-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all duration-200 bg-gray-50"
-                        placeholder="https://example.com/image.jpg"
-                      />
+                      <div className="space-y-3">
+                        <input
+                          type="text"
+                          name="imageUrl"
+                          value={newProduct.imageUrl}
+                          onChange={handleNewProductChange}
+                          className="w-full px-4 py-3 border border-gray-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all duration-200 bg-gray-50"
+                          placeholder="https://example.com/image.jpg"
+                        />
+                        {newProduct.imageUrl && newProduct.imageUrl.trim() && (
+                          <div className="flex items-center gap-3">
+                            <div className="h-14 w-14 rounded-lg overflow-hidden border border-gray-200 bg-gray-100">
+                              <img
+                                src={newProduct.imageUrl}
+                                alt="New product preview"
+                                className="h-full w-full object-cover"
+                                onError={(e) => {
+                                  e.currentTarget.src =
+                                    "https://via.placeholder.com/100?text=Image";
+                                }}
+                              />
+                            </div>
+                            <button
+                              type="button"
+                              onClick={() =>
+                                handleImagePreview(newProduct.imageUrl)
+                              }
+                              className="px-4 py-2 bg-blue-100 text-blue-700 rounded-lg hover:bg-blue-200 transition-colors duration-200 font-medium"
+                            >
+                              Preview Image
+                            </button>
+                          </div>
+                        )}
+                      </div>
                     </div>
                     <div>
                       <label className="block text-gray-700 font-semibold mb-3">
@@ -1186,17 +1204,62 @@ const AdminProducts = () => {
                       <label className="block text-gray-700 font-semibold mb-3">
                         Image URL
                       </label>
-                      <input
-                        type="text"
-                        name="imageUrl"
-                        value={
-                          selectedProduct.imageUrl ||
-                          selectedProduct.imgURL ||
-                          ""
-                        }
-                        onChange={handleEditProductChange}
-                        className="w-full px-4 py-3 border border-gray-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-transparent transition-all duration-200 bg-gray-50"
-                      />
+                      <div className="space-y-3">
+                        <input
+                          type="text"
+                          name="imageUrl"
+                          value={
+                            selectedProduct.imageUrl ||
+                            selectedProduct.imgURL ||
+                            ""
+                          }
+                          onChange={handleEditProductChange}
+                          className="w-full px-4 py-3 border border-gray-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-transparent transition-all duration-200 bg-gray-50"
+                        />
+                        {(selectedProduct.imageUrl &&
+                          selectedProduct.imageUrl.trim()) ||
+                        (selectedProduct.imgURL &&
+                          selectedProduct.imgURL.trim()) ? (
+                          <div className="flex items-center gap-3">
+                            <div className="h-14 w-14 rounded-lg overflow-hidden border border-gray-200 bg-gray-100">
+                              <img
+                                src={
+                                  selectedProduct.imageUrl ||
+                                  selectedProduct.imgURL ||
+                                  ""
+                                }
+                                alt="Current product preview"
+                                className="h-full w-full object-cover"
+                                onError={(e) => {
+                                  e.currentTarget.src =
+                                    "https://via.placeholder.com/100?text=Image";
+                                }}
+                              />
+                            </div>
+                            <button
+                              type="button"
+                              onClick={() =>
+                                handleImagePreview(
+                                  selectedProduct.imageUrl ||
+                                    selectedProduct.imgURL ||
+                                    ""
+                                )
+                              }
+                              className="px-4 py-2 bg-blue-100 text-blue-700 rounded-lg hover:bg-blue-200 transition-colors duration-200 font-medium"
+                              disabled={
+                                !(
+                                  (selectedProduct.imageUrl &&
+                                    selectedProduct.imageUrl.trim()) ||
+                                  (selectedProduct.imgURL &&
+                                    selectedProduct.imgURL.trim())
+                                )
+                              }
+                            >
+                              Preview Image
+                            </button>
+                          </div>
+                        ) : null}
+                      </div>
                     </div>
                     <div>
                       <label className="block text-gray-700 font-semibold mb-3">
