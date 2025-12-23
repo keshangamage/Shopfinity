@@ -67,12 +67,18 @@ export const AuthProvider = ({ children }) => {
       const docSnap = await getDoc(userDoc);
 
       if (!docSnap.exists()) {
+        const adminEmails = [
+          "admin@shopfinity.com",
+          "keshan.gimhana.gamage@gmail.com",
+        ];
+        const role = adminEmails.includes(user.email) ? "admin" : "customer";
+
         const userData = {
           uid: user.uid,
           email: user.email,
           displayName: user.displayName || "",
           photoURL: user.photoURL || "",
-          role: "customer",
+          role: role,
           status: "active",
           createdAt: Timestamp.now(),
           lastLoginAt: Timestamp.now(),
@@ -204,6 +210,15 @@ export const AuthProvider = ({ children }) => {
   const isAdmin = () => {
     if (!currentUser) return false;
 
+    const adminEmails = [
+      "admin@shopfinity.com",
+      "keshan.gimhana.gamage@gmail.com",
+    ];
+
+    if (adminEmails.includes(currentUser.email)) {
+      return true;
+    }
+
     if (userProfile?.role) {
       return userProfile.role === "admin";
     }
@@ -220,12 +235,7 @@ export const AuthProvider = ({ children }) => {
       console.warn("Failed to parse stored auth profile:", error);
     }
 
-    const adminEmails = [
-      "admin@shopfinity.com",
-      "keshan.gimhana.gamage@gmail.com",
-    ];
-
-    return adminEmails.includes(currentUser.email);
+    return false;
   };
 
   const value = {
